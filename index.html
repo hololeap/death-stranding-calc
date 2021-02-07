@@ -4369,15 +4369,6 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $elm$core$Basics$apL = F2(
-	function (f, x) {
-		return f(x);
-	});
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
-var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $author$project$Dict$AutoInc$empty = function (prefix) {
-	return {dict: $elm$core$Dict$empty, lastKey: 0, prefix: prefix};
-};
 var $author$project$Resource$Ceramics$Ceramics40 = {$: 'Ceramics40'};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -4726,6 +4717,10 @@ var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var $elm$core$Array$Leaf = function (a) {
 	return {$: 'Leaf', a: a};
 };
+var $elm$core$Basics$apL = F2(
+	function (f, x) {
+		return f(x);
+	});
 var $elm$core$Basics$apR = F2(
 	function (x, f) {
 		return f(x);
@@ -4929,6 +4924,8 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Dict$Black = {$: 'Black'};
 var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
@@ -5259,6 +5256,9 @@ var $author$project$Main$Model$initTotalCounts = {
 	ceramics: $author$project$Main$Model$initResourceCounts($author$project$Resource$Ceramics$ceramicsResource),
 	metal: $author$project$Main$Model$initResourceCounts($author$project$Resource$Metal$metalResource)
 };
+var $author$project$Dict$AutoInc$empty = function (prefix) {
+	return {dict: $elm$core$Dict$empty, lastKey: 0, prefix: prefix};
+};
 var $author$project$Dict$AutoInc$insert = F2(
 	function (value, dictData) {
 		var key = dictData.lastKey + 1;
@@ -5270,16 +5270,17 @@ var $author$project$Dict$AutoInc$insert = F2(
 				lastKey: key
 			});
 	});
-var $author$project$Main$Model$init = function () {
-	var dict = A2(
-		$author$project$Dict$AutoInc$insert,
-		$author$project$Structure$Model$initStructure,
-		A2(
+var $author$project$Dict$AutoInc$singleton = F2(
+	function (prefix, v) {
+		return A2(
 			$author$project$Dict$AutoInc$insert,
-			$author$project$Structure$Model$initStructure,
-			$author$project$Dict$AutoInc$empty('Structure')));
-	return {structDict: dict, totalCounts: $author$project$Main$Model$initTotalCounts};
-}();
+			v,
+			$author$project$Dict$AutoInc$empty(prefix));
+	});
+var $author$project$Main$Model$init = {
+	structDict: A2($author$project$Dict$AutoInc$singleton, 'Structure', $author$project$Structure$Model$initStructure),
+	totalCounts: $author$project$Main$Model$initTotalCounts
+};
 var $elm$json$Json$Decode$map = _Json_map1;
 var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
@@ -6045,6 +6046,14 @@ var $author$project$Main$Controller$getTotalCounts = function (dict) {
 		$author$project$Main$Model$initTotalCounts,
 		$author$project$Dict$AutoInc$values(dict));
 };
+var $author$project$Dict$AutoInc$remove = F2(
+	function (key, dictData) {
+		return _Utils_update(
+			dictData,
+			{
+				dict: A2($elm$core$Dict$remove, key, dictData.dict)
+			});
+	});
 var $author$project$Dict$AutoInc$update = F3(
 	function (key, func, dictData) {
 		return _Utils_update(
@@ -6193,26 +6202,68 @@ var $author$project$Structure$Controller$updateStructure = F2(
 	});
 var $author$project$Main$Controller$update = F2(
 	function (msg, model) {
-		var newDict = A3(
-			$author$project$Dict$AutoInc$update,
-			msg.structureLabel,
-			function (maybeStruct) {
-				return A2(
-					$elm$core$Maybe$map,
-					function (struct) {
-						return A2($author$project$Structure$Controller$updateStructure, msg.structureMsg, struct);
+		switch (msg.$) {
+			case 'ResourceChange':
+				var change = msg.a;
+				var newDict = A3(
+					$author$project$Dict$AutoInc$update,
+					change.structureLabel,
+					function (maybeStruct) {
+						return A2(
+							$elm$core$Maybe$map,
+							function (struct) {
+								return A2($author$project$Structure$Controller$updateStructure, change.structureMsg, struct);
+							},
+							maybeStruct);
 					},
-					maybeStruct);
-			},
-			model.structDict);
-		var newCounts = $author$project$Main$Controller$getTotalCounts(newDict);
-		return {structDict: newDict, totalCounts: newCounts};
+					model.structDict);
+				var newCounts = $author$project$Main$Controller$getTotalCounts(newDict);
+				return {structDict: newDict, totalCounts: newCounts};
+			case 'AddStructure':
+				return _Utils_update(
+					model,
+					{
+						structDict: A2($author$project$Dict$AutoInc$insert, $author$project$Structure$Model$initStructure, model.structDict)
+					});
+			default:
+				var label = msg.a;
+				return _Utils_update(
+					model,
+					{
+						structDict: A2($author$project$Dict$AutoInc$remove, label, model.structDict)
+					});
+		}
 	});
+var $author$project$Main$Controller$AddStructure = {$: 'AddStructure'};
+var $author$project$Main$Controller$RemoveStructure = function (a) {
+	return {$: 'RemoveStructure', a: a};
+};
+var $author$project$Main$Controller$ResourceChange = function (a) {
+	return {$: 'ResourceChange', a: a};
+};
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
 var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$main_ = _VirtualDom_node('main');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $author$project$Resource$printExcess = F2(
 	function (resource, excess) {
 		return resource.name + (' wasted: ' + $elm$core$String$fromInt(excess));
@@ -6267,7 +6318,6 @@ var $elm$html$Html$Events$alwaysStop = function (x) {
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 'MayStopPropagation', a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -6428,6 +6478,25 @@ var $author$project$Dict$AutoInc$toList = function (dictData) {
 	return $elm$core$Dict$toList(dictData.dict);
 };
 var $author$project$Main$View$view = function (model) {
+	var remButton = function (label) {
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Main$Controller$RemoveStructure(label))
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Remove Structure')
+						]))
+				]));
+	};
 	var countDiv = F2(
 		function (resource, counts) {
 			return A2(
@@ -6462,7 +6531,8 @@ var $author$project$Main$View$view = function (model) {
 		});
 	var conv = F2(
 		function (label, msg) {
-			return {structureLabel: label, structureMsg: msg};
+			return $author$project$Main$Controller$ResourceChange(
+				{structureLabel: label, structureMsg: msg});
 		});
 	var mkDiv = function (_v0) {
 		var label = _v0.a;
@@ -6477,6 +6547,7 @@ var $author$project$Main$View$view = function (model) {
 					conv(label),
 					label,
 					struct),
+					remButton(label),
 					A2($elm$html$Html$hr, _List_Nil, _List_Nil)
 				]));
 	};
@@ -6497,6 +6568,22 @@ var $author$project$Main$View$view = function (model) {
 						$elm$html$Html$text('DeAtH sTrAnDiNg???')
 					])),
 				A2($elm$html$Html$div, _List_Nil, structDivs),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$Controller$AddStructure)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Add Structure')
+							]))
+					])),
 				A2(
 				$elm$html$Html$div,
 				_List_Nil,
