@@ -30,3 +30,6 @@ empty conv = Dict.empty conv
 
 toList : CountDict comparable k -> List (k, Int)
 toList dict = Dict.toList dict
+
+keys : CountDict comparable k -> List k
+keys dict = Dict.keys dict

@@ -2,13 +2,14 @@ module Resource exposing
     ( printPackage
     , printPackageCounts
     , printExcess
+    , printResourceTotal
     , packagesNeeded
     )
 
 import Tuple exposing (first, second)
 
 import Enum exposing (Enum, fromIterator)
-import Dict.Count as Dict
+import Dict.Count as CountDict
 
 import Resource.Ceramics exposing (Ceramics, ceramicsResource)
 import Resource.Metal exposing (Metal, metalResource)
@@ -34,7 +35,7 @@ printPackage resource package =
 printPackageCounts : Resource r -> PackageCounts r -> String
 printPackageCounts resource dict =
     let
-        packages = sortByValueDesc resource <| Dict.toList dict
+        packages = sortByValueDesc resource <| CountDict.toList dict
         mkString (pkg,count) =
             printPackage resource pkg ++ " × " ++ String.fromInt count
     in
@@ -43,12 +44,20 @@ printPackageCounts resource dict =
 printExcess : Resource r -> Excess -> String
 printExcess resource excess =
     resource.name ++ " wasted: " ++ String.fromInt excess
-        
+
+printResourceTotal : Resource r -> PackageCounts r -> String
+printResourceTotal resource dict =
+    let
+        addValue (pkg, count) value =
+            value + resource.packages.toInt pkg * count
+        totalValue = List.foldl addValue 0 <| CountDict.toList dict
+    in resource.name ++ ": " ++ String.fromInt totalValue
+
 packagesNeeded
     : Resource r -> ResourceGiven -> ResourceNeeded -> (PackageCounts r, Excess)
 packagesNeeded resource given0 needed0 =
     let
-        counts0 = Dict.empty resource.packages.toInt
+        counts0 = CountDict.empty resource.packages.toInt
         rem0 = needed0 - given0
         pkgList = packagesByValueDesc resource
 
@@ -63,7 +72,7 @@ packagesNeeded resource given0 needed0 =
                     let
                         toAdd = rem // value
                         newRem = modBy value rem
-                        newCounts = Dict.add pkg toAdd counts
+                        newCounts = CountDict.add pkg toAdd counts
                     in loop newCounts newRem -- Continue recursion            
                 Nothing ->
                     if rem == 0
@@ -73,7 +82,7 @@ packagesNeeded resource given0 needed0 =
                                 min = resource.minimum
                                 minVal = resource.packages.toInt min
                                 excess = minVal - rem
-                                newCounts = Dict.add min 1 counts
+                                newCounts = CountDict.add min 1 counts
                             in (newCounts, excess)
     in
         if given0 >= needed0
