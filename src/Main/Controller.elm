@@ -1,5 +1,5 @@
 module Main.Controller exposing
-    ( Msg
+    ( Msg(..)
     , update
     )
 
@@ -11,9 +11,12 @@ import Structure.Controller exposing (..)
 
 import Main.Model exposing (..)
 
-type alias Msg =
-    { structureLabel : String
-    , structureMsg : StructureMsg }
+type Msg
+    = ResourceChange
+        { structureLabel : String
+        , structureMsg : StructureMsg }
+    | AddStructure
+    | RemoveStructure String
 
 appendResourceCounts 
     :  ResourceModel r
@@ -35,18 +38,30 @@ getTotalCounts dict =
         
 update : Msg -> Model -> Model
 update msg model =
-    let
-        newDict =
-            AutoIncDict.update
-                msg.structureLabel
-                (\maybeStruct ->
-                    Maybe.map
-                        (\struct -> updateStructure msg.structureMsg struct)
-                        maybeStruct
-                )
-                model.structDict
-        newCounts = getTotalCounts newDict
-    in
-        { structDict = newDict
-        , totalCounts = newCounts
-        }
+    case msg of
+        ResourceChange change ->
+            let
+                newDict =
+                    AutoIncDict.update
+                        change.structureLabel
+                        (\maybeStruct ->
+                            Maybe.map
+                                (\struct ->
+                                    updateStructure change.structureMsg struct
+                                )
+                                maybeStruct
+                        )
+                        model.structDict
+                newCounts = getTotalCounts newDict
+            in
+                { structDict = newDict
+                , totalCounts = newCounts
+                }
+        AddStructure ->
+            { model
+            | structDict = AutoIncDict.insert initStructure model.structDict
+            }
+        RemoveStructure label ->
+            { model
+            | structDict = AutoIncDict.remove label model.structDict
+            }

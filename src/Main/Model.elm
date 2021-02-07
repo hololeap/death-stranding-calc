@@ -44,11 +44,6 @@ type alias Model =
 
 init : Model
 init = 
-    let
-        dict = AutoIncDict.insert initStructure
-            <| AutoIncDict.insert initStructure
-            <| AutoIncDict.empty "Structure"
-    in 
-        { structDict = dict
-        , totalCounts = initTotalCounts
-        }
+    { structDict = AutoIncDict.singleton "Structure" initStructure
+    , totalCounts = initTotalCounts
+    }

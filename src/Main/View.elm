@@ -2,7 +2,7 @@ module Main.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, onClick)
 
 import Dict.AutoInc as Dict exposing (AutoIncDict)
 
@@ -19,13 +19,19 @@ import Main.Controller exposing (..)
 view : Model -> Html Msg
 view model =
     let
-        conv label msg =
+        conv label msg = ResourceChange
             { structureLabel = label
             , structureMsg = msg
             }
+        remButton label =
+            div [] [ button 
+                        [ onClick (RemoveStructure label) ]
+                        [ text "Remove Structure" ] 
+                    ]
         mkDiv (label, struct) =
             div []
                 [ structureView (conv label) label struct
+                , remButton label
                 , hr [] []
                 ]
         structDivs = List.map mkDiv <| Dict.toList model.structDict
@@ -41,6 +47,7 @@ view model =
         main_ []
             [ h1 [] [ text "DeAtH sTrAnDiNg???" ]
             , div [] structDivs
+            , div [] [ button [ onClick AddStructure ] [ text "Add Structure" ] ]
             , div []
                 [ countDiv ceramicsResource model.totalCounts.ceramics
                 , countDiv metalResource model.totalCounts.metal
