@@ -6245,6 +6245,7 @@ var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $elm$html$Html$h4 = _VirtualDom_node('h4');
 var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$main_ = _VirtualDom_node('main');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -6297,6 +6298,21 @@ var $author$project$Resource$printPackageCounts = F2(
 		};
 		return $elm$core$Debug$toString(
 			A2($elm$core$List$map, mkString, packages));
+	});
+var $author$project$Resource$printResourceTotal = F2(
+	function (resource, dict) {
+		var addValue = F2(
+			function (_v0, value) {
+				var pkg = _v0.a;
+				var count = _v0.b;
+				return value + (resource.packages.toInt(pkg) * count);
+			});
+		var totalValue = A3(
+			$elm$core$List$foldl,
+			addValue,
+			0,
+			$author$project$Dict$Count$toList(dict));
+		return resource.name + (': ' + $elm$core$String$fromInt(totalValue));
 	});
 var $author$project$Structure$Controller$CeramicsMsg = function (a) {
 	return {$: 'CeramicsMsg', a: a};
@@ -6478,6 +6494,17 @@ var $author$project$Dict$AutoInc$toList = function (dictData) {
 	return $elm$core$Dict$toList(dictData.dict);
 };
 var $author$project$Main$View$view = function (model) {
+	var totalDiv = F2(
+		function (resource, counts) {
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						A2($author$project$Resource$printResourceTotal, resource, counts.pkgs))
+					]));
+		});
 	var remButton = function (label) {
 		return A2(
 			$elm$html$Html$div,
@@ -6505,7 +6532,7 @@ var $author$project$Main$View$view = function (model) {
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$h3,
+						$elm$html$Html$h4,
 						_List_Nil,
 						_List_fromArray(
 							[
@@ -6589,8 +6616,30 @@ var $author$project$Main$View$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
+						A2(
+						$elm$html$Html$h3,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Packages needed:')
+							])),
 						A2(countDiv, $author$project$Resource$Ceramics$ceramicsResource, model.totalCounts.ceramics),
 						A2(countDiv, $author$project$Resource$Metal$metalResource, model.totalCounts.metal)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h3,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Total resources needed:')
+							])),
+						A2(totalDiv, $author$project$Resource$Ceramics$ceramicsResource, model.totalCounts.ceramics),
+						A2(totalDiv, $author$project$Resource$Metal$metalResource, model.totalCounts.metal)
 					]))
 			]));
 };
