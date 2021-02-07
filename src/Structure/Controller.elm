@@ -40,8 +40,8 @@ updateResource resource msg model =
         updateModel given needed =
             let (pkgs, excess) = getPkgs given needed
             in
-                { model
-                | given = given
+                { given = given
+                , needed = needed
                 , pkgs = pkgs
                 , excess = excess
                 }            

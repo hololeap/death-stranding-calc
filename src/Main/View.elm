@@ -41,7 +41,7 @@ view model =
         countDiv : Resource r -> ResourceCounts r -> Html Msg
         countDiv resource counts =
             div []
-                [ h4 [] [ text resource.name ]
+                [ div [] [ text resource.name ]
                 , div [] [ text (printPackageCounts resource counts.pkgs) ]
                 , div [] [ text (printExcess resource counts.excess) ]
                 ]
@@ -55,12 +55,12 @@ view model =
             , div [] structDivs
             , div [] [ button [ onClick AddStructure ] [ text "Add Structure" ] ]
             , div []
-                [ h3 [] [ text "Packages needed:" ]
+                [ div [] [ text "Packages needed:" ]
                 , countDiv ceramicsResource model.totalCounts.ceramics
                 , countDiv metalResource model.totalCounts.metal
                 ]
             , div []
-                [ h3 [] [ text "Total resources needed:" ]
+                [ p [] [ text "Total resources needed:" ]
                 , totalDiv ceramicsResource model.totalCounts.ceramics
                 , totalDiv metalResource model.totalCounts.metal
                 ]
