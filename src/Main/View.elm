@@ -1,4 +1,6 @@
-module Main.View exposing (..)
+module Main.View exposing
+    ( view
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -39,17 +41,28 @@ view model =
         countDiv : Resource r -> ResourceCounts r -> Html Msg
         countDiv resource counts =
             div []
-                [ h3 [] [ text resource.name ]
+                [ h4 [] [ text resource.name ]
                 , div [] [ text (printPackageCounts resource counts.pkgs) ]
                 , div [] [ text (printExcess resource counts.excess) ]
                 ]
+        
+        totalDiv : Resource r -> ResourceCounts r -> Html Msg
+        totalDiv resource counts =
+            div [] [ text (printResourceTotal resource counts.pkgs) ]
     in
         main_ []
             [ h1 [] [ text "DeAtH sTrAnDiNg???" ]
             , div [] structDivs
             , div [] [ button [ onClick AddStructure ] [ text "Add Structure" ] ]
             , div []
-                [ countDiv ceramicsResource model.totalCounts.ceramics
+                [ h3 [] [ text "Packages needed:" ]
+                , countDiv ceramicsResource model.totalCounts.ceramics
                 , countDiv metalResource model.totalCounts.metal
                 ]
+            , div []
+                [ h3 [] [ text "Total resources needed:" ]
+                , totalDiv ceramicsResource model.totalCounts.ceramics
+                , totalDiv metalResource model.totalCounts.metal
+                ]
             ]
+
