@@ -38,20 +38,22 @@ getTotalCounts dict =
         
 update : Msg -> Model -> Model
 update msg model =
-    case msg of
+    case (Debug.log "msg" msg) of
         ResourceChange change ->
             let
                 newDict =
-                    AutoIncDict.update
-                        change.structureLabel
-                        (\maybeStruct ->
-                            Maybe.map
-                                (\struct ->
-                                    updateStructure change.structureMsg struct
-                                )
-                                maybeStruct
+                    Debug.log "newDict"
+                        (AutoIncDict.update
+                            change.structureLabel
+                            (\maybeStruct ->
+                                Maybe.map
+                                    (\struct ->
+                                        updateStructure change.structureMsg struct
+                                    )
+                                    maybeStruct
+                            )
+                            model.structDict
                         )
-                        model.structDict
                 newCounts = getTotalCounts newDict
             in
                 { structDict = newDict

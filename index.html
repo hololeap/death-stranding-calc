@@ -6046,6 +6046,7 @@ var $author$project$Main$Controller$getTotalCounts = function (dict) {
 		$author$project$Main$Model$initTotalCounts,
 		$author$project$Dict$AutoInc$values(dict));
 };
+var $elm$core$Debug$log = _Debug_log;
 var $author$project$Dict$AutoInc$remove = F2(
 	function (key, dictData) {
 		return _Utils_update(
@@ -6154,9 +6155,7 @@ var $author$project$Structure$Controller$updateResource = F3(
 				var _v3 = A2(getPkgs, given, needed);
 				var pkgs = _v3.a;
 				var excess = _v3.b;
-				return _Utils_update(
-					model,
-					{excess: excess, given: given, pkgs: pkgs});
+				return {excess: excess, given: given, needed: needed, pkgs: pkgs};
 			});
 		var updateGiven = function (given) {
 			return A2(updateModel, given, model.needed);
@@ -6202,21 +6201,25 @@ var $author$project$Structure$Controller$updateStructure = F2(
 	});
 var $author$project$Main$Controller$update = F2(
 	function (msg, model) {
-		switch (msg.$) {
+		var _v0 = A2($elm$core$Debug$log, 'msg', msg);
+		switch (_v0.$) {
 			case 'ResourceChange':
-				var change = msg.a;
-				var newDict = A3(
-					$author$project$Dict$AutoInc$update,
-					change.structureLabel,
-					function (maybeStruct) {
-						return A2(
-							$elm$core$Maybe$map,
-							function (struct) {
-								return A2($author$project$Structure$Controller$updateStructure, change.structureMsg, struct);
-							},
-							maybeStruct);
-					},
-					model.structDict);
+				var change = _v0.a;
+				var newDict = A2(
+					$elm$core$Debug$log,
+					'newDict',
+					A3(
+						$author$project$Dict$AutoInc$update,
+						change.structureLabel,
+						function (maybeStruct) {
+							return A2(
+								$elm$core$Maybe$map,
+								function (struct) {
+									return A2($author$project$Structure$Controller$updateStructure, change.structureMsg, struct);
+								},
+								maybeStruct);
+						},
+						model.structDict));
 				var newCounts = $author$project$Main$Controller$getTotalCounts(newDict);
 				return {structDict: newDict, totalCounts: newCounts};
 			case 'AddStructure':
@@ -6226,7 +6229,7 @@ var $author$project$Main$Controller$update = F2(
 						structDict: A2($author$project$Dict$AutoInc$insert, $author$project$Structure$Model$initStructure, model.structDict)
 					});
 			default:
-				var label = msg.a;
+				var label = _v0.a;
 				return _Utils_update(
 					model,
 					{
@@ -6244,8 +6247,6 @@ var $author$project$Main$Controller$ResourceChange = function (a) {
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $elm$html$Html$h3 = _VirtualDom_node('h3');
-var $elm$html$Html$h4 = _VirtualDom_node('h4');
 var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$main_ = _VirtualDom_node('main');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
@@ -6265,6 +6266,7 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $elm$html$Html$p = _VirtualDom_node('p');
 var $author$project$Resource$printExcess = F2(
 	function (resource, excess) {
 		return resource.name + (' wasted: ' + $elm$core$String$fromInt(excess));
@@ -6532,7 +6534,7 @@ var $author$project$Main$View$view = function (model) {
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$h4,
+						$elm$html$Html$div,
 						_List_Nil,
 						_List_fromArray(
 							[
@@ -6617,7 +6619,7 @@ var $author$project$Main$View$view = function (model) {
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$h3,
+						$elm$html$Html$div,
 						_List_Nil,
 						_List_fromArray(
 							[
@@ -6632,7 +6634,7 @@ var $author$project$Main$View$view = function (model) {
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$h3,
+						$elm$html$Html$p,
 						_List_Nil,
 						_List_fromArray(
 							[
