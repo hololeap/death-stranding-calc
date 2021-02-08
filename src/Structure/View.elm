@@ -1,6 +1,8 @@
 module Structure.View exposing (structureView)
 
-import Html exposing (..)
+import Element exposing (Element, el, fill, table)
+
+--import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 
@@ -9,44 +11,39 @@ import Resource.Metal exposing (..)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Structure.Model exposing (Structure, ResourceModel)
-import Structure.Controller exposing (StructureMsg(..), ResourceMsg(..))
+import Structure.Model exposing (Structure)
+import Structure.Controller exposing (StructureMsg(..))
+
+import Resource.MVC.View exposing (ResourceRow, resourceRow)
 
 import Main.Controller exposing (Msg)
 
-structureView :
-    (StructureMsg -> Msg) -> String -> Structure -> Html Msg
-structureView conv label struct =
-    table []
-        [ caption [] [ text label ]
-        , tr []
-            [ th [ scope "col" ] [ text "Resource" ]
-            , th [ scope "col" ] [ text "Given" ]
-            , th [ scope "col" ] [ text "Needed" ]
-            ]
-        , resourceView (conv << CeramicsMsg) ceramicsResource struct.ceramics
-        , resourceView (conv << MetalMsg) metalResource struct.metal
-        ]
-
-resourceView 
-    :  (ResourceMsg r -> Msg)
-    -> Resource r
-    -> ResourceModel r
-    -> Html Msg
-resourceView conv resource model =
+structureView : (StructureMsg -> Msg) -> Structure -> Element Msg
+structureView conv struct =
     let
-        givenInput =
-            [ placeholder (resource.name ++ " Given")
-            , onInput (conv << ChangeGiven << String.toInt)
+        mkResRow resConv resource resModel =
+            resourceRow struct (conv << resConv) resource resModel
+        resRows = 
+            [ mkResRow CeramicsMsg ceramicsResource struct.ceramics
+            , mkResRow MetalMsg metalResource struct.metal
             ]
-        neededInput =
-            [ placeholder (resource.name ++ " Needed")
-            , onInput (conv << ChangeNeeded << String.toInt)
-            ]
-    in 
-        tr []
-            [ th [ scope "row" ] [ text resource.name ]
-            , td [] [ input givenInput [] ]
-            , td [] [ input neededInput [] ]
-            ]
-
+    in
+        el []
+            ( table []
+                { data = resRows
+                , columns =
+                    [ { header = Element.text "Resource"
+                      , width = fill
+                      , view = .name
+                      }
+                    , { header = Element.text "Given"
+                      , width = fill
+                      , view = .given
+                      }
+                    , { header = Element.text "Needed"
+                      , width = fill
+                      , view = .needed
+                      }
+                    ]
+                }
+            )

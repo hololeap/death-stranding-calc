@@ -1,38 +1,31 @@
 module Structure.Model exposing
-    ( ResourceModel
-    , Structure
+    ( Structure
+    , StructureName
     , initStructure
     )
     
+import Dict.AutoInc as AutoIncDict
 import Dict.Count as CountDict
 
 import Resource.Ceramics exposing (..)
 import Resource.Metal exposing (..)
 import Resource.Types exposing (..)
 
-type alias ResourceModel r =
-    { needed : ResourceNeeded
-    , given : ResourceGiven
-    , pkgs : PackageCounts r
-    , excess : Excess
-    }
+import Resource.MVC.Model exposing (ResourceModel, initResourceModel)
+
+type alias StructureName = String
 
 type alias Structure =
-    { ceramics : ResourceModel Ceramics
+    { name : StructureName
+    , key : AutoIncDict.Key
+    , ceramics : ResourceModel Ceramics
     , metal : ResourceModel Metal
     }
-
-
-initStructure : Structure
-initStructure =
-    { ceramics = initResource ceramicsResource
-    , metal = initResource metalResource
-    }
     
-initResource : Resource r -> ResourceModel r
-initResource resource =
-    { needed = 0
-    , given = 0
-    , pkgs = CountDict.empty resource.packages.toInt
-    , excess = 0
+initStructure : Int -> AutoIncDict.Key -> Structure
+initStructure inc key =
+    { name = "Structure " ++ String.fromInt inc
+    , key = key
+    , ceramics = initResourceModel ceramicsResource
+    , metal = initResourceModel metalResource
     }

@@ -2,6 +2,8 @@ module Main.View exposing
     ( view
     )
 
+import Element    
+    
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
@@ -21,24 +23,24 @@ import Main.Controller exposing (..)
 view : Model -> Html Msg
 view model =
     let
-        conv label msg = ResourceChange
-            { structureLabel = label
+        conv key msg = ResourceChange
+            { structureKey = key
             , structureMsg = msg
             }
-        remButton label =
+        remButton key =
             div [] [ button 
-                        [ onClick (RemoveStructure label) ]
+                        [ onClick (RemoveStructure key) ]
                         [ text "Remove Structure" ] 
                     ]
-        mkDiv (label, struct) =
+        mkDiv struct =
             div []
-                [ structureView (conv label) label struct
-                , remButton label
+                [ Element.layout [] (structureView (conv struct.key) struct)
+                , remButton struct.key
                 , hr [] []
                 ]
-        structDivs = List.map mkDiv <| Dict.toList model.structDict
+        structDivs = List.map mkDiv <| Dict.values model.structDict
         
-        countDiv : Resource r -> ResourceCounts r -> Html Msg
+        countDiv : Resource r -> CombinedCounts r -> Html Msg
         countDiv resource counts =
             div []
                 [ div [] [ text resource.name ]
@@ -46,7 +48,7 @@ view model =
                 , div [] [ text (printExcess resource counts.excess) ]
                 ]
         
-        totalDiv : Resource r -> ResourceCounts r -> Html Msg
+        totalDiv : Resource r -> CombinedCounts r -> Html Msg
         totalDiv resource counts =
             div [] [ text (printResourceTotal resource counts.pkgs) ]
     in

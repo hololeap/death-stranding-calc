@@ -1,5 +1,5 @@
 module Main.Model exposing
-    ( ResourceCounts
+    ( CombinedCounts
     , TotalCounts
     , Model
     , init
@@ -15,26 +15,26 @@ import Resource.Types exposing (..)
 
 import Structure.Model exposing (Structure, initStructure)
 
-type alias ResourceCounts r =
+type alias CombinedCounts r =
     { pkgs : PackageCounts r
     , excess : Excess
     }
 
-initResourceCounts : Resource r -> ResourceCounts r
-initResourceCounts resource =
+initCombinedCounts : Resource r -> CombinedCounts r
+initCombinedCounts resource =
     { pkgs = CountDict.empty resource.packages.toInt
     , excess = 0
     }
     
 type alias TotalCounts =
-    { ceramics : ResourceCounts Ceramics
-    , metal : ResourceCounts Metal
+    { ceramics : CombinedCounts Ceramics
+    , metal : CombinedCounts Metal
     }
 
 initTotalCounts : TotalCounts
 initTotalCounts =
-    { ceramics = initResourceCounts ceramicsResource
-    , metal = initResourceCounts metalResource
+    { ceramics = initCombinedCounts ceramicsResource
+    , metal = initCombinedCounts metalResource
     }
 
 type alias Model = 
@@ -43,7 +43,7 @@ type alias Model =
     }
 
 init : Model
-init = 
-    { structDict = AutoIncDict.singleton "Structure" initStructure
+init =
+    { structDict = AutoIncDict.singletonNeedingKeyInc "structure" initStructure
     , totalCounts = initTotalCounts
     }

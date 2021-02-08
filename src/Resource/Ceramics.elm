@@ -31,6 +31,7 @@ ceramicsPackages =
 ceramicsResource : Resource Ceramics
 ceramicsResource =
     { name = "Ceramics"
+    , id = "ceramics"
     , packages = ceramicsPackages
     , minimum = Ceramics40
     }

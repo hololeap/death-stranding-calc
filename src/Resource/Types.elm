@@ -21,7 +21,8 @@ type alias Packages r = EnumInt r
 -- A Resource is actually just an underlying sum type of packages and different
 -- values associated with them
 type alias Resource r =
-    { name : String
+    { name : String -- Pretty name
+    , id : String -- For use with HTML classes, ids, etc. Lowercase
     , packages : Packages r
     , minimum : r
     }
