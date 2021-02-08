@@ -1,71 +1,103 @@
-module Dict.AutoInc exposing (..)
+module Dict.AutoInc exposing
+    ( Key
+    , Prefix
+    , AutoIncDict
+    , empty
+    , singleton
+    , singletonWithKey
+    , singletonNeedingKey
+    , singletonNeedingKeyInc
+    , insert
+    , insertWithKey
+    , insertNeedingKey
+    , insertNeedingKeyInc
+    , update
+    , toList
+    , values
+    , get
+    , remove
+    )
 
 import Dict exposing (Dict)
+import Tuple exposing (first, second)
+
+type alias Key = String
+type alias Prefix = String
 
 type alias AutoIncDict v = 
-    { lastKey : Int
-    , dict : Dict String v
-    , prefix : String }
+    { lastInc : Int
+    , dict : Dict Key v
+    , prefix : Prefix
+    }
 
-empty : String -> AutoIncDict v
+empty : Prefix -> AutoIncDict v
 empty prefix =
-    { lastKey = 0
+    { lastInc = 0
     , dict = Dict.empty
-    , prefix = prefix }
+    , prefix = prefix
+    }
 
-singleton : String -> v -> AutoIncDict v
-singleton prefix v = insert v <| empty prefix
+singleton : Prefix -> v -> AutoIncDict v
+singleton prefix = first << singletonWithKey prefix
+
+singletonWithKey : Prefix -> v -> (AutoIncDict v, Key)
+singletonWithKey prefix value = insertWithKey value <| empty prefix
+
+singletonNeedingKey : Prefix -> (Key -> v) -> AutoIncDict v
+singletonNeedingKey prefix func = insertNeedingKey func <| empty prefix
+
+singletonNeedingKeyInc : Prefix -> (Int -> Key -> v) -> AutoIncDict v
+singletonNeedingKeyInc prefix func = insertNeedingKeyInc func <| empty prefix
 
 insert : v -> AutoIncDict v -> AutoIncDict v
-insert value dictData =
+insert value = first << insertWithKey value
+
+insertNeedingKey : (Key -> v) -> AutoIncDict v -> AutoIncDict v
+insertNeedingKey func = insertNeedingKeyInc (\_ key -> func key)
+
+insertNeedingKeyInc : (Int -> Key -> v) -> AutoIncDict v -> AutoIncDict v
+insertNeedingKeyInc func dictData =
     let
-        key = dictData.lastKey + 1
-        label = dictData.prefix ++ " " ++ String.fromInt key
-    in 
+        inc = dictData.lastInc + 1
+        key = keyFromInc dictData.prefix inc
+    in
         { dictData
-        | lastKey = key
-        , dict = Dict.insert label value dictData.dict
+        | lastInc = inc
+        , dict = Dict.insert key (func inc key) dictData.dict
         }
-
--- If the original label isn't there, just return the original dict
--- If the new label is taken, return Nothing
--- Otherwise, delete the old key and insert a new one with a new name and
--- unchanged value.
-relabel : String -> String -> AutoIncDict v -> Maybe (AutoIncDict v)
-relabel oldLabel newLabel dictData =
-    case get oldLabel dictData of
-        Nothing -> Just dictData
-        Just value ->
-            insertNoInc newLabel value
-                <| remove oldLabel dictData
-
--- If the new label is taken, return Nothing
-insertNoInc : String -> v -> AutoIncDict v -> Maybe (AutoIncDict v)
-insertNoInc label value dictData =
-    if Dict.member label dictData.dict
-        then Nothing
-        else Just
-            { dictData
-            | dict = Dict.insert label value dictData.dict
-            }
         
-update : String -> (Maybe v -> Maybe v) -> AutoIncDict v -> AutoIncDict v
+insertWithKey : v -> AutoIncDict v -> (AutoIncDict v, Key)
+insertWithKey value dictData =
+    let 
+        inc = dictData.lastInc + 1
+        key = keyFromInc dictData.prefix inc
+        newData =
+            { dictData
+            | lastInc = inc
+            , dict = Dict.insert key value dictData.dict
+            }
+    in (newData, key)
+  
+update : Key -> (Maybe v -> Maybe v) -> AutoIncDict v -> AutoIncDict v
 update key func dictData =
     { dictData
     | dict = Dict.update key func dictData.dict
     }
 
-toList : AutoIncDict v -> List (String, v)
-toList dictData = Dict.toList dictData.dict
+toList : AutoIncDict v -> List (Key, v)
+toList = Dict.toList << .dict
 
 values : AutoIncDict v -> List v
-values dictData = Dict.values dictData.dict
+values = Dict.values << .dict
 
-get : String -> AutoIncDict v -> Maybe v
-get key dictData = Dict.get key dictData.dict
+get : Key -> AutoIncDict v -> Maybe v
+get key = Dict.get key << .dict
 
-remove : String -> AutoIncDict v -> AutoIncDict v
+remove : Key -> AutoIncDict v -> AutoIncDict v
 remove key dictData =
     { dictData 
     | dict = Dict.remove key dictData.dict
     }
+
+keyFromInc : Prefix -> Int -> Key
+keyFromInc prefix inc = prefix ++ String.fromInt inc

@@ -3,25 +3,26 @@ module Main.Controller exposing
     , update
     )
 
-import Dict.AutoInc as AutoIncDict exposing (AutoIncDict)
+import Dict.AutoInc as AutoIncDict exposing (AutoIncDict, Key)
 import Dict.Count as CountDict exposing (CountDict)
 
+import Resource.MVC.Model exposing (ResourceModel)
 import Structure.Model exposing (..)
 import Structure.Controller exposing (..)
 
-import Main.Model exposing (..)
+import Main.Model exposing (Model, TotalCounts, CombinedCounts, initTotalCounts)
 
 type Msg
     = ResourceChange
-        { structureLabel : String
+        { structureKey : Key
         , structureMsg : StructureMsg }
     | AddStructure
-    | RemoveStructure String
+    | RemoveStructure Key
 
 appendResourceCounts 
     :  ResourceModel r
-    -> ResourceCounts r
-    -> ResourceCounts r
+    -> CombinedCounts r
+    -> CombinedCounts r
 appendResourceCounts model counts =
     { pkgs = CountDict.union counts.pkgs model.pkgs
     , excess = counts.excess + model.excess
@@ -38,32 +39,23 @@ getTotalCounts dict =
         
 update : Msg -> Model -> Model
 update msg model =
-    case (Debug.log "msg" msg) of
-        ResourceChange change ->
-            let
-                newDict =
-                    Debug.log "newDict"
-                        (AutoIncDict.update
-                            change.structureLabel
-                            (\maybeStruct ->
-                                Maybe.map
-                                    (\struct ->
-                                        updateStructure change.structureMsg struct
-                                    )
-                                    maybeStruct
-                            )
-                            model.structDict
-                        )
-                newCounts = getTotalCounts newDict
-            in
-                { structDict = newDict
-                , totalCounts = newCounts
-                }
-        AddStructure ->
-            { model
-            | structDict = AutoIncDict.insert initStructure model.structDict
+    let
+        updateCounts dict =
+            { structDict = dict
+            , totalCounts = getTotalCounts dict
             }
-        RemoveStructure label ->
-            { model
-            | structDict = AutoIncDict.remove label model.structDict
-            }
+        onResourceChange change =
+            AutoIncDict.update
+                change.structureKey
+                (Maybe.map (updateStructure change.structureMsg))
+                model.structDict
+        onAddStructure =
+            AutoIncDict.insertNeedingKeyInc initStructure model.structDict
+        onRemoveStructure label =
+            AutoIncDict.remove label model.structDict
+    in updateCounts (
+            case msg of
+                ResourceChange change -> onResourceChange change
+                AddStructure -> onAddStructure
+                RemoveStructure label -> onRemoveStructure label
+        )

@@ -1,6 +1,5 @@
 module Structure.Controller exposing
-    ( ResourceMsg(..)
-    , StructureMsg(..)
+    ( StructureMsg(..)
     , updateStructure
     )
 
@@ -9,11 +8,9 @@ import Resource.Metal exposing (..)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Structure.Model exposing (Structure, ResourceModel)
+import Resource.MVC.Controller exposing (ResourceMsg, updateResource)
 
-type ResourceMsg r
-    = ChangeNeeded (Maybe Int)
-    | ChangeGiven (Maybe Int)
+import Structure.Model exposing (Structure)
 
 type StructureMsg
     = CeramicsMsg (ResourceMsg Ceramics)
@@ -30,33 +27,3 @@ updateStructure mainMsg model =
             { model
             | metal = updateResource metalResource msg model.metal
             }
-    
-updateResource
-    : Resource r -> ResourceMsg r -> ResourceModel r -> ResourceModel r
-updateResource resource msg model =
-    let
-        getPkgs given needed =
-            packagesNeeded resource given needed
-        updateModel given needed =
-            let (pkgs, excess) = getPkgs given needed
-            in
-                { given = given
-                , needed = needed
-                , pkgs = pkgs
-                , excess = excess
-                }            
-        updateGiven given = updateModel given model.needed
-        updateNeeded needed = updateModel model.given needed
-    in
-        case msg of
-            ChangeNeeded (Just needed) ->
-                if needed > 0
-                    then updateNeeded needed
-                    else updateNeeded 0
-            ChangeNeeded Nothing -> updateNeeded 0
-            ChangeGiven (Just given) ->
-                if given > 0
-                    then updateGiven given
-                    else updateGiven 0
-            ChangeGiven Nothing -> updateGiven 0
-

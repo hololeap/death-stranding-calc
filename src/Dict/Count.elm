@@ -7,7 +7,7 @@ type alias CountDict comparable k = AnyDict comparable k Int
 -- Add an element 'k' to the 'CountDict', 'n' number of times
 add : k -> Int -> CountDict comparable k -> CountDict comparable k
 add k n dict = 
-    let addN m = Just <| Maybe.withDefault n <| Maybe.map (\i -> i + n) m
+    let addN = Just << Maybe.withDefault n << Maybe.map ((+) n)
     in Dict.update k addN dict
 
 -- Combine two dicts, adding up any collisions
@@ -23,13 +23,13 @@ unions
     :  (k -> comparable)
     -> List (CountDict comparable k)
     -> CountDict comparable k
-unions conv list = List.foldl union (empty conv) list
+unions = List.foldl union << empty
     
 empty : (k -> comparable) -> CountDict comparable k
-empty conv = Dict.empty conv
+empty = Dict.empty
 
 toList : CountDict comparable k -> List (k, Int)
-toList dict = Dict.toList dict
+toList = Dict.toList
 
 keys : CountDict comparable k -> List k
-keys dict = Dict.keys dict
+keys = Dict.keys
