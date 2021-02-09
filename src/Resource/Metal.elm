@@ -30,8 +30,8 @@ metalPackages =
 
 metalResource : Resource Metal
 metalResource =
-    { name = "Metal"
-    , id = "metal"
+    { name = "Metals"
+    , id = "metals"
     , packages = metalPackages
     , minimum = Metal50
     }

@@ -2,11 +2,13 @@ module Structure.Model exposing
     ( Structure
     , StructureName
     , initStructure
+    , structurePackageCounts
     )
     
 import Dict.AutoInc as AutoIncDict
 import Dict.Count as CountDict
 
+import Resource exposing (PackageCountsAll)
 import Resource.ChiralCrystals exposing (ChiralCrystals, chiralCrystalsResource)
 import Resource.Resins exposing (Resins, resinsResource)
 import Resource.Metal exposing (Metal, metalResource)
@@ -40,4 +42,14 @@ initStructure inc key =
     , ceramics = initResourceModel ceramicsResource    
     , chemicals = initResourceModel chemicalsResource
     , specialAlloys = initResourceModel specialAlloysResource
+    }
+
+structurePackageCounts : Structure -> PackageCountsAll
+structurePackageCounts struct =
+    { chiralCrystals = struct.chiralCrystals.pkgs
+    , resins = struct.resins.pkgs
+    , metal = struct.metal.pkgs
+    , ceramics = struct.ceramics.pkgs
+    , chemicals = struct.chemicals.pkgs
+    , specialAlloys = struct.specialAlloys.pkgs
     }

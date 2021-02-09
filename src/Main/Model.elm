@@ -4,11 +4,13 @@ module Main.Model exposing
     , Model
     , init
     , initTotalCounts
+    , totalCountsPackageCounts
     )
 
 import Dict.AutoInc as AutoIncDict exposing (AutoIncDict)
 import Dict.Count as CountDict exposing (CountDict)
 
+import Resource exposing (PackageCountsAll)
 import Resource.ChiralCrystals exposing (ChiralCrystals, chiralCrystalsResource)
 import Resource.Resins exposing (Resins, resinsResource)
 import Resource.Metal exposing (Metal, metalResource)
@@ -47,6 +49,16 @@ initTotalCounts =
     , ceramics = initCombinedCounts ceramicsResource    
     , chemicals = initCombinedCounts chemicalsResource
     , specialAlloys = initCombinedCounts specialAlloysResource
+    }
+
+totalCountsPackageCounts : TotalCounts -> PackageCountsAll
+totalCountsPackageCounts totalCounts =
+    { chiralCrystals = totalCounts.chiralCrystals.pkgs
+    , resins = totalCounts.resins.pkgs
+    , metal = totalCounts.metal.pkgs
+    , ceramics = totalCounts.ceramics.pkgs
+    , chemicals = totalCounts.chemicals.pkgs
+    , specialAlloys = totalCounts.specialAlloys.pkgs
     }
 
 type alias Model = 
