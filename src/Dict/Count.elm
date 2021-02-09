@@ -33,3 +33,6 @@ toList = Dict.toList
 
 keys : CountDict comparable k -> List k
 keys = Dict.keys
+
+isEmpty : CountDict comparable k -> Bool
+isEmpty = Dict.isEmpty

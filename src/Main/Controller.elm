@@ -1,6 +1,5 @@
 module Main.Controller exposing
-    ( Msg(..)
-    , update
+    ( update
     )
 
 import Dict.AutoInc as AutoIncDict exposing (AutoIncDict, Key)
@@ -10,14 +9,9 @@ import Resource.MVC.Model exposing (ResourceModel)
 import Structure.Model exposing (..)
 import Structure.Controller exposing (..)
 
-import Main.Model exposing (Model, TotalCounts, CombinedCounts, initTotalCounts)
+import Types.Msg exposing (Msg(..))
 
-type Msg
-    = ResourceChange
-        { structureKey : Key
-        , structureMsg : StructureMsg }
-    | AddStructure
-    | RemoveStructure Key
+import Main.Model exposing (Model, TotalCounts, CombinedCounts, initTotalCounts)
 
 appendResourceCounts 
     :  ResourceModel r

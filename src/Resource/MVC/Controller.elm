@@ -4,10 +4,7 @@ import Resource exposing (packagesNeeded)
 import Resource.Types exposing (Resource)
 import Resource.MVC.Model exposing (ResourceModel)
 
--- Events for changing state on a ResourceModel
-type ResourceMsg r
-    = ChangeNeeded (Maybe Int)
-    | ChangeGiven (Maybe Int)
+import Types.Msg exposing (ResourceMsg(..))
 
 updateResource
     : Resource r -> ResourceMsg r -> ResourceModel r -> ResourceModel r

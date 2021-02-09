@@ -1,9 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, Attribute, button, div, input, text)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Element
 
 import Resource.Ceramics exposing (..)
 import Resource.Metal exposing (..)
@@ -14,6 +12,8 @@ import Main.Model exposing (..)
 import Main.Controller exposing (..)
 import Main.View exposing (..)
 
-main =
-    Browser.sandbox { init = init, update = update, view = view }
+main = Browser.sandbox
+    { init = init
+    , update = update
+    , view = Element.layout [] << view }
 
