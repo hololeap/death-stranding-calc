@@ -1,6 +1,5 @@
 module Resource.Ceramics exposing (..)
 
-import Dict exposing (Dict)
 import Enum exposing (fromIntIterator)
 
 import Resource.Types exposing (Packages, Resource)

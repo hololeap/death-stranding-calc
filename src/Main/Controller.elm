@@ -25,8 +25,16 @@ appendResourceCounts model counts =
 getTotalCounts : AutoIncDict Structure -> TotalCounts
 getTotalCounts dict =
     let append struct total =
-            { ceramics = appendResourceCounts struct.ceramics total.ceramics
+            { chiralCrystals = appendResourceCounts
+                struct.chiralCrystals
+                total.chiralCrystals                
+            , ceramics = appendResourceCounts struct.ceramics total.ceramics
             , metal = appendResourceCounts struct.metal total.metal
+            , resins = appendResourceCounts struct.resins total.resins
+            , chemicals = appendResourceCounts struct.chemicals total.chemicals
+            , specialAlloys = appendResourceCounts
+                struct.specialAlloys
+                total.specialAlloys
             }
     in
         List.foldl append initTotalCounts <| AutoIncDict.values dict

@@ -1,8 +1,10 @@
-module Resources.Resins
+module Resource.Resins exposing (..)
 
-type alias Resins = Int
+import Enum exposing (fromIntIterator)
 
-type ResinsPkg
+import Resource.Types exposing (Packages, Resource)
+
+type Resins
     = Resins40
     | Resins80
     | Resins160
@@ -11,15 +13,24 @@ type ResinsPkg
     | Resins640
     | Resins800
 
-metalAmt : ResinsPkg -> Resins
-metalAmt metal =
-    case metal of
-        Resins40 -> 40
-        Resins80 -> 80
-        Resins160 -> 160
-        Resins320 -> 320
-        Resins480 -> 480
-        Resins640 -> 640
-        Resins800 -> 800
+resinsPackages : Packages Resins
+resinsPackages =
+    fromIntIterator
+        (\r -> case r of
+            Resins800 -> (40, Resins40)
+            Resins40 -> (80, Resins80)
+            Resins80 -> (160, Resins160)
+            Resins160 -> (320, Resins320)
+            Resins320 -> (480, Resins480)
+            Resins480 -> (640, Resins640)
+            Resins640 -> (800, Resins800)
+        )
+        Resins40
 
-type alias ResinsPkgs = Dict ResinsPkg Int
+resinsResource : Resource Resins
+resinsResource =
+    { name = "Resins"
+    , id = "resins"
+    , packages = resinsPackages
+    , minimum = Resins40
+    }
