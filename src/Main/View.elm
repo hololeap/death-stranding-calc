@@ -25,7 +25,7 @@ import Types.Msg exposing (Msg(..))
 
 view : Model -> Element Msg
 view model = column
-    [ Element.width <| Element.maximum 1000 <| Element.fill
+    [ Element.width <| Element.maximum 500 <| Element.fill
     , Element.centerX
     ]
     [ mainTitle
