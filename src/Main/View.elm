@@ -135,7 +135,7 @@ packageListResElement resource counts =
         pkgList =
             Resource.packagesNeededByValueDesc resource counts
         pkgElement (pkg, count) =
-            Element.row [Element.width Element.fill]
+            Element.row [Element.width <| Element.maximum 490 <| Element.fill]
                 [ el 
                     [ Element.alignLeft
                     , Element.width (Element.px 200)
