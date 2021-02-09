@@ -127,7 +127,7 @@ packageListElement totalCounts =
             ]
         heading =
             el [Region.heading 2] (Element.text "Packages needed:")
-    in columnHelper [] heading resElems
+    in columnHelper [Element.moveRight 40] heading resElems
         
 packageListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 packageListResElement resource counts =
@@ -195,7 +195,7 @@ columnHelper columnAttrs heading list =
             
 structsElement : AutoIncDict Structure -> Element Msg
 structsElement dict =
-    column []
+    column [Element.width (Element.px 490)]
         [ column structsElementAttrs (structList dict)
         , addButton
         ]
