@@ -1,20 +1,19 @@
 module Structure.Controller exposing
-    ( StructureMsg(..)
-    , updateStructure
+    ( updateStructure
     )
 
+import Dict.AutoInc as AutoIncDict    
+    
 import Resource.Ceramics exposing (..)
 import Resource.Metal exposing (..)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Resource.MVC.Controller exposing (ResourceMsg, updateResource)
+import Resource.MVC.Controller exposing (updateResource)
 
 import Structure.Model exposing (Structure)
 
-type StructureMsg
-    = CeramicsMsg (ResourceMsg Ceramics)
-    | MetalMsg (ResourceMsg Metal)
+import Types.Msg exposing (StructureMsg(..))
 
 updateStructure : StructureMsg -> Structure -> Structure
 updateStructure mainMsg model =

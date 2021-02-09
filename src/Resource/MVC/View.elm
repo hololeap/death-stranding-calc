@@ -12,9 +12,9 @@ import Structure.Model exposing (Structure)
 
 import Resource.Types exposing (Resource)
 import Resource.MVC.Model exposing (ResourceModel)
-import Resource.MVC.Controller exposing (ResourceMsg(..))
+--import Resource.MVC.Controller exposing (ResourceMsg(..))
 
-import Main.Controller exposing (Msg)
+import Types.Msg exposing (Msg, ResourceMsg(..), FromResourceMsg)
 
 type alias ResourceRow =
     { name : Element Msg
@@ -24,7 +24,7 @@ type alias ResourceRow =
 
 resourceRow 
     :  Structure
-    -> (ResourceMsg r -> Msg)
+    -> FromResourceMsg r
     -> Resource r
     -> ResourceModel r
     -> ResourceRow
@@ -35,19 +35,19 @@ resourceRow struct conv resource model =
         label inputType =
             struct.name ++  " " ++ resource.name ++ " " ++ inputType
     in
-        { name = el [] (Element.text resource.name)
-        , given = Input.text givenAttrs
+        { name = el [Element.centerY] (Element.text resource.name)
+        , given = el [] ( Input.text givenAttrs
             { onChange = conv << ChangeGiven << String.toInt
-            , text = "0"
+            , text = String.fromInt model.given
             , placeholder = Nothing
             , label = Input.labelHidden (label "given")
-            }
-        , needed = Input.text neededAttrs
+            } )
+        , needed = el [] ( Input.text neededAttrs
             { onChange = conv << ChangeNeeded << String.toInt
-            , text = "0"
+            , text = String.fromInt model.needed
             , placeholder = Nothing
             , label = Input.labelHidden (label "needed")
-            }
+            } )
         }
 
 inputAttributes

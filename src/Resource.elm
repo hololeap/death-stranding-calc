@@ -2,8 +2,10 @@ module Resource exposing
     ( printPackage
     , printPackageCounts
     , printExcess
+    , resourceTotal
     , printResourceTotal
     , packagesNeeded
+    , packagesNeededByValueDesc
     )
 
 import Tuple exposing (first, second)
@@ -45,13 +47,15 @@ printExcess : Resource r -> Excess -> String
 printExcess resource excess =
     resource.name ++ " wasted: " ++ String.fromInt excess
 
+resourceTotal : Resource r -> PackageCounts r -> Int
+resourceTotal resource dict =
+    let addValue (pkg, count) value =
+            value + resource.packages.toInt pkg * count
+    in List.foldl addValue 0 <| CountDict.toList dict
+    
 printResourceTotal : Resource r -> PackageCounts r -> String
 printResourceTotal resource dict =
-    let
-        addValue (pkg, count) value =
-            value + resource.packages.toInt pkg * count
-        totalValue = List.foldl addValue 0 <| CountDict.toList dict
-    in resource.name ++ ": " ++ String.fromInt totalValue
+    resource.name ++ ": " ++ String.fromInt (resourceTotal resource dict)
 
 packagesNeeded
     : Resource r -> ResourceGiven -> ResourceNeeded -> (PackageCounts r, Excess)
@@ -88,7 +92,11 @@ packagesNeeded resource given0 needed0 =
         if given0 >= needed0
             then (counts0, 0)
             else loop counts0 rem0
-    
+
+packagesNeededByValueDesc : Resource r -> PackageCounts r -> List (r, Int)
+packagesNeededByValueDesc resource =
+    sortByValueDesc resource << CountDict.toList
+            
 packagesByValueDesc : Resource r -> List (r, Value)
 packagesByValueDesc resource =
     List.map flip <| List.reverse <| List.sortBy first resource.packages.list
@@ -97,7 +105,7 @@ packagesByValueDesc resource =
 -- each package's value.
 sortByValueDesc : Resource r -> List (r, a) -> List (r, a)
 sortByValueDesc resource list =
-    List.sortBy (resource.packages.toInt << first) list    
+    List.reverse <| List.sortBy (resource.packages.toInt << first) list    
     
 find : (a -> Bool) -> List a -> Maybe a
 find pred list = List.head <| List.filter pred list
