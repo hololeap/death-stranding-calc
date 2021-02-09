@@ -10,9 +10,9 @@ import Element.Region as Region
 --import Html.Events exposing (onInput)
 
 import Resource.ChiralCrystals exposing (chiralCrystalsResource)
-import Resource.Ceramics exposing (ceramicsResource)
-import Resource.Metal exposing (metalResource)
 import Resource.Resins exposing (resinsResource)
+import Resource.Metal exposing (metalResource)
+import Resource.Ceramics exposing (ceramicsResource)
 import Resource.Chemicals exposing (chemicalsResource)
 import Resource.SpecialAlloys exposing (specialAlloysResource)
 import Resource.Types exposing (..)
@@ -35,9 +35,9 @@ structureView struct =
                 ChiralCrystalsMsg
                 chiralCrystalsResource
                 struct.chiralCrystals
-            , mkResRow CeramicsMsg ceramicsResource struct.ceramics
+            , mkResRow ResinsMsg resinsResource struct.resins                
             , mkResRow MetalMsg metalResource struct.metal
-            , mkResRow ResinsMsg resinsResource struct.resins
+            , mkResRow CeramicsMsg ceramicsResource struct.ceramics
             , mkResRow ChemicalsMsg chemicalsResource struct.chemicals
             , mkResRow
                 SpecialAlloysMsg

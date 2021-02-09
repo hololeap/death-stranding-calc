@@ -12,9 +12,9 @@ import Dict.Count as CountDict
 
 import Resource exposing (..)
 import Resource.ChiralCrystals exposing (chiralCrystalsResource)
-import Resource.Ceramics exposing (ceramicsResource)
-import Resource.Metal exposing (metalResource)
 import Resource.Resins exposing (resinsResource)
+import Resource.Metal exposing (metalResource)
+import Resource.Ceramics exposing (ceramicsResource)
 import Resource.Chemicals exposing (chemicalsResource)
 import Resource.SpecialAlloys exposing (specialAlloysResource)
 import Resource.Types exposing (..)
@@ -55,9 +55,9 @@ wastedListElement totalCounts =
             wastedListResElement resource (.excess (selector totalCounts))
         resElems =
             [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem ceramicsResource .ceramics
-            , resElem metalResource .metal
             , resElem resinsResource .resins
+            , resElem metalResource .metal
+            , resElem ceramicsResource .ceramics
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
@@ -93,9 +93,9 @@ totalListElement totalCounts =
             totalListResElement resource (.pkgs (selector totalCounts))
         resElems =
             [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem ceramicsResource .ceramics
+            , resElem resinsResource .resins            
             , resElem metalResource .metal
-            , resElem resinsResource .resins
+            , resElem ceramicsResource .ceramics
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
@@ -135,9 +135,9 @@ packageListElement totalCounts =
             packageListResElement resource (.pkgs (selector totalCounts))
         resElems = 
             [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem ceramicsResource .ceramics
+            , resElem resinsResource .resins            
             , resElem metalResource .metal
-            , resElem resinsResource .resins
+            , resElem ceramicsResource .ceramics            
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
