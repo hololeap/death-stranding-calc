@@ -7,9 +7,10 @@ module Resource.Types exposing
     , ResourceNeeded
     , Excess
     , PackageCounts
+    , initPackageCounts
     )
 
-import Dict.Count exposing (CountDict)
+import Dict.Count as CountDict exposing (CountDict)
 import Enum exposing (EnumInt)
 
 type alias Value = Int -- How much of a resource a package contains
@@ -34,3 +35,6 @@ type alias Excess = Int          -- Amount of a resource that will be wasted
 -- A minimum count of packages needed finish a structure, optimized toward
 -- larger packages.
 type alias PackageCounts r = CountDict Value r
+
+initPackageCounts : Resource r -> PackageCounts r
+initPackageCounts resource = CountDict.empty resource.packages.toInt

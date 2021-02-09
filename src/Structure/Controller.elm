@@ -20,31 +20,34 @@ import Structure.Model exposing (Structure)
 import Types.Msg exposing (StructureMsg(..))
 
 updateStructure : StructureMsg -> Structure -> Structure
-updateStructure mainMsg model =
-    case mainMsg of
-        ChiralCrystalsMsg msg ->
-            { model
-            | chiralCrystals =
-                updateResource chiralCrystalsResource msg model.chiralCrystals
-            }
-        ResinsMsg msg ->
-            { model
-            | resins = updateResource resinsResource msg model.resins
-            }
-        MetalMsg msg ->
-            { model
-            | metal = updateResource metalResource msg model.metal
-            }
-        CeramicsMsg msg ->
-            { model
-            | ceramics = updateResource ceramicsResource msg model.ceramics
-            }            
-        ChemicalsMsg msg ->
-            { model
-            | chemicals = updateResource chemicalsResource msg model.chemicals
-            }
-        SpecialAlloysMsg msg ->
-            { model
-            | specialAlloys =
-                updateResource specialAlloysResource msg model.specialAlloys
-            }
+updateStructure mainMsg struct =
+    let updateRes resource msg selector =
+            updateResource resource msg (selector struct)
+    in 
+        case mainMsg of
+            ChiralCrystalsMsg msg ->
+                { struct
+                | chiralCrystals =
+                    updateRes chiralCrystalsResource msg .chiralCrystals
+                }
+            ResinsMsg msg ->
+                { struct
+                | resins = updateRes resinsResource msg .resins
+                }
+            MetalMsg msg ->
+                { struct
+                | metal = updateRes metalResource msg .metal
+                }
+            CeramicsMsg msg ->
+                { struct
+                | ceramics = updateRes ceramicsResource msg .ceramics
+                }            
+            ChemicalsMsg msg ->
+                { struct
+                | chemicals = updateRes chemicalsResource msg .chemicals
+                }
+            SpecialAlloysMsg msg ->
+                { struct
+                | specialAlloys =
+                    updateRes specialAlloysResource msg .specialAlloys
+                }

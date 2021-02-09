@@ -1,7 +1,7 @@
 module Resource exposing
-    ( printPackage
-    , printPackageCounts
-    , printExcess
+    ( PackageCountsAll
+    , initPackageCountsAll
+    , printPackage
     , resourceTotal
     , printResourceTotal
     , packagesNeeded
@@ -13,39 +13,36 @@ import Tuple exposing (first, second)
 import Enum exposing (Enum, fromIterator)
 import Dict.Count as CountDict
 
-import Resource.Ceramics exposing (Ceramics, ceramicsResource)
+import Resource.ChiralCrystals exposing (ChiralCrystals, chiralCrystalsResource)
+import Resource.Resins exposing (Resins, resinsResource)
 import Resource.Metal exposing (Metal, metalResource)
+import Resource.Ceramics exposing (Ceramics, ceramicsResource)
+import Resource.Chemicals exposing (Chemicals, chemicalsResource)
+import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
 import Resource.Types exposing (..)
 
-type ResourceType
-    = Ceramics
-    | Metal
+type alias PackageCountsAll =
+    { chiralCrystals : PackageCounts ChiralCrystals
+    , resins : PackageCounts Resins
+    , metal : PackageCounts Metal
+    , ceramics : PackageCounts Ceramics
+    , chemicals : PackageCounts Chemicals
+    , specialAlloys : PackageCounts SpecialAlloys
+    }
 
-resourceEnum : Enum ResourceType
-resourceEnum =
-    fromIterator
-        (\r -> case r of
-            Metal -> (ceramicsResource.name, Ceramics)
-            Ceramics -> (metalResource.name, Metal)
-        )
-        Ceramics
+initPackageCountsAll : PackageCountsAll
+initPackageCountsAll =
+    { chiralCrystals = initPackageCounts chiralCrystalsResource
+    , resins = initPackageCounts resinsResource
+    , metal = initPackageCounts metalResource
+    , ceramics = initPackageCounts ceramicsResource
+    , chemicals = initPackageCounts chemicalsResource
+    , specialAlloys = initPackageCounts specialAlloysResource
+    }
 
 printPackage : Resource r -> r -> String
 printPackage resource package =
     resource.name ++ " " ++ String.fromInt (resource.packages.toInt package)
-
-printPackageCounts : Resource r -> PackageCounts r -> String
-printPackageCounts resource dict =
-    let
-        packages = sortByValueDesc resource <| CountDict.toList dict
-        mkString (pkg,count) =
-            printPackage resource pkg ++ " × " ++ String.fromInt count
-    in
-        Debug.toString <| List.map mkString packages
-
-printExcess : Resource r -> Excess -> String
-printExcess resource excess =
-    resource.name ++ " wasted: " ++ String.fromInt excess
 
 resourceTotal : Resource r -> PackageCounts r -> Int
 resourceTotal resource dict =

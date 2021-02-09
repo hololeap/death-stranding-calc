@@ -4,6 +4,7 @@ module Main.View exposing
     
 import Element exposing (Element, el, column)
 import Element.Border as Border
+import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
 
@@ -19,10 +20,15 @@ import Resource.Chemicals exposing (chemicalsResource)
 import Resource.SpecialAlloys exposing (specialAlloysResource)
 import Resource.Types exposing (..)
 
-import Structure.Model exposing (Structure)
+import Structure.Model exposing (Structure, structurePackageCounts)
 import Structure.View exposing (structureView)
 
-import Main.Model exposing (Model, CombinedCounts, TotalCounts)
+import Main.Model exposing
+    ( Model
+    , CombinedCounts
+    , TotalCounts
+    , totalCountsPackageCounts
+    )
 --import Main.Controller exposing (..)
 
 import Types.Msg exposing (Msg(..))
@@ -34,11 +40,8 @@ view model = column
     ]
     [ mainTitle
     , structsElement model.structDict
-    , packageListElement model.totalCounts
-    , totalListElement model.totalCounts
-    , wastedListElement model.totalCounts
+    , totalsColumn model.totalCounts
     ]
-
     
 mainTitle : Element Msg
 mainTitle =
@@ -48,7 +51,22 @@ mainTitle =
         ]
         (Element.text "Death Stranding Structure Calc")
 
-wastedListElement : TotalCounts -> Element Msg
+totalsColumn : TotalCounts -> Element Msg
+totalsColumn totalCounts =
+    let
+        heading =
+            el
+                [ Region.heading 2
+                , Font.underline
+                ]
+                (Element.text "Totals")
+        pkgCounts = totalCountsPackageCounts totalCounts
+        totalPkgs = packageListElement pkgCounts
+        totalRes = totalListElement pkgCounts
+        wasted = wastedListElement totalCounts
+    in columnHelper [] heading [totalPkgs, totalRes, wasted]
+
+wastedListElement : TotalCounts -> Maybe (Element Msg)
 wastedListElement totalCounts =
     let
         resElem resource selector =
@@ -63,10 +81,13 @@ wastedListElement totalCounts =
             ]
         header =
             el 
-                [Region.heading 2
+                [Region.heading 3
                 ] 
                 (Element.text "Resources wasted:")
-    in columnHelper [] header resElems        
+    in 
+        if List.all isNothing resElems
+            then Nothing
+            else Just <| columnHelper [] header resElems        
         
 wastedListResElement : Resource r -> Excess -> Maybe (Element Msg)
 wastedListResElement resource excess =
@@ -86,11 +107,11 @@ wastedListResElement resource excess =
                         (Element.text (String.fromInt excess))
                     )
                 ]
-totalListElement : TotalCounts -> Element Msg
-totalListElement totalCounts =
+totalListElement : PackageCountsAll -> Maybe (Element Msg)
+totalListElement counts =
     let
         resElem resource selector =
-            totalListResElement resource (.pkgs (selector totalCounts))
+            totalListResElement resource (selector counts)
         resElems =
             [ resElem chiralCrystalsResource .chiralCrystals
             , resElem resinsResource .resins            
@@ -101,10 +122,13 @@ totalListElement totalCounts =
             ]
         header =
             el 
-                [Region.heading 2
+                [Region.heading 3
                 ] 
                 (Element.text "Resources needed:")
-    in columnHelper [] header resElems
+    in 
+        if List.all isNothing resElems
+            then Nothing
+            else Just <| columnHelper [] header resElems
 
 totalListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 totalListResElement resource counts =
@@ -128,11 +152,11 @@ totalListResElement resource counts =
                     )
                 ]
         
-packageListElement : TotalCounts -> Element Msg
-packageListElement totalCounts =
+packageListElement : PackageCountsAll -> Maybe (Element Msg)
+packageListElement counts =
     let
         resElem resource selector = 
-            packageListResElement resource (.pkgs (selector totalCounts))
+            packageListResElement resource (selector counts)
         resElems = 
             [ resElem chiralCrystalsResource .chiralCrystals
             , resElem resinsResource .resins            
@@ -143,7 +167,11 @@ packageListElement totalCounts =
             ]
         heading =
             el [Region.heading 2] (Element.text "Packages needed:")
-    in columnHelper [Element.moveRight 40] heading resElems
+    in 
+        if List.all isNothing resElems
+            then Nothing
+            else Just <|
+                columnHelper [] heading resElems
         
 packageListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 packageListResElement resource counts =
@@ -227,10 +255,13 @@ structList = List.map structElem << AutoIncDict.values
 
 structElem : Structure -> Element Msg
 structElem struct =
-    column structAttrs
-        [ el [] (structureView struct)
-        , removeButton struct.key
-        ]
+    let list = packageListElement (structurePackageCounts struct)
+    in
+        column structAttrs
+            [ el [] (structureView struct)
+            , removeButton struct.key
+            , Maybe.withDefault Element.none list
+            ]
 
 structAttrs : List (Element.Attribute Msg)
 structAttrs =
