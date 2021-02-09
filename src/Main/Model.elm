@@ -9,8 +9,12 @@ module Main.Model exposing
 import Dict.AutoInc as AutoIncDict exposing (AutoIncDict)
 import Dict.Count as CountDict exposing (CountDict)
 
-import Resource.Ceramics exposing (..)
-import Resource.Metal exposing (..)
+import Resource.ChiralCrystals exposing (ChiralCrystals, chiralCrystalsResource)
+import Resource.Ceramics exposing (Ceramics, ceramicsResource)
+import Resource.Metal exposing (Metal, metalResource)
+import Resource.Resins exposing (Resins, resinsResource)
+import Resource.Chemicals exposing (Chemicals, chemicalsResource)
+import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
 import Resource.Types exposing (..)
 
 import Structure.Model exposing (Structure, initStructure)
@@ -27,14 +31,22 @@ initCombinedCounts resource =
     }
     
 type alias TotalCounts =
-    { ceramics : CombinedCounts Ceramics
+    { chiralCrystals : CombinedCounts ChiralCrystals
+    , ceramics : CombinedCounts Ceramics
     , metal : CombinedCounts Metal
+    , resins : CombinedCounts Resins
+    , chemicals : CombinedCounts Chemicals
+    , specialAlloys : CombinedCounts SpecialAlloys
     }
 
 initTotalCounts : TotalCounts
 initTotalCounts =
-    { ceramics = initCombinedCounts ceramicsResource
+    { chiralCrystals = initCombinedCounts chiralCrystalsResource
+    , ceramics = initCombinedCounts ceramicsResource
     , metal = initCombinedCounts metalResource
+    , resins = initCombinedCounts resinsResource
+    , chemicals = initCombinedCounts chemicalsResource
+    , specialAlloys = initCombinedCounts specialAlloysResource
     }
 
 type alias Model = 

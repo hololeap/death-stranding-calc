@@ -8,8 +8,12 @@ module Types.Msg exposing
 
 import Dict.AutoInc as AutoIncDict
 
+import Resource.ChiralCrystals exposing (ChiralCrystals)
 import Resource.Ceramics exposing (Ceramics)
 import Resource.Metal exposing (Metal)
+import Resource.Resins exposing (Resins)
+import Resource.Chemicals exposing (Chemicals)
+import Resource.SpecialAlloys exposing (SpecialAlloys)
 
 type Msg
     = ResourceChange
@@ -19,9 +23,13 @@ type Msg
     | RemoveStructure AutoIncDict.Key
 
 type StructureMsg
-    = CeramicsMsg (ResourceMsg Ceramics)
-    | MetalMsg (ResourceMsg Metal) 
-
+    = ChiralCrystalsMsg (ResourceMsg ChiralCrystals)
+    | CeramicsMsg (ResourceMsg Ceramics)
+    | MetalMsg (ResourceMsg Metal)
+    | ResinsMsg (ResourceMsg Resins)
+    | ChemicalsMsg (ResourceMsg Chemicals)
+    | SpecialAlloysMsg (ResourceMsg SpecialAlloys)
+    
 fromStructureMsg : AutoIncDict.Key -> StructureMsg -> Msg
 fromStructureMsg key msg =
     ResourceChange

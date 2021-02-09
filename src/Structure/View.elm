@@ -9,8 +9,12 @@ import Element.Region as Region
 --import Html.Attributes exposing (..)
 --import Html.Events exposing (onInput)
 
-import Resource.Ceramics exposing (..)
-import Resource.Metal exposing (..)
+import Resource.ChiralCrystals exposing (chiralCrystalsResource)
+import Resource.Ceramics exposing (ceramicsResource)
+import Resource.Metal exposing (metalResource)
+import Resource.Resins exposing (resinsResource)
+import Resource.Chemicals exposing (chemicalsResource)
+import Resource.SpecialAlloys exposing (specialAlloysResource)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
@@ -27,8 +31,18 @@ structureView struct =
         mkResRow resConv =
             resourceRow struct (fromStructureMsg struct.key << resConv)
         resRows = 
-            [ mkResRow CeramicsMsg ceramicsResource struct.ceramics
+            [ mkResRow
+                ChiralCrystalsMsg
+                chiralCrystalsResource
+                struct.chiralCrystals
+            , mkResRow CeramicsMsg ceramicsResource struct.ceramics
             , mkResRow MetalMsg metalResource struct.metal
+            , mkResRow ResinsMsg resinsResource struct.resins
+            , mkResRow ChemicalsMsg chemicalsResource struct.chemicals
+            , mkResRow
+                SpecialAlloysMsg
+                specialAlloysResource
+                struct.specialAlloys
             ]
         headerFont =
             [ Font.light

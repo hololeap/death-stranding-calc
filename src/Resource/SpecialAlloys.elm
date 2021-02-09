@@ -1,8 +1,10 @@
-module Resources.SpecialAlloys
+module Resource.SpecialAlloys exposing (..)
 
-type alias SpecialAlloys = Int
+import Enum exposing (fromIntIterator)
 
-type SpecialAlloysPkg
+import Resource.Types exposing (Packages, Resource)
+
+type SpecialAlloys
     = SpecialAlloys60
     | SpecialAlloys120
     | SpecialAlloys240
@@ -11,16 +13,24 @@ type SpecialAlloysPkg
     | SpecialAlloys960
     | SpecialAlloys1200
 
-metalAmt : SpecialAlloysPkg -> SpecialAlloys
-metalAmt metal =
-    case metal of
-        SpecialAlloys40 -> 40
-        SpecialAlloys80 -> 80
-        SpecialAlloys160 -> 160
-        SpecialAlloys320 -> 320
-        SpecialAlloys480 -> 480
-        SpecialAlloys640 -> 640
-        SpecialAlloys800 -> 800
+specialAlloysPackages : Packages SpecialAlloys
+specialAlloysPackages =
+    fromIntIterator
+        (\r -> case r of
+            SpecialAlloys1200 -> (60, SpecialAlloys60)
+            SpecialAlloys60 -> (120, SpecialAlloys120)
+            SpecialAlloys120 -> (240, SpecialAlloys240)
+            SpecialAlloys240 -> (480, SpecialAlloys480)
+            SpecialAlloys480 -> (720, SpecialAlloys720)
+            SpecialAlloys720 -> (960, SpecialAlloys960)
+            SpecialAlloys960 -> (1200, SpecialAlloys1200)
+        )
+        SpecialAlloys60
 
-type alias SpecialAlloysPkgs = Dict SpecialAlloysPkg Int
-
+specialAlloysResource : Resource SpecialAlloys
+specialAlloysResource =
+    { name = "Special alloys"
+    , id = "specialAlloys"
+    , packages = specialAlloysPackages
+    , minimum = SpecialAlloys60
+    }
