@@ -12152,20 +12152,6 @@ var $author$project$Main$View$columnHelper = F3(
 						list))
 				]));
 	});
-var $mdgriffith$elm_ui$Internal$Model$MoveX = function (a) {
-	return {$: 'MoveX', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
-	function (a, b) {
-		return {$: 'TransformComponent', a: a, b: b};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$moveX = $mdgriffith$elm_ui$Internal$Flag$flag(25);
-var $mdgriffith$elm_ui$Element$moveRight = function (x) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
-		$mdgriffith$elm_ui$Internal$Flag$moveX,
-		$mdgriffith$elm_ui$Internal$Model$MoveX(x));
-};
 var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
@@ -12322,14 +12308,7 @@ var $author$project$Main$View$packageListElement = function (totalCounts) {
 				$mdgriffith$elm_ui$Element$Region$heading(2)
 			]),
 		$mdgriffith$elm_ui$Element$text('Packages needed:'));
-	return A3(
-		$author$project$Main$View$columnHelper,
-		_List_fromArray(
-			[
-				$mdgriffith$elm_ui$Element$moveRight(40)
-			]),
-		heading,
-		resElems);
+	return A3($author$project$Main$View$columnHelper, _List_Nil, heading, resElems);
 };
 var $author$project$Types$Msg$AddStructure = {$: 'AddStructure'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
@@ -12722,6 +12701,10 @@ var $mdgriffith$elm_ui$Element$behindContent = function (element) {
 var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
 	return {$: 'MoveY', a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
+	function (a, b) {
+		return {$: 'TransformComponent', a: a, b: b};
+	});
 var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
 var $mdgriffith$elm_ui$Element$moveUp = function (y) {
 	return A2(

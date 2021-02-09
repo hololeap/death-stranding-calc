@@ -127,7 +127,7 @@ packageListElement totalCounts =
             ]
         heading =
             el [Region.heading 2] (Element.text "Packages needed:")
-    in columnHelper [Element.moveRight 40] heading resElems
+    in columnHelper [] heading resElems
         
 packageListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 packageListResElement resource counts =
