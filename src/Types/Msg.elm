@@ -9,9 +9,9 @@ module Types.Msg exposing
 import Dict.AutoInc as AutoIncDict
 
 import Resource.ChiralCrystals exposing (ChiralCrystals)
-import Resource.Ceramics exposing (Ceramics)
-import Resource.Metal exposing (Metal)
 import Resource.Resins exposing (Resins)
+import Resource.Metal exposing (Metal)
+import Resource.Ceramics exposing (Ceramics)
 import Resource.Chemicals exposing (Chemicals)
 import Resource.SpecialAlloys exposing (SpecialAlloys)
 
@@ -24,9 +24,9 @@ type Msg
 
 type StructureMsg
     = ChiralCrystalsMsg (ResourceMsg ChiralCrystals)
-    | CeramicsMsg (ResourceMsg Ceramics)
+    | ResinsMsg (ResourceMsg Resins)    
     | MetalMsg (ResourceMsg Metal)
-    | ResinsMsg (ResourceMsg Resins)
+    | CeramicsMsg (ResourceMsg Ceramics)
     | ChemicalsMsg (ResourceMsg Chemicals)
     | SpecialAlloysMsg (ResourceMsg SpecialAlloys)
     

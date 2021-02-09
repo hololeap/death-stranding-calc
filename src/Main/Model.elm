@@ -10,9 +10,9 @@ import Dict.AutoInc as AutoIncDict exposing (AutoIncDict)
 import Dict.Count as CountDict exposing (CountDict)
 
 import Resource.ChiralCrystals exposing (ChiralCrystals, chiralCrystalsResource)
-import Resource.Ceramics exposing (Ceramics, ceramicsResource)
-import Resource.Metal exposing (Metal, metalResource)
 import Resource.Resins exposing (Resins, resinsResource)
+import Resource.Metal exposing (Metal, metalResource)
+import Resource.Ceramics exposing (Ceramics, ceramicsResource)
 import Resource.Chemicals exposing (Chemicals, chemicalsResource)
 import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
 import Resource.Types exposing (..)
@@ -32,9 +32,9 @@ initCombinedCounts resource =
     
 type alias TotalCounts =
     { chiralCrystals : CombinedCounts ChiralCrystals
-    , ceramics : CombinedCounts Ceramics
+    , resins : CombinedCounts Resins    
     , metal : CombinedCounts Metal
-    , resins : CombinedCounts Resins
+    , ceramics : CombinedCounts Ceramics
     , chemicals : CombinedCounts Chemicals
     , specialAlloys : CombinedCounts SpecialAlloys
     }
@@ -42,9 +42,9 @@ type alias TotalCounts =
 initTotalCounts : TotalCounts
 initTotalCounts =
     { chiralCrystals = initCombinedCounts chiralCrystalsResource
-    , ceramics = initCombinedCounts ceramicsResource
-    , metal = initCombinedCounts metalResource
     , resins = initCombinedCounts resinsResource
+    , metal = initCombinedCounts metalResource
+    , ceramics = initCombinedCounts ceramicsResource    
     , chemicals = initCombinedCounts chemicalsResource
     , specialAlloys = initCombinedCounts specialAlloysResource
     }

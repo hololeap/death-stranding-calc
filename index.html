@@ -12052,12 +12052,12 @@ var $author$project$Structure$Controller$updateStructure = F2(
 					{
 						chiralCrystals: A3($author$project$Resource$MVC$Controller$updateResource, $author$project$Resource$ChiralCrystals$chiralCrystalsResource, msg, model.chiralCrystals)
 					});
-			case 'CeramicsMsg':
+			case 'ResinsMsg':
 				var msg = mainMsg.a;
 				return _Utils_update(
 					model,
 					{
-						ceramics: A3($author$project$Resource$MVC$Controller$updateResource, $author$project$Resource$Ceramics$ceramicsResource, msg, model.ceramics)
+						resins: A3($author$project$Resource$MVC$Controller$updateResource, $author$project$Resource$Resins$resinsResource, msg, model.resins)
 					});
 			case 'MetalMsg':
 				var msg = mainMsg.a;
@@ -12066,12 +12066,12 @@ var $author$project$Structure$Controller$updateStructure = F2(
 					{
 						metal: A3($author$project$Resource$MVC$Controller$updateResource, $author$project$Resource$Metal$metalResource, msg, model.metal)
 					});
-			case 'ResinsMsg':
+			case 'CeramicsMsg':
 				var msg = mainMsg.a;
 				return _Utils_update(
 					model,
 					{
-						resins: A3($author$project$Resource$MVC$Controller$updateResource, $author$project$Resource$Resins$resinsResource, msg, model.resins)
+						ceramics: A3($author$project$Resource$MVC$Controller$updateResource, $author$project$Resource$Ceramics$ceramicsResource, msg, model.ceramics)
 					});
 			case 'ChemicalsMsg':
 				var msg = mainMsg.a;
@@ -12447,9 +12447,9 @@ var $author$project$Main$View$packageListElement = function (totalCounts) {
 			}),
 			A2(
 			resElem,
-			$author$project$Resource$Ceramics$ceramicsResource,
+			$author$project$Resource$Resins$resinsResource,
 			function ($) {
-				return $.ceramics;
+				return $.resins;
 			}),
 			A2(
 			resElem,
@@ -12459,9 +12459,9 @@ var $author$project$Main$View$packageListElement = function (totalCounts) {
 			}),
 			A2(
 			resElem,
-			$author$project$Resource$Resins$resinsResource,
+			$author$project$Resource$Ceramics$ceramicsResource,
 			function ($) {
-				return $.resins;
+				return $.ceramics;
 			}),
 			A2(
 			resElem,
@@ -14029,9 +14029,9 @@ var $author$project$Structure$View$structureView = function (struct) {
 	var resRows = _List_fromArray(
 		[
 			A3(mkResRow, $author$project$Types$Msg$ChiralCrystalsMsg, $author$project$Resource$ChiralCrystals$chiralCrystalsResource, struct.chiralCrystals),
-			A3(mkResRow, $author$project$Types$Msg$CeramicsMsg, $author$project$Resource$Ceramics$ceramicsResource, struct.ceramics),
-			A3(mkResRow, $author$project$Types$Msg$MetalMsg, $author$project$Resource$Metal$metalResource, struct.metal),
 			A3(mkResRow, $author$project$Types$Msg$ResinsMsg, $author$project$Resource$Resins$resinsResource, struct.resins),
+			A3(mkResRow, $author$project$Types$Msg$MetalMsg, $author$project$Resource$Metal$metalResource, struct.metal),
+			A3(mkResRow, $author$project$Types$Msg$CeramicsMsg, $author$project$Resource$Ceramics$ceramicsResource, struct.ceramics),
 			A3(mkResRow, $author$project$Types$Msg$ChemicalsMsg, $author$project$Resource$Chemicals$chemicalsResource, struct.chemicals),
 			A3(mkResRow, $author$project$Types$Msg$SpecialAlloysMsg, $author$project$Resource$SpecialAlloys$specialAlloysResource, struct.specialAlloys)
 		]);
@@ -14224,9 +14224,9 @@ var $author$project$Main$View$totalListElement = function (totalCounts) {
 			}),
 			A2(
 			resElem,
-			$author$project$Resource$Ceramics$ceramicsResource,
+			$author$project$Resource$Resins$resinsResource,
 			function ($) {
-				return $.ceramics;
+				return $.resins;
 			}),
 			A2(
 			resElem,
@@ -14236,9 +14236,9 @@ var $author$project$Main$View$totalListElement = function (totalCounts) {
 			}),
 			A2(
 			resElem,
-			$author$project$Resource$Resins$resinsResource,
+			$author$project$Resource$Ceramics$ceramicsResource,
 			function ($) {
-				return $.resins;
+				return $.ceramics;
 			}),
 			A2(
 			resElem,
@@ -14316,9 +14316,9 @@ var $author$project$Main$View$wastedListElement = function (totalCounts) {
 			}),
 			A2(
 			resElem,
-			$author$project$Resource$Ceramics$ceramicsResource,
+			$author$project$Resource$Resins$resinsResource,
 			function ($) {
-				return $.ceramics;
+				return $.resins;
 			}),
 			A2(
 			resElem,
@@ -14328,9 +14328,9 @@ var $author$project$Main$View$wastedListElement = function (totalCounts) {
 			}),
 			A2(
 			resElem,
-			$author$project$Resource$Resins$resinsResource,
+			$author$project$Resource$Ceramics$ceramicsResource,
 			function ($) {
-				return $.resins;
+				return $.ceramics;
 			}),
 			A2(
 			resElem,
