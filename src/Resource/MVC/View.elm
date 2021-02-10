@@ -10,7 +10,13 @@ import Html.Attributes exposing (..)
 
 import Structure.Model exposing (Structure)
 
-import Resource.Types exposing (Resource)
+import Resource.Types exposing
+    ( Resource
+    , ResourceGiven(..)
+    , showResourceGiven
+    , ResourceNeededTotal(..)
+    , showResourceNeededTotal
+    )
 import Resource.MVC.Model exposing (ResourceModel)
 --import Resource.MVC.Controller exposing (ResourceMsg(..))
 
@@ -37,14 +43,20 @@ resourceRow struct conv resource model =
     in
         { name = el [Element.centerY] (Element.text resource.name)
         , given = el [] ( Input.text givenAttrs
-            { onChange = conv << ChangeGiven << String.toInt
-            , text = String.fromInt model.given
+            { onChange = conv
+                << ChangeGiven
+                << Maybe.map ResourceGiven
+                << String.toInt
+            , text = showResourceGiven model.given
             , placeholder = Nothing
             , label = Input.labelHidden (label "given")
             } )
         , needed = el [] ( Input.text neededAttrs
-            { onChange = conv << ChangeNeeded << String.toInt
-            , text = String.fromInt model.needed
+            { onChange = conv 
+                << ChangeNeeded
+                << Maybe.map ResourceNeededTotal
+                << String.toInt
+            , text = showResourceNeededTotal model.needed
             , placeholder = Nothing
             , label = Input.labelHidden (label "needed")
             } )

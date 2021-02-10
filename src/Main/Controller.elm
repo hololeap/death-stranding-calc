@@ -6,6 +6,7 @@ import Dict.AutoInc as AutoIncDict exposing (AutoIncDict, Key)
 import Dict.Count as CountDict exposing (CountDict)
 
 import Resource.MVC.Model exposing (ResourceModel)
+import Resource.Types exposing (Excess(..), getExcess)
 import Structure.Model exposing (..)
 import Structure.Controller exposing (..)
 
@@ -19,7 +20,7 @@ appendResourceCounts
     -> CombinedCounts r
 appendResourceCounts model counts =
     { pkgs = CountDict.union counts.pkgs model.pkgs
-    , excess = counts.excess + model.excess
+    , excess = Excess <| getExcess counts.excess + getExcess model.excess
     }
 
 getTotalCounts : AutoIncDict Structure -> TotalCounts

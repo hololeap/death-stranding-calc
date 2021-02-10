@@ -29,7 +29,7 @@ type alias CombinedCounts r =
 initCombinedCounts : Resource r -> CombinedCounts r
 initCombinedCounts resource =
     { pkgs = CountDict.empty resource.packages.toInt
-    , excess = 0
+    , excess = Excess 0
     }
     
 type alias TotalCounts =

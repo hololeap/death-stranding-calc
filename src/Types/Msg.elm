@@ -14,6 +14,7 @@ import Resource.Metal exposing (Metal)
 import Resource.Ceramics exposing (Ceramics)
 import Resource.Chemicals exposing (Chemicals)
 import Resource.SpecialAlloys exposing (SpecialAlloys)
+import Resource.Types exposing (ResourceNeededTotal, ResourceGiven)
 
 type Msg
     = ResourceChange
@@ -39,7 +40,7 @@ fromStructureMsg key msg =
         
 -- Events for changing state on a ResourceModel
 type ResourceMsg r
-    = ChangeNeeded (Maybe Int)
-    | ChangeGiven (Maybe Int)
+    = ChangeNeeded (Maybe ResourceNeededTotal)
+    | ChangeGiven (Maybe ResourceGiven)
 
 type alias FromResourceMsg r = ResourceMsg r -> Msg

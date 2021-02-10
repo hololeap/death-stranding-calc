@@ -3,9 +3,18 @@ module Resource.Types exposing
     , ResourceName
     , Packages
     , Resource
-    , ResourceGiven
-    , ResourceNeeded
-    , Excess
+    , ResourceGiven(..)
+    , getResourceGiven
+    , showResourceGiven
+    , ResourceNeededTotal(..)
+    , getResourceNeededTotal
+    , showResourceNeededTotal    
+    , ResourceNeeded(..)
+    , getResourceNeeded
+    , showResourceNeeded    
+    , Excess(..)
+    , getExcess
+    , showExcess    
     , PackageCounts
     , initPackageCounts
     )
@@ -28,9 +37,41 @@ type alias Resource r =
     , minimum : r
     }
 
-type alias ResourceGiven = Int   -- Amount of a resource present in a structure
-type alias ResourceNeeded = Int  -- Total amount of a resource needed
-type alias Excess = Int          -- Amount of a resource that will be wasted
+-- Amount of a resource present in a structure
+type ResourceGiven = ResourceGiven Int
+
+getResourceGiven : ResourceGiven -> Int
+getResourceGiven (ResourceGiven i) = i
+
+showResourceGiven : ResourceGiven -> String
+showResourceGiven = String.fromInt << getResourceGiven
+
+-- Total amount of a resource needed
+type ResourceNeededTotal = ResourceNeededTotal Int
+
+getResourceNeededTotal : ResourceNeededTotal -> Int
+getResourceNeededTotal (ResourceNeededTotal i) = i
+
+showResourceNeededTotal : ResourceNeededTotal -> String
+showResourceNeededTotal = String.fromInt << getResourceNeededTotal
+
+-- Amount of resource needed to finish structure
+type ResourceNeeded = ResourceNeeded Int
+
+getResourceNeeded : ResourceNeeded -> Int
+getResourceNeeded (ResourceNeeded i) = i
+
+showResourceNeeded : ResourceNeeded -> String
+showResourceNeeded = String.fromInt << getResourceNeeded
+
+-- Amount of a resource that will be wasted
+type Excess = Excess Int
+
+getExcess : Excess -> Int
+getExcess (Excess i) = i
+
+showExcess : Excess -> String
+showExcess = String.fromInt << getExcess
 
 -- A minimum count of packages needed finish a structure, optimized toward
 -- larger packages.
