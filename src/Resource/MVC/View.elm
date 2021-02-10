@@ -3,12 +3,16 @@ module Resource.MVC.View exposing (ResourceRow, resourceRow)
 import Dict.AutoInc as AutoIncDict
 
 import Element exposing (Element, Attribute, el, htmlAttribute)
+import Element.Border as Border
+import Element.Font as Font
 import Element.Input as Input
 
 --import Html exposing (Attribute)
 import Html.Attributes exposing (..)
 
 import Structure.Model exposing (Structure)
+import Structure.Rename.Model exposing 
+    (StructureName(..), getOldStructureName)
 
 import Resource.Types exposing
     ( Resource
@@ -38,10 +42,26 @@ resourceRow struct conv resource model =
     let
         givenAttrs = inputAttributes struct.key resource "given"
         neededAttrs = inputAttributes struct.key resource "needed"
+        structName = case struct.name of
+            RenamingStructure oldName _ -> getOldStructureName oldName
+            StructureName str -> str
         label inputType =
-            struct.name ++  " " ++ resource.name ++ " " ++ inputType
+            structName ++  " " ++ resource.name ++ " " ++ inputType
+        resourceLabelFont =
+            [ Font.size 16
+            , Font.variant Font.smallCaps
+            ]
+        
     in
-        { name = el [Element.centerY] (Element.text resource.name)
+        { name = el 
+            [ Element.centerY
+            ]
+            ( el 
+                ( Element.alignRight
+                  :: resourceLabelFont
+                )
+                (Element.text resource.name)
+            )
         , given = el [] ( Input.text givenAttrs
             { onChange = conv
                 << ChangeGiven

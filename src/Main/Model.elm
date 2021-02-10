@@ -20,6 +20,7 @@ import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
 import Resource.Types exposing (..)
 
 import Structure.Model exposing (Structure, initStructure)
+import Structure.Rename.Model exposing (isRenaming)
 
 type alias CombinedCounts r =
     { pkgs : PackageCounts r
@@ -28,7 +29,7 @@ type alias CombinedCounts r =
 
 initCombinedCounts : Resource r -> CombinedCounts r
 initCombinedCounts resource =
-    { pkgs = CountDict.empty resource.packages.toInt
+    { pkgs = initPackageCounts resource
     , excess = Excess 0
     }
     
@@ -65,7 +66,7 @@ type alias Model =
     { structDict : AutoIncDict Structure
     , totalCounts : TotalCounts
     }
-
+    
 init : Model
 init =
     { structDict = AutoIncDict.singletonNeedingKeyInc "structure" initStructure

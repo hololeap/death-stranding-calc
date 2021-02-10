@@ -4491,6 +4491,9 @@ var $elm$core$Basics$composeL = F3(
 		return g(
 			f(x));
 	});
+var $author$project$Structure$Rename$Model$StructureName = function (a) {
+	return {$: 'StructureName', a: a};
+};
 var $elm$core$Basics$append = _Utils_append;
 var $author$project$Resource$Ceramics$Ceramics40 = {$: 'Ceramics40'};
 var $author$project$Resource$Ceramics$Ceramics160 = {$: 'Ceramics160'};
@@ -5397,7 +5400,8 @@ var $author$project$Structure$Model$initStructure = F2(
 			chiralCrystals: $author$project$Resource$MVC$Model$initResourceModel($author$project$Resource$ChiralCrystals$chiralCrystalsResource),
 			key: key,
 			metal: $author$project$Resource$MVC$Model$initResourceModel($author$project$Resource$Metal$metalResource),
-			name: 'Structure ' + $elm$core$String$fromInt(inc),
+			name: $author$project$Structure$Rename$Model$StructureName(
+				'Structure ' + $elm$core$String$fromInt(inc)),
 			resins: $author$project$Resource$MVC$Model$initResourceModel($author$project$Resource$Resins$resinsResource),
 			specialAlloys: $author$project$Resource$MVC$Model$initResourceModel($author$project$Resource$SpecialAlloys$specialAlloysResource)
 		};
@@ -5405,7 +5409,7 @@ var $author$project$Structure$Model$initStructure = F2(
 var $author$project$Main$Model$initCombinedCounts = function (resource) {
 	return {
 		excess: $author$project$Resource$Types$Excess(0),
-		pkgs: $author$project$Dict$Count$empty(resource.packages.toInt)
+		pkgs: $author$project$Resource$Types$initPackageCounts(resource)
 	};
 };
 var $author$project$Main$Model$initTotalCounts = {
@@ -11942,6 +11946,57 @@ var $author$project$Dict$AutoInc$remove = F2(
 				dict: A2($elm$core$Dict$remove, key, dictData.dict)
 			});
 	});
+var $author$project$Structure$Rename$Model$NewStructureName = function (a) {
+	return {$: 'NewStructureName', a: a};
+};
+var $author$project$Structure$Rename$Model$OldStructureName = function (a) {
+	return {$: 'OldStructureName', a: a};
+};
+var $author$project$Structure$Rename$Model$RenamingStructure = F2(
+	function (a, b) {
+		return {$: 'RenamingStructure', a: a, b: b};
+	});
+var $author$project$Structure$Rename$Model$getNewStructureName = function (_v0) {
+	var s = _v0.a;
+	return s;
+};
+var $author$project$Structure$Rename$Model$getOldStructureName = function (_v0) {
+	var s = _v0.a;
+	return s;
+};
+var $author$project$Structure$Rename$Controller$renameStructure = F2(
+	function (msg, structName) {
+		switch (msg.$) {
+			case 'EditStructureName':
+				var newName = msg.a;
+				if (structName.$ === 'StructureName') {
+					var name = structName.a;
+					return A2(
+						$author$project$Structure$Rename$Model$RenamingStructure,
+						$author$project$Structure$Rename$Model$OldStructureName(name),
+						$author$project$Structure$Rename$Model$NewStructureName(''));
+				} else {
+					var oldName = structName.a;
+					return A2($author$project$Structure$Rename$Model$RenamingStructure, oldName, newName);
+				}
+			case 'AcceptStructureName':
+				if (structName.$ === 'StructureName') {
+					return structName;
+				} else {
+					var newName = structName.b;
+					return $author$project$Structure$Rename$Model$StructureName(
+						$author$project$Structure$Rename$Model$getNewStructureName(newName));
+				}
+			default:
+				if (structName.$ === 'StructureName') {
+					return structName;
+				} else {
+					var oldName = structName.a;
+					return $author$project$Structure$Rename$Model$StructureName(
+						$author$project$Structure$Rename$Model$getOldStructureName(oldName));
+				}
+		}
+	});
 var $author$project$Dict$AutoInc$update = F3(
 	function (key, func, dictData) {
 		return _Utils_update(
@@ -12190,36 +12245,71 @@ var $author$project$Main$Controller$update = F2(
 			};
 		};
 		var onResourceChange = function (change) {
-			return A3(
-				$author$project$Dict$AutoInc$update,
-				change.structureKey,
-				$elm$core$Maybe$map(
-					$author$project$Structure$Controller$updateStructure(change.structureMsg)),
-				model.structDict);
+			return updateCounts(
+				A3(
+					$author$project$Dict$AutoInc$update,
+					change.structureKey,
+					$elm$core$Maybe$map(
+						$author$project$Structure$Controller$updateStructure(change.structureMsg)),
+					model.structDict));
 		};
-		var onRemoveStructure = function (label) {
-			return A2($author$project$Dict$AutoInc$remove, label, model.structDict);
+		var onRemoveStructure = function (key) {
+			return updateCounts(
+				A2($author$project$Dict$AutoInc$remove, key, model.structDict));
 		};
-		var onAddStructure = A2($author$project$Dict$AutoInc$insertNeedingKeyInc, $author$project$Structure$Model$initStructure, model.structDict);
-		return updateCounts(
-			function () {
-				switch (msg.$) {
-					case 'ResourceChange':
-						var change = msg.a;
-						return onResourceChange(change);
-					case 'AddStructure':
-						return onAddStructure;
-					default:
-						var label = msg.a;
-						return onRemoveStructure(label);
-				}
-			}());
+		var onAddStructure = updateCounts(
+			A2($author$project$Dict$AutoInc$insertNeedingKeyInc, $author$project$Structure$Model$initStructure, model.structDict));
+		var doRename = F2(
+			function (renameMsg, struct) {
+				return _Utils_update(
+					struct,
+					{
+						name: A2($author$project$Structure$Rename$Controller$renameStructure, renameMsg, struct.name)
+					});
+			});
+		var onRenameStructure = F2(
+			function (key, renameMsg) {
+				return _Utils_update(
+					model,
+					{
+						structDict: A3(
+							$author$project$Dict$AutoInc$update,
+							key,
+							$elm$core$Maybe$map(
+								doRename(renameMsg)),
+							model.structDict)
+					});
+			});
+		switch (msg.$) {
+			case 'ResourceChange':
+				var change = msg.a;
+				return onResourceChange(change);
+			case 'AddStructure':
+				return onAddStructure;
+			case 'RemoveStructure':
+				var key = msg.a;
+				return onRemoveStructure(key);
+			default:
+				var key = msg.a;
+				var renameMsg = msg.b;
+				return A2(onRenameStructure, key, renameMsg);
+		}
 	});
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
 };
 var $mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
 var $mdgriffith$elm_ui$Element$centerX = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$CenterX);
+var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$bgColor,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Colored,
+			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'background-color',
+			clr));
+};
 var $mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
 var $mdgriffith$elm_ui$Internal$Model$asColumn = $mdgriffith$elm_ui$Internal$Model$AsColumn;
 var $mdgriffith$elm_ui$Internal$Model$Height = function (a) {
@@ -12250,10 +12340,6 @@ var $mdgriffith$elm_ui$Element$column = F2(
 						attrs))),
 			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
-	return {$: 'Fill', a: a};
-};
-var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
 var $mdgriffith$elm_ui$Element$el = F2(
 	function (attrs, child) {
 		return A4(
@@ -12271,6 +12357,10 @@ var $mdgriffith$elm_ui$Element$el = F2(
 				_List_fromArray(
 					[child])));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var $mdgriffith$elm_ui$Element$fill = $mdgriffith$elm_ui$Internal$Model$Fill(1);
 var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
 	return {$: 'Describe', a: a};
 };
@@ -12302,6 +12392,53 @@ var $mdgriffith$elm_ui$Element$maximum = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
 var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
+var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
+	function (a, b, c, d, e) {
+		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$padding = $mdgriffith$elm_ui$Internal$Flag$flag(2);
+var $mdgriffith$elm_ui$Element$padding = function (x) {
+	var f = x;
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$padding,
+		A5(
+			$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+			'p-' + $elm$core$String$fromInt(x),
+			f,
+			f,
+			f,
+			f));
+};
+var $mdgriffith$elm_ui$Element$rgb255 = F3(
+	function (red, green, blue) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, red / 255, green / 255, blue / 255, 1);
+	});
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
+var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
+	function (a, b, c) {
+		return {$: 'SpacingStyle', a: a, b: b, c: c};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$spacing = $mdgriffith$elm_ui$Internal$Flag$flag(3);
+var $mdgriffith$elm_ui$Internal$Model$spacingName = F2(
+	function (x, y) {
+		return 'spacing-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y)));
+	});
+var $mdgriffith$elm_ui$Element$spacing = function (x) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$spacing,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$SpacingStyle,
+			A2($mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
+			x,
+			x));
+};
 var $author$project$Types$Msg$AddStructure = {$: 'AddStructure'};
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
@@ -12452,24 +12589,6 @@ var $mdgriffith$elm_ui$Element$Input$button = F2(
 				_List_fromArray(
 					[label])));
 	});
-var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
-	function (a, b, c, d, e) {
-		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$padding = $mdgriffith$elm_ui$Internal$Flag$flag(2);
-var $mdgriffith$elm_ui$Element$padding = function (x) {
-	var f = x;
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$padding,
-		A5(
-			$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-			'p-' + $elm$core$String$fromInt(x),
-			f,
-			f,
-			f,
-			f));
-};
 var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
 var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 	return A2(
@@ -12481,8 +12600,6 @@ var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
 			'border-radius',
 			$elm$core$String$fromInt(radius) + 'px'));
 };
-var $mdgriffith$elm_ui$Internal$Flag$borderStyle = $mdgriffith$elm_ui$Internal$Flag$flag(11);
-var $mdgriffith$elm_ui$Element$Border$solid = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$borderStyle, $mdgriffith$elm_ui$Internal$Style$classes.borderSolid);
 var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
 	function (a, b, c, d, e) {
 		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
@@ -12501,7 +12618,6 @@ var $mdgriffith$elm_ui$Element$Border$width = function (v) {
 };
 var $author$project$Main$View$buttonAttrs = _List_fromArray(
 	[
-		$mdgriffith$elm_ui$Element$Border$solid,
 		$mdgriffith$elm_ui$Element$Border$width(1),
 		$mdgriffith$elm_ui$Element$Border$rounded(5),
 		$mdgriffith$elm_ui$Element$padding(5)
@@ -12513,10 +12629,6 @@ var $author$project$Main$View$addButton = A2(
 		label: $mdgriffith$elm_ui$Element$text('Add structure'),
 		onPress: $elm$core$Maybe$Just($author$project$Types$Msg$AddStructure)
 	});
-var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
 		return !A2(
@@ -12524,6 +12636,11 @@ var $elm$core$List$all = F2(
 			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
 			list);
 	});
+var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
 var $author$project$Main$View$isNothing = function (m) {
 	if (m.$ === 'Just') {
 		return false;
@@ -12531,46 +12648,83 @@ var $author$project$Main$View$isNothing = function (m) {
 		return true;
 	}
 };
-var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
-	function (a, b, c) {
-		return {$: 'SpacingStyle', a: a, b: b, c: c};
-	});
-var $mdgriffith$elm_ui$Internal$Flag$spacing = $mdgriffith$elm_ui$Internal$Flag$flag(3);
-var $mdgriffith$elm_ui$Internal$Model$spacingName = F2(
-	function (x, y) {
-		return 'spacing-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y)));
-	});
-var $mdgriffith$elm_ui$Element$spacing = function (x) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$spacing,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$SpacingStyle,
-			A2($mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
-			x,
-			x));
+var $mdgriffith$elm_ui$Internal$Model$MoveX = function (a) {
+	return {$: 'MoveX', a: a};
 };
-var $author$project$Main$View$columnHelper = F3(
-	function (columnAttrs, heading, list) {
+var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
+	function (a, b) {
+		return {$: 'TransformComponent', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Internal$Flag$moveX = $mdgriffith$elm_ui$Internal$Flag$flag(25);
+var $mdgriffith$elm_ui$Element$moveRight = function (x) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$TransformComponent,
+		$mdgriffith$elm_ui$Internal$Flag$moveX,
+		$mdgriffith$elm_ui$Internal$Model$MoveX(x));
+};
+var $mdgriffith$elm_ui$Element$paddingXY = F2(
+	function (x, y) {
+		if (_Utils_eq(x, y)) {
+			var f = x;
+			return A2(
+				$mdgriffith$elm_ui$Internal$Model$StyleClass,
+				$mdgriffith$elm_ui$Internal$Flag$padding,
+				A5(
+					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+					'p-' + $elm$core$String$fromInt(x),
+					f,
+					f,
+					f,
+					f));
+		} else {
+			var yFloat = y;
+			var xFloat = x;
+			return A2(
+				$mdgriffith$elm_ui$Internal$Model$StyleClass,
+				$mdgriffith$elm_ui$Internal$Flag$padding,
+				A5(
+					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
+					'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
+					yFloat,
+					xFloat,
+					yFloat,
+					xFloat));
+		}
+	});
+var $author$project$Main$View$columnHelper = F4(
+	function (headingAttrs, columnAttrs, heading, list) {
 		return A2($elm$core$List$all, $author$project$Main$View$isNothing, list) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 			A2(
 				$mdgriffith$elm_ui$Element$column,
 				A2(
 					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$spacing(10),
 					A2(
 						$elm$core$List$cons,
 						$mdgriffith$elm_ui$Element$padding(10),
-						columnAttrs)),
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+							columnAttrs))),
 				_List_fromArray(
 					[
-						heading,
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						A2(
+							$elm$core$List$cons,
+							$mdgriffith$elm_ui$Element$padding(5),
+							headingAttrs),
+						heading),
 						A2(
 						$mdgriffith$elm_ui$Element$column,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$padding(20),
-								$mdgriffith$elm_ui$Element$spacing(10)
+								A2($mdgriffith$elm_ui$Element$paddingXY, 10, 0),
+								$mdgriffith$elm_ui$Element$moveRight(15),
+								$mdgriffith$elm_ui$Element$spacing(10),
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$centerX,
+								$mdgriffith$elm_ui$Element$centerY
 							]),
 						A2(
 							$elm$core$List$map,
@@ -12600,6 +12754,10 @@ var $author$project$Resource$printPackage = F2(
 		return resource.name + (' ' + $elm$core$String$fromInt(
 			resource.packages.toInt(_package)));
 	});
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
 var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
 var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Element$row = F2(
@@ -12630,8 +12788,7 @@ var $author$project$Main$View$packageListResElement = F2(
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$width(
-						A2($mdgriffith$elm_ui$Element$maximum, 490, $mdgriffith$elm_ui$Element$fill))
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 					]),
 				_List_fromArray(
 					[
@@ -12657,8 +12814,7 @@ var $author$project$Main$View$packageListResElement = F2(
 						$mdgriffith$elm_ui$Element$el,
 						_List_fromArray(
 							[
-								$mdgriffith$elm_ui$Element$width(
-								$mdgriffith$elm_ui$Element$px(100))
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 							]),
 						A2(
 							$mdgriffith$elm_ui$Element$el,
@@ -12668,33 +12824,19 @@ var $author$project$Main$View$packageListResElement = F2(
 								$elm$core$String$fromInt(count))))
 					]));
 		};
-		var heading = A2(
-			$mdgriffith$elm_ui$Element$el,
+		var heading = $mdgriffith$elm_ui$Element$text(resource.name);
+		return A4(
+			$author$project$Main$View$columnHelper,
 			_List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$Region$heading(3)
 				]),
-			$mdgriffith$elm_ui$Element$text(resource.name));
-		return $elm$core$List$isEmpty(pkgList) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+			_List_Nil,
+			heading,
 			A2(
-				$mdgriffith$elm_ui$Element$column,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$padding(10)
-					]),
-				_List_fromArray(
-					[
-						heading,
-						A2(
-						$mdgriffith$elm_ui$Element$column,
-						_List_fromArray(
-							[
-								$mdgriffith$elm_ui$Element$padding(20),
-								$mdgriffith$elm_ui$Element$spacing(10)
-							]),
-						A2($elm$core$List$map, pkgElement, pkgList))
-					])));
+				$elm$core$List$map,
+				A2($elm$core$Basics$composeL, $elm$core$Maybe$Just, pkgElement),
+				pkgList));
 	});
 var $author$project$Main$View$packageListElement = function (counts) {
 	var resElem = F2(
@@ -12743,14 +12885,16 @@ var $author$project$Main$View$packageListElement = function (counts) {
 				return $.specialAlloys;
 			})
 		]);
-	var heading = A2(
-		$mdgriffith$elm_ui$Element$el,
+	var heading = $mdgriffith$elm_ui$Element$text('Packages needed:');
+	return A4(
+		$author$project$Main$View$columnHelper,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$Region$heading(2)
 			]),
-		$mdgriffith$elm_ui$Element$text('Packages needed:'));
-	return A3($author$project$Main$View$columnHelper, _List_Nil, heading, resElems);
+		_List_Nil,
+		heading,
+		resElems);
 };
 var $author$project$Types$Msg$RemoveStructure = function (a) {
 	return {$: 'RemoveStructure', a: a};
@@ -12767,10 +12911,10 @@ var $author$project$Main$View$removeButton = function (key) {
 };
 var $author$project$Main$View$structAttrs = _List_fromArray(
 	[
-		$mdgriffith$elm_ui$Element$padding(15),
 		$mdgriffith$elm_ui$Element$spacing(10),
-		$mdgriffith$elm_ui$Element$Border$solid,
-		$mdgriffith$elm_ui$Element$Border$width(2)
+		$mdgriffith$elm_ui$Element$Border$width(2),
+		$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+		$mdgriffith$elm_ui$Element$padding(10)
 	]);
 var $author$project$Structure$Model$structurePackageCounts = function (struct) {
 	return {ceramics: struct.ceramics.pkgs, chemicals: struct.chemicals.pkgs, chiralCrystals: struct.chiralCrystals.pkgs, metal: struct.metal.pkgs, resins: struct.resins.pkgs, specialAlloys: struct.specialAlloys.pkgs};
@@ -12827,11 +12971,6 @@ var $author$project$Types$Msg$ChangeGiven = function (a) {
 var $author$project$Types$Msg$ChangeNeeded = function (a) {
 	return {$: 'ChangeNeeded', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
 var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
@@ -12863,6 +13002,10 @@ var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
 var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
 var $author$project$Resource$Types$showResourceGiven = A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $author$project$Resource$Types$getResourceGiven);
 var $author$project$Resource$Types$showResourceNeededTotal = A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $author$project$Resource$Types$getResourceNeededTotal);
+var $mdgriffith$elm_ui$Internal$Model$VariantActive = function (a) {
+	return {$: 'VariantActive', a: a};
+};
+var $mdgriffith$elm_ui$Element$Font$smallCaps = $mdgriffith$elm_ui$Internal$Model$VariantActive('smcp');
 var $mdgriffith$elm_ui$Element$Input$TextInputNode = function (a) {
 	return {$: 'TextInputNode', a: a};
 };
@@ -12969,10 +13112,6 @@ var $mdgriffith$elm_ui$Element$behindContent = function (element) {
 var $mdgriffith$elm_ui$Internal$Model$MoveY = function (a) {
 	return {$: 'MoveY', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Model$TransformComponent = F2(
-	function (a, b) {
-		return {$: 'TransformComponent', a: a, b: b};
-	});
 var $mdgriffith$elm_ui$Internal$Flag$moveY = $mdgriffith$elm_ui$Internal$Flag$flag(26);
 var $mdgriffith$elm_ui$Element$moveUp = function (y) {
 	return A2(
@@ -13007,16 +13146,6 @@ var $mdgriffith$elm_ui$Element$Input$calcMoveToCompensateForPadding = function (
 };
 var $mdgriffith$elm_ui$Internal$Flag$overflow = $mdgriffith$elm_ui$Internal$Flag$flag(20);
 var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$overflow, $mdgriffith$elm_ui$Internal$Style$classes.clip);
-var $mdgriffith$elm_ui$Element$Background$color = function (clr) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$bgColor,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Colored,
-			'bg-' + $mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'background-color',
-			clr));
-};
 var $mdgriffith$elm_ui$Internal$Flag$borderColor = $mdgriffith$elm_ui$Internal$Flag$flag(28);
 var $mdgriffith$elm_ui$Element$Border$color = function (clr) {
 	return A2(
@@ -13033,35 +13162,6 @@ var $mdgriffith$elm_ui$Element$rgb = F3(
 		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
 	});
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
-var $mdgriffith$elm_ui$Element$paddingXY = F2(
-	function (x, y) {
-		if (_Utils_eq(x, y)) {
-			var f = x;
-			return A2(
-				$mdgriffith$elm_ui$Internal$Model$StyleClass,
-				$mdgriffith$elm_ui$Internal$Flag$padding,
-				A5(
-					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-					'p-' + $elm$core$String$fromInt(x),
-					f,
-					f,
-					f,
-					f));
-		} else {
-			var yFloat = y;
-			var xFloat = x;
-			return A2(
-				$mdgriffith$elm_ui$Internal$Model$StyleClass,
-				$mdgriffith$elm_ui$Internal$Flag$padding,
-				A5(
-					$mdgriffith$elm_ui$Internal$Model$PaddingStyle,
-					'p-' + ($elm$core$String$fromInt(x) + ('-' + $elm$core$String$fromInt(y))),
-					yFloat,
-					xFloat,
-					yFloat,
-					xFloat));
-		}
-	});
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
 var $mdgriffith$elm_ui$Element$Input$white = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
 var $mdgriffith$elm_ui$Element$Input$defaultTextBoxStyle = _List_fromArray(
@@ -13797,11 +13897,48 @@ var $mdgriffith$elm_ui$Element$Input$text = $mdgriffith$elm_ui$Element$Input$tex
 		spellchecked: false,
 		type_: $mdgriffith$elm_ui$Element$Input$TextInputNode('text')
 	});
+var $mdgriffith$elm_ui$Internal$Flag$fontVariant = $mdgriffith$elm_ui$Internal$Flag$flag(48);
+var $mdgriffith$elm_ui$Element$Font$variant = function (_var) {
+	switch (_var.$) {
+		case 'VariantActive':
+			var name = _var.a;
+			return A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontVariant, 'v-' + name);
+		case 'VariantOff':
+			var name = _var.a;
+			return A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontVariant, 'v-' + (name + '-off'));
+		default:
+			var name = _var.a;
+			var index = _var.b;
+			return A2(
+				$mdgriffith$elm_ui$Internal$Model$StyleClass,
+				$mdgriffith$elm_ui$Internal$Flag$fontVariant,
+				A3(
+					$mdgriffith$elm_ui$Internal$Model$Single,
+					'v-' + (name + ('-' + $elm$core$String$fromInt(index))),
+					'font-feature-settings',
+					'\"' + (name + ('\" ' + $elm$core$String$fromInt(index)))));
+	}
+};
 var $author$project$Resource$MVC$View$resourceRow = F4(
 	function (struct, conv, resource, model) {
+		var structName = function () {
+			var _v0 = struct.name;
+			if (_v0.$ === 'RenamingStructure') {
+				var oldName = _v0.a;
+				return $author$project$Structure$Rename$Model$getOldStructureName(oldName);
+			} else {
+				var str = _v0.a;
+				return str;
+			}
+		}();
+		var resourceLabelFont = _List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$size(16),
+				$mdgriffith$elm_ui$Element$Font$variant($mdgriffith$elm_ui$Element$Font$smallCaps)
+			]);
 		var neededAttrs = A3($author$project$Resource$MVC$View$inputAttributes, struct.key, resource, 'needed');
 		var label = function (inputType) {
-			return struct.name + (' ' + (resource.name + (' ' + inputType)));
+			return structName + (' ' + (resource.name + (' ' + inputType)));
 		};
 		var givenAttrs = A3($author$project$Resource$MVC$View$inputAttributes, struct.key, resource, 'given');
 		return {
@@ -13828,7 +13965,10 @@ var $author$project$Resource$MVC$View$resourceRow = F4(
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
 					[$mdgriffith$elm_ui$Element$centerY]),
-				$mdgriffith$elm_ui$Element$text(resource.name)),
+				A2(
+					$mdgriffith$elm_ui$Element$el,
+					A2($elm$core$List$cons, $mdgriffith$elm_ui$Element$alignRight, resourceLabelFont),
+					$mdgriffith$elm_ui$Element$text(resource.name))),
 			needed: A2(
 				$mdgriffith$elm_ui$Element$el,
 				_List_Nil,
@@ -13850,16 +13990,140 @@ var $author$project$Resource$MVC$View$resourceRow = F4(
 					}))
 		};
 	});
-var $mdgriffith$elm_ui$Element$Font$size = function (i) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontSize,
-		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+var $author$project$Types$Msg$AcceptStructureName = {$: 'AcceptStructureName'};
+var $author$project$Types$Msg$CancelRenameStructure = {$: 'CancelRenameStructure'};
+var $author$project$Types$Msg$EditStructureName = function (a) {
+	return {$: 'EditStructureName', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Model$VariantActive = function (a) {
-	return {$: 'VariantActive', a: a};
+var $author$project$Types$Msg$RenameStructure = F2(
+	function (a, b) {
+		return {$: 'RenameStructure', a: a, b: b};
+	});
+var $author$project$Types$Msg$fromRenameStructureMsg = $author$project$Types$Msg$RenameStructure;
+var $mdgriffith$elm_ui$Element$Font$italic = $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.italic);
+var $mdgriffith$elm_ui$Element$Input$Placeholder = F2(
+	function (a, b) {
+		return {$: 'Placeholder', a: a, b: b};
+	});
+var $mdgriffith$elm_ui$Element$Input$placeholder = $mdgriffith$elm_ui$Element$Input$Placeholder;
+var $mdgriffith$elm_ui$Element$Font$underline = $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.underline);
+var $author$project$Structure$Rename$View$structureNameElem = function (struct) {
+	var _v0 = struct.name;
+	if (_v0.$ === 'StructureName') {
+		var name = _v0.a;
+		return A2(
+			$mdgriffith$elm_ui$Element$el,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$Region$heading(2),
+					$mdgriffith$elm_ui$Element$centerX,
+					$mdgriffith$elm_ui$Element$Font$underline,
+					$mdgriffith$elm_ui$Element$padding(20),
+					$mdgriffith$elm_ui$Element$Events$onClick(
+					A2(
+						$author$project$Types$Msg$fromRenameStructureMsg,
+						struct.key,
+						$author$project$Types$Msg$EditStructureName(
+							$author$project$Structure$Rename$Model$NewStructureName(name))))
+				]),
+			$mdgriffith$elm_ui$Element$text(name));
+	} else {
+		var oldName = _v0.a;
+		var newName = _v0.b;
+		var nameInput = A2(
+			$mdgriffith$elm_ui$Element$Input$text,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+				]),
+			{
+				label: $mdgriffith$elm_ui$Element$Input$labelHidden('New structure name'),
+				onChange: A2(
+					$elm$core$Basics$composeL,
+					A2(
+						$elm$core$Basics$composeL,
+						$author$project$Types$Msg$fromRenameStructureMsg(struct.key),
+						$author$project$Types$Msg$EditStructureName),
+					$author$project$Structure$Rename$Model$NewStructureName),
+				placeholder: $elm$core$Maybe$Just(
+					A2(
+						$mdgriffith$elm_ui$Element$Input$placeholder,
+						_List_fromArray(
+							[$mdgriffith$elm_ui$Element$Font$italic]),
+						$mdgriffith$elm_ui$Element$text('Please enter a name'))),
+				text: $author$project$Structure$Rename$Model$getNewStructureName(newName)
+			});
+		var cancelButtonText = $mdgriffith$elm_ui$Element$text('🗙');
+		var buttonTextAttrs = _List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$Font$color(
+				A3($mdgriffith$elm_ui$Element$rgb255, 230, 230, 230)),
+				$mdgriffith$elm_ui$Element$centerX,
+				$mdgriffith$elm_ui$Element$centerY
+			]);
+		var buttonText = function (text) {
+			return $mdgriffith$elm_ui$Element$el;
+		};
+		var buttonAttrs = _List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width(
+				$mdgriffith$elm_ui$Element$px(20)),
+				$mdgriffith$elm_ui$Element$height(
+				$mdgriffith$elm_ui$Element$px(20)),
+				$mdgriffith$elm_ui$Element$centerX,
+				$mdgriffith$elm_ui$Element$centerY
+			]);
+		var cancelButton = A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$Background$color(
+					A3($mdgriffith$elm_ui$Element$rgb255, 230, 0, 10)),
+				buttonAttrs),
+			{
+				label: A2($mdgriffith$elm_ui$Element$el, buttonTextAttrs, cancelButtonText),
+				onPress: $elm$core$Maybe$Just(
+					A2($author$project$Types$Msg$fromRenameStructureMsg, struct.key, $author$project$Types$Msg$CancelRenameStructure))
+			});
+		var acceptButtonText = $mdgriffith$elm_ui$Element$text('✓');
+		var disabledAcceptButton = A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$Background$color(
+					A3($mdgriffith$elm_ui$Element$rgb255, 128, 128, 128)),
+				buttonAttrs),
+			{
+				label: A2($mdgriffith$elm_ui$Element$el, buttonTextAttrs, acceptButtonText),
+				onPress: $elm$core$Maybe$Nothing
+			});
+		var enabledAcceptButton = A2(
+			$mdgriffith$elm_ui$Element$Input$button,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$Background$color(
+					A3($mdgriffith$elm_ui$Element$rgb255, 0, 200, 20)),
+				buttonAttrs),
+			{
+				label: A2($mdgriffith$elm_ui$Element$el, buttonTextAttrs, acceptButtonText),
+				onPress: $elm$core$Maybe$Just(
+					A2($author$project$Types$Msg$fromRenameStructureMsg, struct.key, $author$project$Types$Msg$AcceptStructureName))
+			});
+		var acceptButton = $elm$core$String$isEmpty(
+			$author$project$Structure$Rename$Model$getNewStructureName(newName)) ? disabledAcceptButton : enabledAcceptButton;
+		return A2(
+			$mdgriffith$elm_ui$Element$row,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$centerX,
+					$mdgriffith$elm_ui$Element$spacing(5),
+					$mdgriffith$elm_ui$Element$padding(10)
+				]),
+			_List_fromArray(
+				[nameInput, acceptButton, cancelButton]));
+	}
 };
-var $mdgriffith$elm_ui$Element$Font$smallCaps = $mdgriffith$elm_ui$Internal$Model$VariantActive('smcp');
 var $mdgriffith$elm_ui$Element$InternalColumn = function (a) {
 	return {$: 'InternalColumn', a: a};
 };
@@ -14077,29 +14341,6 @@ var $mdgriffith$elm_ui$Element$table = F2(
 				data: config.data
 			});
 	});
-var $mdgriffith$elm_ui$Element$Font$underline = $mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.underline);
-var $mdgriffith$elm_ui$Internal$Flag$fontVariant = $mdgriffith$elm_ui$Internal$Flag$flag(48);
-var $mdgriffith$elm_ui$Element$Font$variant = function (_var) {
-	switch (_var.$) {
-		case 'VariantActive':
-			var name = _var.a;
-			return A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontVariant, 'v-' + name);
-		case 'VariantOff':
-			var name = _var.a;
-			return A2($mdgriffith$elm_ui$Internal$Model$Class, $mdgriffith$elm_ui$Internal$Flag$fontVariant, 'v-' + (name + '-off'));
-		default:
-			var name = _var.a;
-			var index = _var.b;
-			return A2(
-				$mdgriffith$elm_ui$Internal$Model$StyleClass,
-				$mdgriffith$elm_ui$Internal$Flag$fontVariant,
-				A3(
-					$mdgriffith$elm_ui$Internal$Model$Single,
-					'v-' + (name + ('-' + $elm$core$String$fromInt(index))),
-					'font-feature-settings',
-					'\"' + (name + ('\" ' + $elm$core$String$fromInt(index)))));
-	}
-};
 var $author$project$Structure$View$structureView = function (struct) {
 	var mkResRow = function (resConv) {
 		return A2(
@@ -14125,22 +14366,23 @@ var $author$project$Structure$View$structureView = function (struct) {
 			$mdgriffith$elm_ui$Element$Font$variant($mdgriffith$elm_ui$Element$Font$smallCaps),
 			$mdgriffith$elm_ui$Element$Font$size(14)
 		]);
+	var headerElem = function (text) {
+		return A2(
+			$mdgriffith$elm_ui$Element$el,
+			A2($elm$core$List$cons, $mdgriffith$elm_ui$Element$centerX, headerFont),
+			$mdgriffith$elm_ui$Element$text(text));
+	};
 	return A2(
 		$mdgriffith$elm_ui$Element$Keyed$column,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+			]),
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
 				struct.key + '-heading',
-				A2(
-					$mdgriffith$elm_ui$Element$el,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$Region$heading(2),
-							$mdgriffith$elm_ui$Element$centerX,
-							$mdgriffith$elm_ui$Element$Font$underline
-						]),
-					$mdgriffith$elm_ui$Element$text(struct.name))),
+				$author$project$Structure$Rename$View$structureNameElem(struct)),
 				_Utils_Tuple2(
 				struct.key + '-table',
 				A2(
@@ -14156,8 +14398,8 @@ var $author$project$Structure$View$structureView = function (struct) {
 								{
 								header: A2(
 									$mdgriffith$elm_ui$Element$el,
-									headerFont,
-									$mdgriffith$elm_ui$Element$text('Resource')),
+									_List_Nil,
+									headerElem('Resource')),
 								view: function ($) {
 									return $.name;
 								},
@@ -14166,8 +14408,8 @@ var $author$project$Structure$View$structureView = function (struct) {
 								{
 								header: A2(
 									$mdgriffith$elm_ui$Element$el,
-									headerFont,
-									$mdgriffith$elm_ui$Element$text('Given')),
+									_List_Nil,
+									headerElem('Given')),
 								view: function ($) {
 									return $.given;
 								},
@@ -14176,8 +14418,8 @@ var $author$project$Structure$View$structureView = function (struct) {
 								{
 								header: A2(
 									$mdgriffith$elm_ui$Element$el,
-									headerFont,
-									$mdgriffith$elm_ui$Element$text('Needed')),
+									_List_Nil,
+									headerElem('Needed')),
 								view: function ($) {
 									return $.needed;
 								},
@@ -14198,10 +14440,18 @@ var $author$project$Main$View$structElem = function (struct) {
 			[
 				A2(
 				$mdgriffith$elm_ui$Element$el,
-				_List_Nil,
+				_List_fromArray(
+					[$mdgriffith$elm_ui$Element$centerX]),
 				$author$project$Structure$View$structureView(struct)),
 				$author$project$Main$View$removeButton(struct.key),
-				A2($elm$core$Maybe$withDefault, $mdgriffith$elm_ui$Element$none, list)
+				A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$padding(20),
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+					]),
+				A2($elm$core$Maybe$withDefault, $mdgriffith$elm_ui$Element$none, list))
 			]));
 };
 var $author$project$Main$View$structList = A2(
@@ -14210,16 +14460,16 @@ var $author$project$Main$View$structList = A2(
 	$author$project$Dict$AutoInc$values);
 var $author$project$Main$View$structsElementAttrs = _List_fromArray(
 	[
-		$mdgriffith$elm_ui$Element$padding(20),
-		$mdgriffith$elm_ui$Element$spacing(10)
+		$mdgriffith$elm_ui$Element$spacing(10),
+		$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 	]);
 var $author$project$Main$View$structsElement = function (dict) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$width(
-				$mdgriffith$elm_ui$Element$px(490))
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$spacing(20)
 			]),
 		_List_fromArray(
 			[
@@ -14340,14 +14590,16 @@ var $author$project$Main$View$totalListElement = function (counts) {
 				return $.specialAlloys;
 			})
 		]);
-	var header = A2(
-		$mdgriffith$elm_ui$Element$el,
+	var header = $mdgriffith$elm_ui$Element$text('Resources needed:');
+	return A4(
+		$author$project$Main$View$columnHelper,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$Region$heading(3)
 			]),
-		$mdgriffith$elm_ui$Element$text('Resources needed:'));
-	return A3($author$project$Main$View$columnHelper, _List_Nil, header, resElems);
+		_List_Nil,
+		header,
+		resElems);
 };
 var $author$project$Resource$Types$showExcess = A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $author$project$Resource$Types$getExcess);
 var $author$project$Main$View$wastedListResElement = F2(
@@ -14433,31 +14685,34 @@ var $author$project$Main$View$wastedListElement = function (totalCounts) {
 				return $.specialAlloys;
 			})
 		]);
-	var header = A2(
-		$mdgriffith$elm_ui$Element$el,
+	var header = $mdgriffith$elm_ui$Element$text('Resources wasted:');
+	return A4(
+		$author$project$Main$View$columnHelper,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$Region$heading(3)
 			]),
-		$mdgriffith$elm_ui$Element$text('Resources wasted:'));
-	return A3($author$project$Main$View$columnHelper, _List_Nil, header, resElems);
+		_List_Nil,
+		header,
+		resElems);
 };
 var $author$project$Main$View$totalsColumn = function (totalCounts) {
 	var wasted = $author$project$Main$View$wastedListElement(totalCounts);
 	var pkgCounts = $author$project$Main$Model$totalCountsPackageCounts(totalCounts);
 	var totalPkgs = $author$project$Main$View$packageListElement(pkgCounts);
 	var totalRes = $author$project$Main$View$totalListElement(pkgCounts);
-	var heading = A2(
-		$mdgriffith$elm_ui$Element$el,
+	var heading = $mdgriffith$elm_ui$Element$text('Totals');
+	return A4(
+		$author$project$Main$View$columnHelper,
 		_List_fromArray(
 			[
 				$mdgriffith$elm_ui$Element$Region$heading(2),
 				$mdgriffith$elm_ui$Element$Font$underline
 			]),
-		$mdgriffith$elm_ui$Element$text('Totals'));
-	return A3(
-		$author$project$Main$View$columnHelper,
-		_List_Nil,
+		_List_fromArray(
+			[
+				$mdgriffith$elm_ui$Element$spacing(20)
+			]),
 		heading,
 		_List_fromArray(
 			[totalPkgs, totalRes, wasted]));
@@ -14469,16 +14724,27 @@ var $author$project$Main$View$view = function (model) {
 			[
 				$mdgriffith$elm_ui$Element$width(
 				A2($mdgriffith$elm_ui$Element$maximum, 500, $mdgriffith$elm_ui$Element$fill)),
-				$mdgriffith$elm_ui$Element$centerX
+				$mdgriffith$elm_ui$Element$centerX,
+				$mdgriffith$elm_ui$Element$Font$size(20),
+				$mdgriffith$elm_ui$Element$spacing(20)
 			]),
 		_List_fromArray(
 			[
 				$author$project$Main$View$mainTitle,
 				$author$project$Main$View$structsElement(model.structDict),
 				A2(
-				$elm$core$Maybe$withDefault,
-				$mdgriffith$elm_ui$Element$none,
-				$author$project$Main$View$totalsColumn(model.totalCounts))
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[
+						$mdgriffith$elm_ui$Element$padding(20),
+						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+						$mdgriffith$elm_ui$Element$Background$color(
+						A3($mdgriffith$elm_ui$Element$rgb255, 230, 230, 230))
+					]),
+				A2(
+					$elm$core$Maybe$withDefault,
+					$mdgriffith$elm_ui$Element$none,
+					$author$project$Main$View$totalsColumn(model.totalCounts)))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(

@@ -1,6 +1,5 @@
 module Structure.Model exposing
     ( Structure
-    , StructureName
     , initStructure
     , structurePackageCounts
     )
@@ -19,7 +18,7 @@ import Resource.Types exposing (..)
 
 import Resource.MVC.Model exposing (ResourceModel, initResourceModel)
 
-type alias StructureName = String
+import Structure.Rename.Model exposing (StructureName(..))
 
 type alias Structure =
     { name : StructureName
@@ -34,7 +33,7 @@ type alias Structure =
     
 initStructure : Int -> AutoIncDict.Key -> Structure
 initStructure inc key =
-    { name = "Structure " ++ String.fromInt inc
+    { name = StructureName ("Structure " ++ String.fromInt inc)
     , key = key
     , chiralCrystals = initResourceModel chiralCrystalsResource
     , resins = initResourceModel resinsResource

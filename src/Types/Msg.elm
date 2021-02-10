@@ -1,5 +1,7 @@
 module Types.Msg exposing
     ( Msg(..)
+    , RenameStructureMsg(..)
+    , fromRenameStructureMsg
     , StructureMsg(..)
     , fromStructureMsg
     , ResourceMsg(..)
@@ -16,13 +18,25 @@ import Resource.Chemicals exposing (Chemicals)
 import Resource.SpecialAlloys exposing (SpecialAlloys)
 import Resource.Types exposing (ResourceNeededTotal, ResourceGiven)
 
+import Structure.Rename.Model exposing
+    (OldStructureName, NewStructureName)
+
 type Msg
     = ResourceChange
         { structureKey : AutoIncDict.Key
         , structureMsg : StructureMsg }
     | AddStructure
     | RemoveStructure AutoIncDict.Key
+    | RenameStructure AutoIncDict.Key RenameStructureMsg
 
+type RenameStructureMsg
+    = EditStructureName NewStructureName
+    | AcceptStructureName
+    | CancelRenameStructure
+
+fromRenameStructureMsg : AutoIncDict.Key -> RenameStructureMsg -> Msg
+fromRenameStructureMsg = RenameStructure
+    
 type StructureMsg
     = ChiralCrystalsMsg (ResourceMsg ChiralCrystals)
     | ResinsMsg (ResourceMsg Resins)    
