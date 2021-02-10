@@ -12636,11 +12636,6 @@ var $elm$core$List$all = F2(
 			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
 			list);
 	});
-var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
 var $author$project$Main$View$isNothing = function (m) {
 	if (m.$ === 'Just') {
 		return false;
@@ -12698,10 +12693,10 @@ var $author$project$Main$View$columnHelper = F4(
 				$mdgriffith$elm_ui$Element$column,
 				A2(
 					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$spacing(10),
+					$mdgriffith$elm_ui$Element$spacing(30),
 					A2(
 						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$padding(10),
+						$mdgriffith$elm_ui$Element$Border$width(1),
 						A2(
 							$elm$core$List$cons,
 							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
@@ -12712,19 +12707,17 @@ var $author$project$Main$View$columnHelper = F4(
 						$mdgriffith$elm_ui$Element$el,
 						A2(
 							$elm$core$List$cons,
-							$mdgriffith$elm_ui$Element$padding(5),
+							A2($mdgriffith$elm_ui$Element$paddingXY, 0, 0),
 							headingAttrs),
 						heading),
 						A2(
 						$mdgriffith$elm_ui$Element$column,
 						_List_fromArray(
 							[
-								A2($mdgriffith$elm_ui$Element$paddingXY, 10, 0),
+								A2($mdgriffith$elm_ui$Element$paddingXY, 15, 10),
 								$mdgriffith$elm_ui$Element$moveRight(15),
-								$mdgriffith$elm_ui$Element$spacing(10),
-								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-								$mdgriffith$elm_ui$Element$centerX,
-								$mdgriffith$elm_ui$Element$centerY
+								$mdgriffith$elm_ui$Element$spacing(20),
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 							]),
 						A2(
 							$elm$core$List$map,
@@ -12914,7 +12907,7 @@ var $author$project$Main$View$structAttrs = _List_fromArray(
 		$mdgriffith$elm_ui$Element$spacing(10),
 		$mdgriffith$elm_ui$Element$Border$width(2),
 		$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-		$mdgriffith$elm_ui$Element$padding(10)
+		$mdgriffith$elm_ui$Element$padding(20)
 	]);
 var $author$project$Structure$Model$structurePackageCounts = function (struct) {
 	return {ceramics: struct.ceramics.pkgs, chemicals: struct.chemicals.pkgs, chiralCrystals: struct.chiralCrystals.pkgs, metal: struct.metal.pkgs, resins: struct.resins.pkgs, specialAlloys: struct.specialAlloys.pkgs};
@@ -12971,6 +12964,11 @@ var $author$project$Types$Msg$ChangeGiven = function (a) {
 var $author$project$Types$Msg$ChangeNeeded = function (a) {
 	return {$: 'ChangeNeeded', a: a};
 };
+var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
 var $mdgriffith$elm_ui$Element$htmlAttribute = $mdgriffith$elm_ui$Internal$Model$Attr;
 var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
@@ -14018,7 +14016,6 @@ var $author$project$Structure$Rename$View$structureNameElem = function (struct) 
 					$mdgriffith$elm_ui$Element$Region$heading(2),
 					$mdgriffith$elm_ui$Element$centerX,
 					$mdgriffith$elm_ui$Element$Font$underline,
-					$mdgriffith$elm_ui$Element$padding(20),
 					$mdgriffith$elm_ui$Element$Events$onClick(
 					A2(
 						$author$project$Types$Msg$fromRenameStructureMsg,
@@ -14117,8 +14114,7 @@ var $author$project$Structure$Rename$View$structureNameElem = function (struct) 
 				[
 					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 					$mdgriffith$elm_ui$Element$centerX,
-					$mdgriffith$elm_ui$Element$spacing(5),
-					$mdgriffith$elm_ui$Element$padding(10)
+					$mdgriffith$elm_ui$Element$spacing(5)
 				]),
 			_List_fromArray(
 				[nameInput, acceptButton, cancelButton]));
@@ -14448,7 +14444,6 @@ var $author$project$Main$View$structElem = function (struct) {
 				$mdgriffith$elm_ui$Element$el,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$padding(20),
 						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 					]),
 				A2($elm$core$Maybe$withDefault, $mdgriffith$elm_ui$Element$none, list))
@@ -14711,7 +14706,7 @@ var $author$project$Main$View$totalsColumn = function (totalCounts) {
 			]),
 		_List_fromArray(
 			[
-				$mdgriffith$elm_ui$Element$spacing(20)
+				$mdgriffith$elm_ui$Element$padding(20)
 			]),
 		heading,
 		_List_fromArray(
@@ -14730,21 +14725,24 @@ var $author$project$Main$View$view = function (model) {
 			]),
 		_List_fromArray(
 			[
+				A2($mdgriffith$elm_ui$Element$el, _List_Nil, $mdgriffith$elm_ui$Element$none),
 				$author$project$Main$View$mainTitle,
 				$author$project$Main$View$structsElement(model.structDict),
 				A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$padding(20),
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-						$mdgriffith$elm_ui$Element$Background$color(
-						A3($mdgriffith$elm_ui$Element$rgb255, 230, 230, 230))
-					]),
+				$elm$core$Maybe$withDefault,
+				$mdgriffith$elm_ui$Element$none,
 				A2(
-					$elm$core$Maybe$withDefault,
-					$mdgriffith$elm_ui$Element$none,
-					$author$project$Main$View$totalsColumn(model.totalCounts)))
+					$elm$core$Maybe$map,
+					$mdgriffith$elm_ui$Element$el(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$padding(20),
+								$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+								$mdgriffith$elm_ui$Element$Background$color(
+								A3($mdgriffith$elm_ui$Element$rgb255, 230, 230, 230))
+							])),
+					$author$project$Main$View$totalsColumn(model.totalCounts))),
+				A2($mdgriffith$elm_ui$Element$el, _List_Nil, $mdgriffith$elm_ui$Element$none)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(
