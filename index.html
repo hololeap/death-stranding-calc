@@ -5274,6 +5274,15 @@ var $author$project$Resource$ChiralCrystals$chiralCrystalsResource = {id: 'chira
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
+var $author$project$Resource$Types$Excess = function (a) {
+	return {$: 'Excess', a: a};
+};
+var $author$project$Resource$Types$ResourceGiven = function (a) {
+	return {$: 'ResourceGiven', a: a};
+};
+var $author$project$Resource$Types$ResourceNeededTotal = function (a) {
+	return {$: 'ResourceNeededTotal', a: a};
+};
 var $turboMaCk$any_dict$Dict$Any$AnyDict = function (a) {
 	return {$: 'AnyDict', a: a};
 };
@@ -5287,9 +5296,9 @@ var $author$project$Resource$Types$initPackageCounts = function (resource) {
 };
 var $author$project$Resource$MVC$Model$initResourceModel = function (resource) {
 	return {
-		excess: 0,
-		given: 0,
-		needed: 0,
+		excess: $author$project$Resource$Types$Excess(0),
+		given: $author$project$Resource$Types$ResourceGiven(0),
+		needed: $author$project$Resource$Types$ResourceNeededTotal(0),
 		pkgs: $author$project$Resource$Types$initPackageCounts(resource)
 	};
 };
@@ -5395,7 +5404,7 @@ var $author$project$Structure$Model$initStructure = F2(
 	});
 var $author$project$Main$Model$initCombinedCounts = function (resource) {
 	return {
-		excess: 0,
+		excess: $author$project$Resource$Types$Excess(0),
 		pkgs: $author$project$Dict$Count$empty(resource.packages.toInt)
 	};
 };
@@ -11452,6 +11461,10 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
+var $author$project$Resource$Types$getExcess = function (_v0) {
+	var i = _v0.a;
+	return i;
+};
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
@@ -11892,7 +11905,8 @@ var $author$project$Dict$Count$union = F2(
 var $author$project$Main$Controller$appendResourceCounts = F2(
 	function (model, counts) {
 		return {
-			excess: counts.excess + model.excess,
+			excess: $author$project$Resource$Types$Excess(
+				$author$project$Resource$Types$getExcess(counts.excess) + $author$project$Resource$Types$getExcess(model.excess)),
 			pkgs: A2($author$project$Dict$Count$union, counts.pkgs, model.pkgs)
 		};
 	});
@@ -11936,11 +11950,26 @@ var $author$project$Dict$AutoInc$update = F3(
 				dict: A3($elm$core$Dict$update, key, func, dictData.dict)
 			});
 	});
+var $author$project$Resource$Types$getResourceGiven = function (_v0) {
+	var i = _v0.a;
+	return i;
+};
+var $author$project$Resource$Types$getResourceNeededTotal = function (_v0) {
+	var i = _v0.a;
+	return i;
+};
+var $author$project$Resource$Types$ResourceNeeded = function (a) {
+	return {$: 'ResourceNeeded', a: a};
+};
 var $author$project$Resource$find = F2(
 	function (pred, list) {
 		return $elm$core$List$head(
 			A2($elm$core$List$filter, pred, list));
 	});
+var $author$project$Resource$Types$getResourceNeeded = function (_v0) {
+	var i = _v0.a;
+	return i;
+};
 var $elm$core$Basics$modBy = _Basics_modBy;
 var $author$project$Resource$flip = function (_v0) {
 	var a = _v0.a;
@@ -11956,51 +11985,56 @@ var $author$project$Resource$packagesByValueDesc = function (resource) {
 			A2($elm$core$List$sortBy, $elm$core$Tuple$first, resource.packages.list)));
 };
 var $author$project$Resource$packagesNeeded = F3(
-	function (resource, given0, needed0) {
-		var rem0 = needed0 - given0;
+	function (resource, given, neededTotal) {
 		var pkgList = $author$project$Resource$packagesByValueDesc(resource);
-		var maxPkg = function (rem) {
+		var needed0 = $author$project$Resource$Types$ResourceNeeded(
+			$author$project$Resource$Types$getResourceNeededTotal(neededTotal) - $author$project$Resource$Types$getResourceGiven(given));
+		var minValue = resource.packages.toInt(resource.minimum);
+		var roundUpNeeded = (!A2(
+			$elm$core$Basics$modBy,
+			minValue,
+			$author$project$Resource$Types$getResourceNeeded(needed0))) ? needed0 : $author$project$Resource$Types$ResourceNeeded(
+			minValue * ((($author$project$Resource$Types$getResourceNeeded(needed0) / minValue) | 0) + 1));
+		var maxPkg = function (needed) {
 			return A2(
 				$author$project$Resource$find,
 				A2(
 					$elm$core$Basics$composeL,
 					function (i) {
-						return _Utils_cmp(i, rem) < 1;
+						return _Utils_cmp(
+							i,
+							$author$project$Resource$Types$getResourceNeeded(needed)) < 1;
 					},
 					$elm$core$Tuple$second),
 				pkgList);
 		};
 		var loop = F2(
-			function (counts, rem) {
+			function (counts, needed) {
 				loop:
 				while (true) {
-					var _v0 = maxPkg(rem);
+					var _v0 = maxPkg(needed);
 					if (_v0.$ === 'Just') {
 						var _v1 = _v0.a;
 						var pkg = _v1.a;
 						var value = _v1.b;
-						var toAdd = (rem / value) | 0;
-						var newRem = A2($elm$core$Basics$modBy, value, rem);
+						var toAdd = ($author$project$Resource$Types$getResourceNeeded(needed) / value) | 0;
+						var newNeeded = $author$project$Resource$Types$ResourceNeeded(
+							A2(
+								$elm$core$Basics$modBy,
+								value,
+								$author$project$Resource$Types$getResourceNeeded(needed)));
 						var newCounts = A3($author$project$Dict$Count$add, pkg, toAdd, counts);
 						var $temp$counts = newCounts,
-							$temp$rem = newRem;
+							$temp$needed = newNeeded;
 						counts = $temp$counts;
-						rem = $temp$rem;
+						needed = $temp$needed;
 						continue loop;
 					} else {
-						if (!rem) {
-							return _Utils_Tuple2(counts, rem);
-						} else {
-							var min = resource.minimum;
-							var minVal = resource.packages.toInt(min);
-							var newCounts = A3($author$project$Dict$Count$add, min, 1, counts);
-							var excess = minVal - rem;
-							return _Utils_Tuple2(newCounts, excess);
-						}
+						return counts;
 					}
 				}
 			});
-		var counts0 = $author$project$Dict$Count$empty(resource.packages.toInt);
+		var counts0 = $author$project$Resource$Types$initPackageCounts(resource);
 		var addN = F2(
 			function (n, m) {
 				return $elm$core$Maybe$Just(
@@ -12014,7 +12048,14 @@ var $author$project$Resource$packagesNeeded = F3(
 							},
 							m)));
 			});
-		return (_Utils_cmp(given0, needed0) > -1) ? _Utils_Tuple2(counts0, 0) : A2(loop, counts0, rem0);
+		return (_Utils_cmp(
+			$author$project$Resource$Types$getResourceGiven(given),
+			$author$project$Resource$Types$getResourceNeededTotal(neededTotal)) > -1) ? _Utils_Tuple2(
+			counts0,
+			$author$project$Resource$Types$Excess(0)) : _Utils_Tuple2(
+			A2(loop, counts0, roundUpNeeded),
+			$author$project$Resource$Types$Excess(
+				$author$project$Resource$Types$getResourceNeeded(roundUpNeeded) - $author$project$Resource$Types$getResourceNeeded(needed0)));
 	});
 var $author$project$Resource$MVC$Controller$updateResource = F3(
 	function (resource, msg, model) {
@@ -12038,11 +12079,15 @@ var $author$project$Resource$MVC$Controller$updateResource = F3(
 		if (msg.$ === 'ChangeNeeded') {
 			var maybeNeeded = msg.a;
 			return updateNeeded(
-				verifyNum(maybeNeeded));
+				$author$project$Resource$Types$ResourceNeededTotal(
+					verifyNum(
+						A2($elm$core$Maybe$map, $author$project$Resource$Types$getResourceNeededTotal, maybeNeeded))));
 		} else {
 			var maybeGiven = msg.a;
 			return updateGiven(
-				verifyNum(maybeGiven));
+				$author$project$Resource$Types$ResourceGiven(
+					verifyNum(
+						A2($elm$core$Maybe$map, $author$project$Resource$Types$getResourceGiven, maybeGiven))));
 		}
 	});
 var $author$project$Structure$Controller$updateStructure = F2(
@@ -12255,6 +12300,8 @@ var $mdgriffith$elm_ui$Element$maximum = F2(
 	function (i, l) {
 		return A2($mdgriffith$elm_ui$Internal$Model$Max, i, l);
 	});
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
 var $author$project$Types$Msg$AddStructure = {$: 'AddStructure'};
 var $mdgriffith$elm_ui$Internal$Model$Right = {$: 'Right'};
 var $mdgriffith$elm_ui$Element$alignRight = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Right);
@@ -12470,8 +12517,6 @@ var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
 	return {$: 'Px', a: a};
 };
 var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
-var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
-var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
 var $elm$core$List$all = F2(
 	function (isOkay, list) {
 		return !A2(
@@ -12507,30 +12552,31 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 };
 var $author$project$Main$View$columnHelper = F3(
 	function (columnAttrs, heading, list) {
-		return A2($elm$core$List$all, $author$project$Main$View$isNothing, list) ? $mdgriffith$elm_ui$Element$none : A2(
-			$mdgriffith$elm_ui$Element$column,
+		return A2($elm$core$List$all, $author$project$Main$View$isNothing, list) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				$mdgriffith$elm_ui$Element$column,
 				A2(
 					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$padding(10),
-					columnAttrs)),
-			_List_fromArray(
-				[
-					heading,
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 					A2(
-					$mdgriffith$elm_ui$Element$column,
-					_List_fromArray(
-						[
-							$mdgriffith$elm_ui$Element$padding(20),
-							$mdgriffith$elm_ui$Element$spacing(10)
-						]),
-					A2(
-						$elm$core$List$map,
-						$elm$core$Maybe$withDefault($mdgriffith$elm_ui$Element$none),
-						list))
-				]));
+						$elm$core$List$cons,
+						$mdgriffith$elm_ui$Element$padding(10),
+						columnAttrs)),
+				_List_fromArray(
+					[
+						heading,
+						A2(
+						$mdgriffith$elm_ui$Element$column,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$padding(20),
+								$mdgriffith$elm_ui$Element$spacing(10)
+							]),
+						A2(
+							$elm$core$List$map,
+							$elm$core$Maybe$withDefault($mdgriffith$elm_ui$Element$none),
+							list))
+					])));
 	});
 var $mdgriffith$elm_ui$Internal$Model$Left = {$: 'Left'};
 var $mdgriffith$elm_ui$Element$alignLeft = $mdgriffith$elm_ui$Internal$Model$AlignX($mdgriffith$elm_ui$Internal$Model$Left);
@@ -12704,8 +12750,7 @@ var $author$project$Main$View$packageListElement = function (counts) {
 				$mdgriffith$elm_ui$Element$Region$heading(2)
 			]),
 		$mdgriffith$elm_ui$Element$text('Packages needed:'));
-	return A2($elm$core$List$all, $author$project$Main$View$isNothing, resElems) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-		A3($author$project$Main$View$columnHelper, _List_Nil, heading, resElems));
+	return A3($author$project$Main$View$columnHelper, _List_Nil, heading, resElems);
 };
 var $author$project$Types$Msg$RemoveStructure = function (a) {
 	return {$: 'RemoveStructure', a: a};
@@ -12816,6 +12861,8 @@ var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
 	return {$: 'HiddenLabel', a: a};
 };
 var $mdgriffith$elm_ui$Element$Input$labelHidden = $mdgriffith$elm_ui$Element$Input$HiddenLabel;
+var $author$project$Resource$Types$showResourceGiven = A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $author$project$Resource$Types$getResourceGiven);
+var $author$project$Resource$Types$showResourceNeededTotal = A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $author$project$Resource$Types$getResourceNeededTotal);
 var $mdgriffith$elm_ui$Element$Input$TextInputNode = function (a) {
 	return {$: 'TextInputNode', a: a};
 };
@@ -13769,10 +13816,13 @@ var $author$project$Resource$MVC$View$resourceRow = F4(
 							label('given')),
 						onChange: A2(
 							$elm$core$Basics$composeL,
-							A2($elm$core$Basics$composeL, conv, $author$project$Types$Msg$ChangeGiven),
+							A2(
+								$elm$core$Basics$composeL,
+								A2($elm$core$Basics$composeL, conv, $author$project$Types$Msg$ChangeGiven),
+								$elm$core$Maybe$map($author$project$Resource$Types$ResourceGiven)),
 							$elm$core$String$toInt),
 						placeholder: $elm$core$Maybe$Nothing,
-						text: $elm$core$String$fromInt(model.given)
+						text: $author$project$Resource$Types$showResourceGiven(model.given)
 					})),
 			name: A2(
 				$mdgriffith$elm_ui$Element$el,
@@ -13790,10 +13840,13 @@ var $author$project$Resource$MVC$View$resourceRow = F4(
 							label('needed')),
 						onChange: A2(
 							$elm$core$Basics$composeL,
-							A2($elm$core$Basics$composeL, conv, $author$project$Types$Msg$ChangeNeeded),
+							A2(
+								$elm$core$Basics$composeL,
+								A2($elm$core$Basics$composeL, conv, $author$project$Types$Msg$ChangeNeeded),
+								$elm$core$Maybe$map($author$project$Resource$Types$ResourceNeededTotal)),
 							$elm$core$String$toInt),
 						placeholder: $elm$core$Maybe$Nothing,
-						text: $elm$core$String$fromInt(model.needed)
+						text: $author$project$Resource$Types$showResourceNeededTotal(model.needed)
 					}))
 		};
 	});
@@ -14294,12 +14347,12 @@ var $author$project$Main$View$totalListElement = function (counts) {
 				$mdgriffith$elm_ui$Element$Region$heading(3)
 			]),
 		$mdgriffith$elm_ui$Element$text('Resources needed:'));
-	return A2($elm$core$List$all, $author$project$Main$View$isNothing, resElems) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-		A3($author$project$Main$View$columnHelper, _List_Nil, header, resElems));
+	return A3($author$project$Main$View$columnHelper, _List_Nil, header, resElems);
 };
+var $author$project$Resource$Types$showExcess = A2($elm$core$Basics$composeL, $elm$core$String$fromInt, $author$project$Resource$Types$getExcess);
 var $author$project$Main$View$wastedListResElement = F2(
 	function (resource, excess) {
-		return (!excess) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+		return (!$author$project$Resource$Types$getExcess(excess)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 			A2(
 				$mdgriffith$elm_ui$Element$row,
 				_List_fromArray(
@@ -14327,7 +14380,7 @@ var $author$project$Main$View$wastedListResElement = F2(
 							_List_fromArray(
 								[$mdgriffith$elm_ui$Element$alignRight]),
 							$mdgriffith$elm_ui$Element$text(
-								$elm$core$String$fromInt(excess))))
+								$author$project$Resource$Types$showExcess(excess))))
 					])));
 	});
 var $author$project$Main$View$wastedListElement = function (totalCounts) {
@@ -14387,8 +14440,7 @@ var $author$project$Main$View$wastedListElement = function (totalCounts) {
 				$mdgriffith$elm_ui$Element$Region$heading(3)
 			]),
 		$mdgriffith$elm_ui$Element$text('Resources wasted:'));
-	return A2($elm$core$List$all, $author$project$Main$View$isNothing, resElems) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-		A3($author$project$Main$View$columnHelper, _List_Nil, header, resElems));
+	return A3($author$project$Main$View$columnHelper, _List_Nil, header, resElems);
 };
 var $author$project$Main$View$totalsColumn = function (totalCounts) {
 	var wasted = $author$project$Main$View$wastedListElement(totalCounts);
@@ -14423,7 +14475,10 @@ var $author$project$Main$View$view = function (model) {
 			[
 				$author$project$Main$View$mainTitle,
 				$author$project$Main$View$structsElement(model.structDict),
-				$author$project$Main$View$totalsColumn(model.totalCounts)
+				A2(
+				$elm$core$Maybe$withDefault,
+				$mdgriffith$elm_ui$Element$none,
+				$author$project$Main$View$totalsColumn(model.totalCounts))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$sandbox(

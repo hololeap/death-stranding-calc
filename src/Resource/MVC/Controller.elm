@@ -1,7 +1,13 @@
 module Resource.MVC.Controller exposing (..)
 
 import Resource exposing (packagesNeeded)
-import Resource.Types exposing (Resource)
+import Resource.Types exposing 
+    ( Resource
+    , ResourceNeededTotal(..)
+    , getResourceNeededTotal
+    , ResourceGiven(..)
+    , getResourceGiven
+    )
 import Resource.MVC.Model exposing (ResourceModel)
 
 import Types.Msg exposing (ResourceMsg(..))
@@ -26,6 +32,12 @@ updateResource resource msg model =
     in
         case msg of
             ChangeNeeded maybeNeeded ->
-                updateNeeded <| verifyNum maybeNeeded
+                updateNeeded 
+                    <| ResourceNeededTotal
+                    <| verifyNum
+                    <| Maybe.map getResourceNeededTotal maybeNeeded
             ChangeGiven maybeGiven ->
-                updateGiven <| verifyNum maybeGiven
+                updateGiven 
+                    <| ResourceGiven
+                    <| verifyNum
+                    <| Maybe.map getResourceGiven maybeGiven

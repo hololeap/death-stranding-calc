@@ -40,7 +40,7 @@ view model = column
     ]
     [ mainTitle
     , structsElement model.structDict
-    , totalsColumn model.totalCounts
+    , Maybe.withDefault Element.none (totalsColumn model.totalCounts)
     ]
     
 mainTitle : Element Msg
@@ -51,7 +51,7 @@ mainTitle =
         ]
         (Element.text "Death Stranding Structure Calc")
 
-totalsColumn : TotalCounts -> Element Msg
+totalsColumn : TotalCounts -> Maybe (Element Msg)
 totalsColumn totalCounts =
     let
         heading =
@@ -84,14 +84,11 @@ wastedListElement totalCounts =
                 [Region.heading 3
                 ] 
                 (Element.text "Resources wasted:")
-    in 
-        if List.all isNothing resElems
-            then Nothing
-            else Just <| columnHelper [] header resElems        
+    in columnHelper [] header resElems        
         
 wastedListResElement : Resource r -> Excess -> Maybe (Element Msg)
 wastedListResElement resource excess =
-    if excess == 0
+    if getExcess excess == 0
         then Nothing
         else Just <|
             Element.row
@@ -104,7 +101,7 @@ wastedListResElement resource excess =
                     [Element.width Element.fill] 
                     (el 
                         [Element.alignRight]
-                        (Element.text (String.fromInt excess))
+                        (Element.text (showExcess excess))
                     )
                 ]
 totalListElement : PackageCountsAll -> Maybe (Element Msg)
@@ -125,10 +122,7 @@ totalListElement counts =
                 [Region.heading 3
                 ] 
                 (Element.text "Resources needed:")
-    in 
-        if List.all isNothing resElems
-            then Nothing
-            else Just <| columnHelper [] header resElems
+    in columnHelper [] header resElems
 
 totalListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 totalListResElement resource counts =
@@ -167,11 +161,7 @@ packageListElement counts =
             ]
         heading =
             el [Region.heading 2] (Element.text "Packages needed:")
-    in 
-        if List.all isNothing resElems
-            then Nothing
-            else Just <|
-                columnHelper [] heading resElems
+    in columnHelper [] heading resElems
         
 packageListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 packageListResElement resource counts =
@@ -219,11 +209,11 @@ columnHelper
     :  List (Element.Attribute Msg) -- Extra attributes for column
     -> Element Msg -- Heading
     -> List (Maybe (Element Msg))
-    -> Element Msg
+    -> Maybe (Element Msg)
 columnHelper columnAttrs heading list =
     if List.all isNothing list
-        then Element.none
-        else
+        then Nothing
+        else Just <|
             column 
                 (    Element.width Element.fill
                   :: Element.padding 10
