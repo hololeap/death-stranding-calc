@@ -41,14 +41,19 @@ view model = column
     , Font.size 20
     , Element.spacing 20
     ]
-    [ mainTitle
+    [ el [] Element.none
+    , mainTitle
     , structsElement model.structDict
-    , el 
-        [ Element.padding 20
-        , Element.width Element.fill
-        , Background.color (Element.rgb255 230 230 230)
-        ] 
-        (Maybe.withDefault Element.none (totalsColumn model.totalCounts))
+    , Maybe.withDefault Element.none 
+        <| Maybe.map 
+            ( el 
+                    [ Element.padding 20
+                    , Element.width Element.fill
+                    , Background.color (Element.rgb255 230 230 230)
+                    ]
+            )
+        <| totalsColumn model.totalCounts
+    , el [] Element.none
     ]
     
 mainTitle : Element Msg
@@ -71,7 +76,7 @@ totalsColumn totalCounts =
         [ Region.heading 2
         , Font.underline
         ]    
-        [Element.spacing 20] 
+        [Element.padding 20] 
         heading 
         [totalPkgs, totalRes, wasted]
 
@@ -212,23 +217,21 @@ columnHelper headingAttrs columnAttrs heading list =
         then Nothing
         else Just <|
             column 
-                (    Element.spacing 10
-                  :: Element.padding 10
+                (    Element.spacing 30
+                  :: Border.width 1
                   :: Element.width Element.fill
                   :: columnAttrs
                 )
                 [ el 
-                    ( Element.padding 5
+                    ( Element.paddingXY 0 0
                       :: headingAttrs
                     )
                     heading
                 , column
-                    [ Element.paddingXY 10 0
+                    [ Element.paddingXY 15 10
                     , Element.moveRight 15
-                    , Element.spacing 10
+                    , Element.spacing 20
                     , Element.width Element.fill
-                    , Element.centerX
-                    , Element.centerY
                     ] 
                     (List.map (Maybe.withDefault Element.none) list)
                 ]                
@@ -253,13 +256,12 @@ structList = List.map structElem << AutoIncDict.values
 structElem : Structure -> Element Msg
 structElem struct =
     let list = packageListElement (structurePackageCounts struct)
-    in
+    in 
         column structAttrs
             [ el [Element.centerX] (structureView struct)
             , removeButton struct.key
             , el 
-                [ Element.padding 20
-                , Element.width Element.fill
+                [ Element.width Element.fill
                 ] 
                 (Maybe.withDefault Element.none list)
             ]
@@ -269,7 +271,7 @@ structAttrs =
     [ Element.spacing 10
     , Border.width 2
     , Element.width Element.fill
-    , Element.padding 10
+    , Element.padding 20
     ]
     
 addButton : Element Msg

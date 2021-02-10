@@ -28,7 +28,6 @@ structureNameElem struct =
                 [ Region.heading 2
                 , Element.centerX
                 , Font.underline
-                , Element.padding 20
                 , Events.onClick
                     <| fromRenameStructureMsg struct.key
                     <| EditStructureName
@@ -115,7 +114,6 @@ structureNameElem struct =
                     [ Element.width Element.fill
                     , Element.centerX
                     , Element.spacing 5
-                    , Element.padding 10
                     ]
                     [ nameInput
                     , acceptButton
