@@ -3,6 +3,7 @@ module Main.View exposing
     )
     
 import Element exposing (Element, el, column)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
@@ -37,10 +38,17 @@ view : Model -> Element Msg
 view model = column
     [ Element.width <| Element.maximum 500 <| Element.fill
     , Element.centerX
+    , Font.size 20
+    , Element.spacing 20
     ]
     [ mainTitle
     , structsElement model.structDict
-    , Maybe.withDefault Element.none (totalsColumn model.totalCounts)
+    , el 
+        [ Element.padding 20
+        , Element.width Element.fill
+        , Background.color (Element.rgb255 230 230 230)
+        ] 
+        (Maybe.withDefault Element.none (totalsColumn model.totalCounts))
     ]
     
 mainTitle : Element Msg
@@ -54,17 +62,18 @@ mainTitle =
 totalsColumn : TotalCounts -> Maybe (Element Msg)
 totalsColumn totalCounts =
     let
-        heading =
-            el
-                [ Region.heading 2
-                , Font.underline
-                ]
-                (Element.text "Totals")
+        heading = Element.text "Totals"
         pkgCounts = totalCountsPackageCounts totalCounts
         totalPkgs = packageListElement pkgCounts
         totalRes = totalListElement pkgCounts
         wasted = wastedListElement totalCounts
-    in columnHelper [] heading [totalPkgs, totalRes, wasted]
+    in columnHelper
+        [ Region.heading 2
+        , Font.underline
+        ]    
+        [Element.spacing 20] 
+        heading 
+        [totalPkgs, totalRes, wasted]
 
 wastedListElement : TotalCounts -> Maybe (Element Msg)
 wastedListElement totalCounts =
@@ -79,12 +88,8 @@ wastedListElement totalCounts =
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
-        header =
-            el 
-                [Region.heading 3
-                ] 
-                (Element.text "Resources wasted:")
-    in columnHelper [] header resElems        
+        header = Element.text "Resources wasted:"
+    in columnHelper [Region.heading 3] [] header resElems        
         
 wastedListResElement : Resource r -> Excess -> Maybe (Element Msg)
 wastedListResElement resource excess =
@@ -117,12 +122,8 @@ totalListElement counts =
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
-        header =
-            el 
-                [Region.heading 3
-                ] 
-                (Element.text "Resources needed:")
-    in columnHelper [] header resElems
+        header = Element.text "Resources needed:"
+    in columnHelper [Region.heading 3] [] header resElems
 
 totalListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 totalListResElement resource counts =
@@ -159,9 +160,12 @@ packageListElement counts =
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
-        heading =
-            el [Region.heading 2] (Element.text "Packages needed:")
-    in columnHelper [] heading resElems
+        heading = Element.text "Packages needed:"
+    in columnHelper 
+        [Region.heading 2]
+        [] 
+        heading 
+        resElems
         
 packageListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 packageListResElement resource counts =
@@ -169,7 +173,9 @@ packageListResElement resource counts =
         pkgList =
             Resource.packagesNeededByValueDesc resource counts
         pkgElement (pkg, count) =
-            Element.row [Element.width <| Element.maximum 490 <| Element.fill]
+            Element.row
+                [ Element.width Element.fill
+                ]
                 [ el 
                     [ Element.alignLeft
                     , Element.width (Element.px 200)
@@ -180,7 +186,7 @@ packageListResElement resource counts =
                     ]
                     (Element.text "✕")
                 , el 
-                    [ Element.width (Element.px 100)
+                    [ Element.width Element.fill
                     ]
                     ( el 
                         [ Element.alignRight
@@ -188,56 +194,57 @@ packageListResElement resource counts =
                         (Element.text (String.fromInt count))
                     )
                 ]
-        heading = el [Region.heading 3] (Element.text resource.name)
-    in
-        if List.isEmpty pkgList
-            then Nothing
-            else Just <|
-                column 
-                    [ Element.width Element.fill
-                    , Element.padding 10
-                    ]
-                    [ heading
-                    , column
-                        [ Element.padding 20
-                        , Element.spacing 10
-                        ] 
-                        (List.map pkgElement pkgList)
-                    ]
-
+        heading = Element.text resource.name
+    in columnHelper 
+        [ Region.heading 3 ]
+        [] 
+        heading 
+        (List.map (Just << pkgElement) pkgList)
+    
 columnHelper
-    :  List (Element.Attribute Msg) -- Extra attributes for column
+    :  List (Element.Attribute Msg) -- Extra attributes for header
+    -> List (Element.Attribute Msg) -- Extra attributes for column
     -> Element Msg -- Heading
     -> List (Maybe (Element Msg))
     -> Maybe (Element Msg)
-columnHelper columnAttrs heading list =
+columnHelper headingAttrs columnAttrs heading list =
     if List.all isNothing list
         then Nothing
         else Just <|
             column 
-                (    Element.width Element.fill
+                (    Element.spacing 10
                   :: Element.padding 10
+                  :: Element.width Element.fill
                   :: columnAttrs
                 )
-                [ heading
+                [ el 
+                    ( Element.padding 5
+                      :: headingAttrs
+                    )
+                    heading
                 , column
-                    [ Element.padding 20
+                    [ Element.paddingXY 10 0
+                    , Element.moveRight 15
                     , Element.spacing 10
+                    , Element.width Element.fill
+                    , Element.centerX
+                    , Element.centerY
                     ] 
                     (List.map (Maybe.withDefault Element.none) list)
                 ]                
             
 structsElement : AutoIncDict Structure -> Element Msg
 structsElement dict =
-    column [Element.width (Element.px 490)]
+    column 
+        [Element.width Element.fill, Element.spacing 20]
         [ column structsElementAttrs (structList dict)
         , addButton
         ]
 
 structsElementAttrs : List (Element.Attribute Msg)
 structsElementAttrs =
-    [ Element.padding 20
-    , Element.spacing 10
+    [ Element.spacing 10
+    , Element.width Element.fill
     ]
         
 structList : AutoIncDict Structure -> List (Element Msg)
@@ -248,17 +255,21 @@ structElem struct =
     let list = packageListElement (structurePackageCounts struct)
     in
         column structAttrs
-            [ el [] (structureView struct)
+            [ el [Element.centerX] (structureView struct)
             , removeButton struct.key
-            , Maybe.withDefault Element.none list
+            , el 
+                [ Element.padding 20
+                , Element.width Element.fill
+                ] 
+                (Maybe.withDefault Element.none list)
             ]
 
 structAttrs : List (Element.Attribute Msg)
 structAttrs =
-    [ Element.padding 15
-    , Element.spacing 10
-    , Border.solid
+    [ Element.spacing 10
     , Border.width 2
+    , Element.width Element.fill
+    , Element.padding 10
     ]
     
 addButton : Element Msg
@@ -277,8 +288,7 @@ removeButton key =
 
 buttonAttrs : List (Element.Attribute Msg)
 buttonAttrs =
-    [ Border.solid
-    , Border.width 1
+    [ Border.width 1
     , Border.rounded 5
     , Element.padding 5
     ]

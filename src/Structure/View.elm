@@ -1,6 +1,7 @@
 module Structure.View exposing (structureView)
 
 import Element exposing (Element, el, fill, table, column, centerX)
+import Element.Border as Border
 import Element.Font as Font
 import Element.Keyed as Keyed
 import Element.Region as Region
@@ -19,7 +20,7 @@ import Resource.Types exposing (..)
 import Resource exposing (..)
 
 import Structure.Model exposing (Structure)
---import Structure.Controller exposing (StructureMsg(..))
+import Structure.Rename.View exposing (structureNameElem)
 
 import Resource.MVC.View exposing (ResourceRow, resourceRow)
 
@@ -49,27 +50,33 @@ structureView struct =
             , Font.variant Font.smallCaps
             , Font.size 14
             ]
+        headerElem text =
+            el
+                ( Element.centerX
+                  :: headerFont
+                )
+                (Element.text text)
     in
-        Keyed.column []
+        Keyed.column [Element.width Element.fill]
             [ ( struct.key ++ "-heading"
-              , el [Region.heading 2, centerX, Font.underline] (Element.text struct.name)
+              , structureNameElem struct
               )
             , ( struct.key ++ "-table"
               , table [Element.spacing 10, Element.padding 15]
                     { data = resRows
                     , columns =
-                        [ { header = el headerFont (Element.text "Resource")
-                        , width = fill
-                        , view = .name
-                        }
-                        , { header = el headerFont (Element.text "Given")
-                        , width = fill
-                        , view = .given
-                        }
-                        , { header = el headerFont (Element.text "Needed")
-                        , width = fill
-                        , view = .needed
-                        }
+                        [ { header = el [] (headerElem "Resource")
+                          , width = fill
+                          , view = .name
+                          }
+                        , { header = el [] (headerElem "Given")
+                          , width = fill
+                          , view = .given
+                          }
+                        , { header = el [] (headerElem "Needed")
+                          , width = fill
+                          , view = .needed
+                          }
                         ]
                     }
                 )

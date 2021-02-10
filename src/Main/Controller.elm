@@ -9,6 +9,7 @@ import Resource.MVC.Model exposing (ResourceModel)
 import Resource.Types exposing (Excess(..), getExcess)
 import Structure.Model exposing (..)
 import Structure.Controller exposing (..)
+import Structure.Rename.Controller exposing (renameStructure)
 
 import Types.Msg exposing (Msg(..))
 
@@ -47,18 +48,33 @@ update msg model =
             { structDict = dict
             , totalCounts = getTotalCounts dict
             }
-        onResourceChange change =
-            AutoIncDict.update
+        onResourceChange change = 
+            updateCounts
+            <| AutoIncDict.update
                 change.structureKey
                 (Maybe.map (updateStructure change.structureMsg))
                 model.structDict
-        onAddStructure =
-            AutoIncDict.insertNeedingKeyInc initStructure model.structDict
-        onRemoveStructure label =
-            AutoIncDict.remove label model.structDict
-    in updateCounts (
-            case msg of
-                ResourceChange change -> onResourceChange change
-                AddStructure -> onAddStructure
-                RemoveStructure label -> onRemoveStructure label
-        )
+        onAddStructure = 
+            updateCounts
+            <| AutoIncDict.insertNeedingKeyInc initStructure model.structDict
+        onRemoveStructure key = 
+            updateCounts
+            <| AutoIncDict.remove key model.structDict
+        doRename renameMsg struct =
+            { struct
+            | name = renameStructure renameMsg struct.name
+            }
+        onRenameStructure key renameMsg = 
+            { model
+            | structDict = 
+                AutoIncDict.update
+                    key
+                    (Maybe.map (doRename renameMsg))
+                    model.structDict
+            }
+    in 
+        case msg of
+            ResourceChange change -> onResourceChange change
+            AddStructure -> onAddStructure
+            RemoveStructure key -> onRemoveStructure key
+            RenameStructure key renameMsg -> onRenameStructure key renameMsg
