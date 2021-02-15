@@ -17,7 +17,7 @@ import Palette.Colors as Colors
 import Types.Msg exposing (Msg)
 
 body : Element Msg -> Element Msg
-body = el 
+body = el
     [ Background.color Colors.black
     , Element.width Element.fill
     , Element.height Element.fill

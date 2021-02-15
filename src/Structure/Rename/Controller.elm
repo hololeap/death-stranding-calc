@@ -15,7 +15,7 @@ import Structure.Rename.Model exposing
 renameStructure : RenameStructureMsg -> StructureName -> StructureName
 renameStructure msg structName =
     case msg of
-        EditStructureName newName -> 
+        EditStructureName newName ->
             case structName of
                 StructureName name ->
                     RenamingStructure
@@ -26,11 +26,11 @@ renameStructure msg structName =
         AcceptStructureName ->
             case structName of
                 StructureName _ -> structName
-                RenamingStructure _ newName -> 
+                RenamingStructure _ newName ->
                     StructureName (getNewStructureName newName)
         CancelRenameStructure ->
             case structName of
                 StructureName _ -> structName
                 RenamingStructure oldName _ ->
                     StructureName (getOldStructureName oldName)
-        
+

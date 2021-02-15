@@ -12,7 +12,7 @@ import Element.Input as Input
 import Html.Attributes
 
 import Structure.Model exposing (Structure)
-import Structure.Rename.Model exposing 
+import Structure.Rename.Model exposing
     (StructureName(..), getOldStructureName)
 
 import Resource.Types exposing
@@ -38,7 +38,7 @@ type alias ResourceRow =
     , needed : Element Msg
     }
 
-resourceRow 
+resourceRow
     :  Structure
     -> FromResourceMsg r
     -> Resource r
@@ -76,14 +76,14 @@ resourceRow struct conv resource model =
                         , description = ""
                         }
                     )
-                , el 
+                , el
                     ( Element.alignRight
                     :: Element.width Element.fill
                     :: resourceLabelFont
                     )
                     (el [Element.alignRight] (Element.text resource.name))
                 ]
-        , given = el [inputFontColor (getResourceGiven model.given)] 
+        , given = el [inputFontColor (getResourceGiven model.given)]
             ( Input.text givenAttrs
                 { onChange = conv
                     << ChangeGiven
@@ -92,11 +92,11 @@ resourceRow struct conv resource model =
                 , text = showResourceGiven model.given
                 , placeholder = Nothing
                 , label = Input.labelHidden (label "given")
-                } 
+                }
             )
         , needed = el [inputFontColor (getResourceNeededTotal model.needed)]
             ( Input.text neededAttrs
-                { onChange = conv 
+                { onChange = conv
                     << ChangeNeeded
                     << Maybe.map ResourceNeededTotal
                     << String.toInt

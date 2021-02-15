@@ -6,7 +6,7 @@ module Types.Msg exposing
     , fromStructureMsg
     , ResourceMsg(..)
     , FromResourceMsg
-    ) 
+    )
 
 import Dict.AutoInc as AutoIncDict
 
@@ -36,22 +36,22 @@ type RenameStructureMsg
 
 fromRenameStructureMsg : AutoIncDict.Key -> RenameStructureMsg -> Msg
 fromRenameStructureMsg = RenameStructure
-    
+
 type StructureMsg
     = ChiralCrystalsMsg (ResourceMsg ChiralCrystals)
-    | ResinsMsg (ResourceMsg Resins)    
+    | ResinsMsg (ResourceMsg Resins)
     | MetalMsg (ResourceMsg Metal)
     | CeramicsMsg (ResourceMsg Ceramics)
     | ChemicalsMsg (ResourceMsg Chemicals)
     | SpecialAlloysMsg (ResourceMsg SpecialAlloys)
-    
+
 fromStructureMsg : AutoIncDict.Key -> StructureMsg -> Msg
 fromStructureMsg key msg =
     ResourceChange
         { structureKey = key
         , structureMsg = msg
         }
-        
+
 -- Events for changing state on a ResourceModel
 type ResourceMsg r
     = ChangeNeeded (Maybe ResourceNeededTotal)

@@ -54,12 +54,12 @@ resourceTotal resource dict =
 resourceWeight : Resource r -> PackageCounts r -> Weight
 resourceWeight resource dict =
     Weight <| toFloat (resourceTotal resource dict) * getWeight resource.weight
-    
+
 printResourceTotal : Resource r -> PackageCounts r -> String
 printResourceTotal resource dict =
     resource.name ++ ": " ++ String.fromInt (resourceTotal resource dict)
-    
-    
+
+
 
 packagesNeeded
     :  Resource r
@@ -69,18 +69,18 @@ packagesNeeded
 packagesNeeded resource given neededTotal =
     let
         counts0 = initPackageCounts resource
-        needed0 = ResourceNeeded 
+        needed0 = ResourceNeeded
             (getResourceNeededTotal neededTotal - getResourceGiven given)
         pkgList = packagesByValueDesc resource
 
-        maxPkg needed = find 
+        maxPkg needed = find
             ((\i -> i <= getResourceNeeded needed) << second)
             pkgList
         addN n m =
             Just <| Maybe.withDefault n <| Maybe.map (\old -> (old + n)) m
-        
+
         minValue = resource.packages.toInt resource.minimum
-        
+
         -- For best results, we round modifiedRem up to the next whole multiple
         -- of the smallest package value.
         roundUpNeeded =
@@ -88,24 +88,24 @@ packagesNeeded resource given neededTotal =
                 then needed0
                 else ResourceNeeded <|
                     minValue * (getResourceNeeded needed0 // minValue + 1)
-        
+
         loop : PackageCounts r -> ResourceNeeded -> PackageCounts r
-        loop counts needed =                
+        loop counts needed =
             case maxPkg needed of
                 Just (pkg, value) ->
                     let
                         toAdd = getResourceNeeded needed // value
-                        newNeeded = ResourceNeeded 
+                        newNeeded = ResourceNeeded
                             (modBy value (getResourceNeeded needed))
                         newCounts = CountDict.add pkg toAdd counts
-                    in loop newCounts newNeeded -- Continue recursion            
+                    in loop newCounts newNeeded -- Continue recursion
                 Nothing -> counts
     in
         if getResourceGiven given >= getResourceNeededTotal neededTotal
             then (counts0, Excess 0)
-            else 
+            else
                 ( loop counts0 roundUpNeeded
-                , Excess 
+                , Excess
                     ( getResourceNeeded roundUpNeeded
                     - getResourceNeeded needed0
                     )
@@ -114,7 +114,7 @@ packagesNeeded resource given neededTotal =
 packagesNeededByValueDesc : Resource r -> PackageCounts r -> List (r, Int)
 packagesNeededByValueDesc resource =
     sortByValueDesc resource << CountDict.toList
-            
+
 packagesByValueDesc : Resource r -> List (r, Value)
 packagesByValueDesc resource =
     List.map flip <| List.reverse <| List.sortBy first resource.packages.list
@@ -123,8 +123,8 @@ packagesByValueDesc resource =
 -- each package's value.
 sortByValueDesc : Resource r -> List (r, a) -> List (r, a)
 sortByValueDesc resource list =
-    List.reverse <| List.sortBy (resource.packages.toInt << first) list    
-    
+    List.reverse <| List.sortBy (resource.packages.toInt << first) list
+
 find : (a -> Bool) -> List a -> Maybe a
 find pred list = List.head <| List.filter pred list
 

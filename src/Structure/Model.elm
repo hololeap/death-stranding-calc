@@ -3,7 +3,7 @@ module Structure.Model exposing
     , initStructure
     , structurePackageCounts
     )
-    
+
 import Dict.AutoInc as AutoIncDict
 import Dict.Count as CountDict
 
@@ -30,7 +30,7 @@ type alias Structure =
     , chemicals : ResourceModel Chemicals
     , specialAlloys : ResourceModel SpecialAlloys
     }
-    
+
 initStructure : Int -> AutoIncDict.Key -> Structure
 initStructure inc key =
     { name = StructureName ("Structure " ++ String.fromInt inc)
@@ -38,7 +38,7 @@ initStructure inc key =
     , chiralCrystals = initResourceModel chiralCrystalsResource
     , resins = initResourceModel resinsResource
     , metal = initResourceModel metalResource
-    , ceramics = initResourceModel ceramicsResource    
+    , ceramics = initResourceModel ceramicsResource
     , chemicals = initResourceModel chemicalsResource
     , specialAlloys = initResourceModel specialAlloysResource
     }

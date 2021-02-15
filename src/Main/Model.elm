@@ -32,10 +32,10 @@ initCombinedCounts resource =
     { pkgs = initPackageCounts resource
     , excess = Excess 0
     }
-    
+
 type alias TotalCounts =
     { chiralCrystals : CombinedCounts ChiralCrystals
-    , resins : CombinedCounts Resins    
+    , resins : CombinedCounts Resins
     , metal : CombinedCounts Metal
     , ceramics : CombinedCounts Ceramics
     , chemicals : CombinedCounts Chemicals
@@ -47,7 +47,7 @@ initTotalCounts =
     { chiralCrystals = initCombinedCounts chiralCrystalsResource
     , resins = initCombinedCounts resinsResource
     , metal = initCombinedCounts metalResource
-    , ceramics = initCombinedCounts ceramicsResource    
+    , ceramics = initCombinedCounts ceramicsResource
     , chemicals = initCombinedCounts chemicalsResource
     , specialAlloys = initCombinedCounts specialAlloysResource
     }
@@ -62,11 +62,11 @@ totalCountsPackageCounts totalCounts =
     , specialAlloys = totalCounts.specialAlloys.pkgs
     }
 
-type alias Model = 
+type alias Model =
     { structDict : AutoIncDict Structure
     , totalCounts : TotalCounts
     }
-    
+
 init : Model
 init =
     { structDict = AutoIncDict.singletonNeedingKeyInc "structure" initStructure

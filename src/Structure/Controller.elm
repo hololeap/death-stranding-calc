@@ -2,8 +2,8 @@ module Structure.Controller exposing
     ( updateStructure
     )
 
-import Dict.AutoInc as AutoIncDict    
-   
+import Dict.AutoInc as AutoIncDict
+
 import Resource.ChiralCrystals exposing (chiralCrystalsResource)
 import Resource.Resins exposing (resinsResource)
 import Resource.Metal exposing (metalResource)
@@ -23,7 +23,7 @@ updateStructure : StructureMsg -> Structure -> Structure
 updateStructure mainMsg struct =
     let updateRes resource msg selector =
             updateResource resource msg (selector struct)
-    in 
+    in
         case mainMsg of
             ChiralCrystalsMsg msg ->
                 { struct
@@ -41,7 +41,7 @@ updateStructure mainMsg struct =
             CeramicsMsg msg ->
                 { struct
                 | ceramics = updateRes ceramicsResource msg .ceramics
-                }            
+                }
             ChemicalsMsg msg ->
                 { struct
                 | chemicals = updateRes chemicalsResource msg .chemicals

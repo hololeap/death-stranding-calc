@@ -6,7 +6,7 @@ type alias CountDict comparable k = AnyDict comparable k Int
 
 -- Add an element 'k' to the 'CountDict', 'n' number of times
 add : k -> Int -> CountDict comparable k -> CountDict comparable k
-add k n dict = 
+add k n dict =
     let addN = Just << Maybe.withDefault n << Maybe.map ((+) n)
     in Dict.update k addN dict
 
@@ -24,7 +24,7 @@ unions
     -> List (CountDict comparable k)
     -> CountDict comparable k
 unions = List.foldl union << empty
-    
+
 empty : (k -> comparable) -> CountDict comparable k
 empty = Dict.empty
 

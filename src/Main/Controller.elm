@@ -15,7 +15,7 @@ import Types.Msg exposing (Msg(..))
 
 import Main.Model exposing (Model, TotalCounts, CombinedCounts, initTotalCounts)
 
-appendResourceCounts 
+appendResourceCounts
     :  ResourceModel r
     -> CombinedCounts r
     -> CombinedCounts r
@@ -29,10 +29,10 @@ getTotalCounts dict =
     let append struct total =
             { chiralCrystals = appendResourceCounts
                 struct.chiralCrystals
-                total.chiralCrystals                
+                total.chiralCrystals
             , resins = appendResourceCounts struct.resins total.resins
             , metal = appendResourceCounts struct.metal total.metal
-            , ceramics = appendResourceCounts struct.ceramics total.ceramics            
+            , ceramics = appendResourceCounts struct.ceramics total.ceramics
             , chemicals = appendResourceCounts struct.chemicals total.chemicals
             , specialAlloys = appendResourceCounts
                 struct.specialAlloys
@@ -40,7 +40,7 @@ getTotalCounts dict =
             }
     in
         List.foldl append initTotalCounts <| AutoIncDict.values dict
-        
+
 update : Msg -> Model -> Model
 update msg model =
     let
@@ -48,31 +48,31 @@ update msg model =
             { structDict = dict
             , totalCounts = getTotalCounts dict
             }
-        onResourceChange change = 
+        onResourceChange change =
             updateCounts
             <| AutoIncDict.update
                 change.structureKey
                 (Maybe.map (updateStructure change.structureMsg))
                 model.structDict
-        onAddStructure = 
+        onAddStructure =
             updateCounts
             <| AutoIncDict.insertNeedingKeyInc initStructure model.structDict
-        onRemoveStructure key = 
+        onRemoveStructure key =
             updateCounts
             <| AutoIncDict.remove key model.structDict
         doRename renameMsg struct =
             { struct
             | name = renameStructure renameMsg struct.name
             }
-        onRenameStructure key renameMsg = 
+        onRenameStructure key renameMsg =
             { model
-            | structDict = 
+            | structDict =
                 AutoIncDict.update
                     key
                     (Maybe.map (doRename renameMsg))
                     model.structDict
             }
-    in 
+    in
         case msg of
             ResourceChange change -> onResourceChange change
             AddStructure -> onAddStructure

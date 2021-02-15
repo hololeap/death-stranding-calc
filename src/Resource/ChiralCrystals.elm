@@ -13,7 +13,7 @@ chiralCrystalsPackages =
             ChiralCrystals -> (1, ChiralCrystals)
         )
         ChiralCrystals
-        
+
 chiralCrystalsResource : Resource ChiralCrystals
 chiralCrystalsResource =
     { name = "Chiral crystals"

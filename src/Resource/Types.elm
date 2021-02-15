@@ -10,13 +10,13 @@ module Resource.Types exposing
     , showResourceGiven
     , ResourceNeededTotal(..)
     , getResourceNeededTotal
-    , showResourceNeededTotal    
+    , showResourceNeededTotal
     , ResourceNeeded(..)
     , getResourceNeeded
-    , showResourceNeeded    
+    , showResourceNeeded
     , Excess(..)
     , getExcess
-    , showExcess    
+    , showExcess
     , PackageCounts
     , initPackageCounts
     )

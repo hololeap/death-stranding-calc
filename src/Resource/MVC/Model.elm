@@ -1,4 +1,4 @@
-module Resource.MVC.Model exposing (..) 
+module Resource.MVC.Model exposing (..)
 
 import Dict.Count as CountDict
 
