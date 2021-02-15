@@ -2,7 +2,7 @@ module Resource.Chemicals exposing (..)
 
 import Enum exposing (fromIntIterator)
 
-import Resource.Types exposing (Packages, Resource)
+import Resource.Types exposing (Packages, Resource, Weight(..))
 
 type Chemicals
     = Chemicals30
@@ -33,4 +33,6 @@ chemicalsResource =
     , id = "chemicals"
     , packages = chemicalsPackages
     , minimum = Chemicals30
+    , image = "chemicals-transparent.png"
+    , weight = Weight 0.1
     }

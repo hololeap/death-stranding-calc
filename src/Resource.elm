@@ -3,6 +3,7 @@ module Resource exposing
     , initPackageCountsAll
     , printPackage
     , resourceTotal
+    , resourceWeight
     , printResourceTotal
     , packagesNeeded
     , packagesNeededByValueDesc
@@ -49,6 +50,10 @@ resourceTotal resource dict =
     let addValue (pkg, count) value =
             value + resource.packages.toInt pkg * count
     in List.foldl addValue 0 <| CountDict.toList dict
+
+resourceWeight : Resource r -> PackageCounts r -> Weight
+resourceWeight resource dict =
+    Weight <| toFloat (resourceTotal resource dict) * getWeight resource.weight
     
 printResourceTotal : Resource r -> PackageCounts r -> String
 printResourceTotal resource dict =

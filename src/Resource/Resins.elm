@@ -2,7 +2,7 @@ module Resource.Resins exposing (..)
 
 import Enum exposing (fromIntIterator)
 
-import Resource.Types exposing (Packages, Resource)
+import Resource.Types exposing (Packages, Resource, Weight(..))
 
 type Resins
     = Resins40
@@ -33,4 +33,6 @@ resinsResource =
     , id = "resins"
     , packages = resinsPackages
     , minimum = Resins40
+    , image = "resins-transparent.png"
+    , weight = Weight 0.1
     }

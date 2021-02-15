@@ -2,7 +2,7 @@ module Resource.ChiralCrystals exposing (..)
 
 import Enum exposing (fromIntIterator)
 
-import Resource.Types exposing (Packages, Resource)
+import Resource.Types exposing (Packages, Resource, Weight(..))
 
 type ChiralCrystals = ChiralCrystals
 
@@ -20,4 +20,6 @@ chiralCrystalsResource =
     , id = "chiralCrystals"
     , packages = chiralCrystalsPackages
     , minimum = ChiralCrystals
+    , image = "chiral-crystals-transparent.png"
+    , weight = Weight 0
     }

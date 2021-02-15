@@ -2,7 +2,7 @@ module Resource.Ceramics exposing (..)
 
 import Enum exposing (fromIntIterator)
 
-import Resource.Types exposing (Packages, Resource)
+import Resource.Types exposing (Packages, Resource, Weight(..))
 
 type Ceramics
     = Ceramics40
@@ -33,4 +33,6 @@ ceramicsResource =
     , id = "ceramics"
     , packages = ceramicsPackages
     , minimum = Ceramics40
+    , image = "ceramics-transparent.png"
+    , weight = Weight 0.1
     }

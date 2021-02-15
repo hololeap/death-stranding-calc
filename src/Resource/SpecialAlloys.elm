@@ -2,7 +2,7 @@ module Resource.SpecialAlloys exposing (..)
 
 import Enum exposing (fromIntIterator)
 
-import Resource.Types exposing (Packages, Resource)
+import Resource.Types exposing (Packages, Resource, Weight(..))
 
 type SpecialAlloys
     = SpecialAlloys60
@@ -33,4 +33,6 @@ specialAlloysResource =
     , id = "specialAlloys"
     , packages = specialAlloysPackages
     , minimum = SpecialAlloys60
+    , image = "special-alloys-transparent.png"
+    , weight = Weight 0.1
     }
