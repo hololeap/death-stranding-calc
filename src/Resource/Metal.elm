@@ -3,7 +3,7 @@ module Resource.Metal exposing (..)
 import Dict exposing (Dict)
 import Enum exposing (fromIntIterator)
 
-import Resource.Types exposing (Packages, Resource)
+import Resource.Types exposing (Packages, Resource, Weight(..))
 
 type Metal
     = Metal50
@@ -34,4 +34,6 @@ metalResource =
     , id = "metals"
     , packages = metalPackages
     , minimum = Metal50
+    , image = "metals-transparent.png"
+    , weight = Weight 0.1
     }

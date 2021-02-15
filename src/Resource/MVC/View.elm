@@ -2,13 +2,14 @@ module Resource.MVC.View exposing (ResourceRow, resourceRow)
 
 import Dict.AutoInc as AutoIncDict
 
-import Element exposing (Element, Attribute, el, htmlAttribute)
+import Element exposing (Element, Attr, Attribute, el, htmlAttribute)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 
 --import Html exposing (Attribute)
-import Html.Attributes exposing (..)
+import Html.Attributes
 
 import Structure.Model exposing (Structure)
 import Structure.Rename.Model exposing 
@@ -17,14 +18,19 @@ import Structure.Rename.Model exposing
 import Resource.Types exposing
     ( Resource
     , ResourceGiven(..)
+    , getResourceGiven
     , showResourceGiven
     , ResourceNeededTotal(..)
+    , getResourceNeededTotal
     , showResourceNeededTotal
     )
 import Resource.MVC.Model exposing (ResourceModel)
 --import Resource.MVC.Controller exposing (ResourceMsg(..))
 
 import Types.Msg exposing (Msg, ResourceMsg(..), FromResourceMsg)
+
+import Palette.Colors as Colors
+import Palette.Font.Size as FontSize
 
 type alias ResourceRow =
     { name : Element Msg
@@ -48,38 +54,57 @@ resourceRow struct conv resource model =
         label inputType =
             structName ++  " " ++ resource.name ++ " " ++ inputType
         resourceLabelFont =
-            [ Font.size 16
+            [ FontSize.small
             , Font.variant Font.smallCaps
             ]
-        
+        inputFontColor i =
+            if i <= 0
+                then Font.color Colors.lightBlue
+                else Font.color Colors.lightGrey
     in
-        { name = el 
-            [ Element.centerY
-            ]
-            ( el 
-                ( Element.alignRight
-                  :: resourceLabelFont
-                )
-                (Element.text resource.name)
+        { name =
+            Element.row
+                [ Element.width Element.fill
+                , Element.centerY
+                ]
+                [ el
+                    [ Element.padding 10
+                    ]
+                    ( Element.image
+                        [Element.height (Element.px 25)]
+                        { src = "/images/" ++ resource.image
+                        , description = ""
+                        }
+                    )
+                , el 
+                    ( Element.alignRight
+                    :: Element.width Element.fill
+                    :: resourceLabelFont
+                    )
+                    (el [Element.alignRight] (Element.text resource.name))
+                ]
+        , given = el [inputFontColor (getResourceGiven model.given)] 
+            ( Input.text givenAttrs
+                { onChange = conv
+                    << ChangeGiven
+                    << Maybe.map ResourceGiven
+                    << String.toInt
+                , text = showResourceGiven model.given
+                , placeholder = Nothing
+                , label = Input.labelHidden (label "given")
+                } 
             )
-        , given = el [] ( Input.text givenAttrs
-            { onChange = conv
-                << ChangeGiven
-                << Maybe.map ResourceGiven
-                << String.toInt
-            , text = showResourceGiven model.given
-            , placeholder = Nothing
-            , label = Input.labelHidden (label "given")
-            } )
-        , needed = el [] ( Input.text neededAttrs
-            { onChange = conv 
-                << ChangeNeeded
-                << Maybe.map ResourceNeededTotal
-                << String.toInt
-            , text = showResourceNeededTotal model.needed
-            , placeholder = Nothing
-            , label = Input.labelHidden (label "needed")
-            } )
+        , needed = el [inputFontColor (getResourceNeededTotal model.needed)]
+            ( Input.text neededAttrs
+                { onChange = conv 
+                    << ChangeNeeded
+                    << Maybe.map ResourceNeededTotal
+                    << String.toInt
+                , text = showResourceNeededTotal model.needed
+                , placeholder = Nothing
+                , label = Input.labelHidden (label "needed")
+                }
+            )
         }
 
 inputAttributes
@@ -97,8 +122,9 @@ inputAttributes key resource inputType =
 --            ]
 --        , placeholder "0"
         List.map htmlAttribute
-            [ type_ "number"
-            , size 4
+            [ Html.Attributes.type_ "number"
+            , Html.Attributes.size 4
             , Html.Attributes.min "0"
             , Html.Attributes.max "9999"
             ]
+        ++ [ Background.color Colors.darkBlue ]
