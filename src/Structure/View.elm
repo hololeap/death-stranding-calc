@@ -35,12 +35,12 @@ structureView struct =
     let
         mkResRow resConv =
             resourceRow struct (fromStructureMsg struct.key << resConv)
-        resRows = 
+        resRows =
             [ mkResRow
                 ChiralCrystalsMsg
                 chiralCrystalsResource
                 struct.chiralCrystals
-            , mkResRow ResinsMsg resinsResource struct.resins                
+            , mkResRow ResinsMsg resinsResource struct.resins
             , mkResRow MetalMsg metalResource struct.metal
             , mkResRow CeramicsMsg ceramicsResource struct.ceramics
             , mkResRow ChemicalsMsg chemicalsResource struct.chemicals
@@ -61,7 +61,7 @@ structureView struct =
                 )
                 (Element.text text)
     in
-        Keyed.column 
+        Keyed.column
             [ Element.width Element.fill
             , Element.spacing 15
             ]
@@ -69,7 +69,7 @@ structureView struct =
               , structureNameElem struct
               )
             , ( struct.key ++ "-table"
-              , table 
+              , table
                     [ Element.spacing 10
                     , Element.padding 15
                     , Border.width 1

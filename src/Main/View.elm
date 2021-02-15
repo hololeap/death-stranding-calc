@@ -1,7 +1,7 @@
 module Main.View exposing
     ( view
     )
-    
+
 import Element exposing (Element, el, column)
 import Element.Background as Background
 import Element.Border as Border
@@ -50,19 +50,19 @@ view model = column
     [ el [] Element.none
     , mainTitle
     , structsElement model.structDict
-    , Maybe.withDefault Element.none 
-        <| Maybe.map 
-            ( el 
+    , Maybe.withDefault Element.none
+        <| Maybe.map
+            ( el
                     [ Element.padding 20
                     , Element.width Element.fill
                     ]
             )
         <| totalsColumn model.totalCounts
-    , el [] Element.none        
+    , el [] Element.none
     , footer
     , el [] Element.none
     ]
-    
+
 mainTitle : Element Msg
 mainTitle =
     el
@@ -77,7 +77,7 @@ footer =
     let
         copyright = "Death Stranding is a trademark of Sony Interactive "
             ++ "Entertainment LLC."
-    in el 
+    in el
         [ FontSize.xSmall
         , Element.centerX
         , Font.italic
@@ -96,11 +96,11 @@ totalsColumn totalCounts =
     in columnHelper
         [ Region.heading 2
         , Font.underline
-        ]    
+        ]
         [Element.padding 20
         , Background.color Colors.black
-        ] 
-        heading 
+        ]
+        heading
         [totalPkgs, totalRes, wasted, weight]
 
 wastedListElement : TotalCounts -> Maybe (Element Msg)
@@ -118,11 +118,11 @@ wastedListElement totalCounts =
             ]
         header = Element.text "Resources wasted:"
     in columnHelper
-        [Region.heading 3] 
-        [Background.color Colors.xDarkBlue] 
-        header 
-        resElems        
-        
+        [Region.heading 3]
+        [Background.color Colors.xDarkBlue]
+        header
+        resElems
+
 wastedListResElement : Resource r -> Excess -> Maybe (Element Msg)
 wastedListResElement resource excess =
     if getExcess excess == 0
@@ -131,12 +131,12 @@ wastedListResElement resource excess =
             Element.row
                 [ Element.width Element.fill
                 ]
-                [ el 
-                    [Element.width (Element.px 250)] 
+                [ el
+                    [Element.width (Element.px 250)]
                     (Element.text (resource.name ++ ":"))
-                , el 
-                    [Element.width Element.fill] 
-                    (el 
+                , el
+                    [Element.width Element.fill]
+                    (el
                         [Element.alignRight]
                         (Element.text (showExcess excess))
                     )
@@ -148,19 +148,19 @@ totalListElement counts =
             totalListResElement resource (selector counts)
         resElems =
             [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem resinsResource .resins            
+            , resElem resinsResource .resins
             , resElem metalResource .metal
             , resElem ceramicsResource .ceramics
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
         heading = Element.text "Resources needed:"
-    in columnHelper 
-        [Region.heading 3] 
-        [Background.color Colors.xDarkBlue] 
-        heading 
+    in columnHelper
+        [Region.heading 3]
+        [Background.color Colors.xDarkBlue]
+        heading
         resElems
-        
+
 totalListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 totalListResElement resource counts =
     if CountDict.isEmpty counts
@@ -169,15 +169,15 @@ totalListResElement resource counts =
             Element.row
                 [ Element.width Element.fill
                 ]
-                [ el 
-                    [Element.width (Element.px 250)] 
+                [ el
+                    [Element.width (Element.px 250)]
                     (Element.text (resource.name ++ ":"))
-                , el 
-                    [Element.width Element.fill] 
-                    (el 
+                , el
+                    [Element.width Element.fill]
+                    (el
                         [Element.alignRight]
-                        (Element.text 
-                            <| String.fromInt 
+                        (Element.text
+                            <| String.fromInt
                             <| resourceTotal resource counts
                         )
                     )
@@ -191,7 +191,7 @@ totalWeightElement countsAll =
             in if CountDict.isEmpty counts
                     then Nothing
                     else Just (resourceWeight resource counts)
-        resWeights = 
+        resWeights =
             [ resWeight chiralCrystalsResource .chiralCrystals
             , resWeight resinsResource .resins
             , resWeight metalResource .metal
@@ -207,35 +207,35 @@ totalWeightElement countsAll =
                     case maybeTotalWeight of
                         Nothing -> Just w1
                         Just w2 -> Just (Weight (getWeight w1 + getWeight w2))
-        elem (Weight w) = 
+        elem (Weight w) =
             el [Element.alignRight]
                 (Element.text (String.fromFloat w ++ " kilograms"))
     in columnHelper
             [Region.heading 3]
             [Background.color Colors.xDarkBlue]
             heading
-            [Maybe.map elem (List.foldl addMaybe Nothing resWeights)]                
-                
+            [Maybe.map elem (List.foldl addMaybe Nothing resWeights)]
+
 packageListElement : PackageCountsAll -> Maybe (Element Msg)
 packageListElement counts =
     let
-        resElem resource selector = 
+        resElem resource selector =
             packageListResElement resource (selector counts)
-        resElems = 
+        resElems =
             [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem resinsResource .resins            
+            , resElem resinsResource .resins
             , resElem metalResource .metal
-            , resElem ceramicsResource .ceramics            
+            , resElem ceramicsResource .ceramics
             , resElem chemicalsResource .chemicals
             , resElem specialAlloysResource .specialAlloys
             ]
         heading = Element.text "Packages needed:"
-    in columnHelper 
+    in columnHelper
         [Region.heading 2]
-        [Background.color Colors.xDarkBlue] 
-        heading 
+        [Background.color Colors.xDarkBlue]
+        heading
         resElems
-        
+
 packageListResElement : Resource r -> PackageCounts r -> Maybe (Element Msg)
 packageListResElement resource counts =
     let
@@ -245,7 +245,7 @@ packageListResElement resource counts =
             Element.row
                 [ Element.width Element.fill
                 ]
-                [ el 
+                [ el
                     [ Element.alignLeft
                     , Element.width (Element.px 200)
                     ]
@@ -254,16 +254,16 @@ packageListResElement resource counts =
                     [ Element.width (Element.px 20)
                     ]
                     (Element.text "✕")
-                , el 
+                , el
                     [ Element.width Element.fill
                     ]
-                    ( el 
+                    ( el
                         [ Element.alignRight
-                        ] 
+                        ]
                         (Element.text (String.fromInt count))
                     )
                 ]
-        heading = 
+        heading =
             Element.row
                 [Element.width Element.fill]
                 [ el
@@ -282,7 +282,7 @@ packageListResElement resource counts =
                     ]
                     ( Element.text resource.name )
                 ]
-    in columnHelper 
+    in columnHelper
         [ Region.heading 3
         , Element.width Element.fill
         , Element.padding 5
@@ -294,10 +294,10 @@ packageListResElement resource counts =
             }
         ]
         [ Background.color Colors.darkBlue
-        ] 
-        heading 
+        ]
+        heading
         (List.map (Just << pkgElement) pkgList)
-    
+
 columnHelper
     :  List (Element.Attribute Msg) -- Extra attributes for header
     -> List (Element.Attribute Msg) -- Extra attributes for column
@@ -308,7 +308,7 @@ columnHelper headingAttrs columnAttrs heading list =
     if List.all isNothing list
         then Nothing
         else Just <|
-            column 
+            column
                 (    Element.spacing 30
                   :: Border.width 1
                   :: Border.rounded 10
@@ -316,7 +316,7 @@ columnHelper headingAttrs columnAttrs heading list =
                   :: Element.width Element.fill
                   :: columnAttrs
                 )
-                [ el 
+                [ el
                     ( Element.paddingXY 0 0
                       :: headingAttrs
                     )
@@ -326,13 +326,13 @@ columnHelper headingAttrs columnAttrs heading list =
                     , Element.moveRight 15
                     , Element.spacing 20
                     , Element.width Element.fill
-                    ] 
+                    ]
                     (List.map (Maybe.withDefault Element.none) list)
-                ]                
-            
+                ]
+
 structsElement : AutoIncDict Structure -> Element Msg
 structsElement dict =
-    column 
+    column
         [Element.width Element.fill, Element.spacing 20]
         [ column structsElementAttrs (structList dict)
         , addButton
@@ -343,20 +343,20 @@ structsElementAttrs =
     [ Element.spacing 10
     , Element.width Element.fill
     ]
-        
+
 structList : AutoIncDict Structure -> List (Element Msg)
 structList = List.map structElem << AutoIncDict.values
 
 structElem : Structure -> Element Msg
 structElem struct =
     let list = packageListElement (structurePackageCounts struct)
-    in 
+    in
         column structAttrs
             [ el [Element.centerX] (structureView struct)
             , removeButton struct.key
-            , el 
+            , el
                 [ Element.width Element.fill
-                ] 
+                ]
                 (Maybe.withDefault Element.none list)
             ]
 
@@ -369,7 +369,7 @@ structAttrs =
     , Element.width Element.fill
     , Element.padding 20
     ]
-    
+
 addButton : Element Msg
 addButton = Widget.button
     "Add structure"

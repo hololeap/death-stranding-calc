@@ -24,7 +24,7 @@ import Tuple exposing (first, second)
 type alias Key = String
 type alias Prefix = String
 
-type alias AutoIncDict v = 
+type alias AutoIncDict v =
     { lastInc : Int
     , dict : Dict Key v
     , prefix : Prefix
@@ -65,10 +65,10 @@ insertNeedingKeyInc func dictData =
         | lastInc = inc
         , dict = Dict.insert key (func inc key) dictData.dict
         }
-        
+
 insertWithKey : v -> AutoIncDict v -> (AutoIncDict v, Key)
 insertWithKey value dictData =
-    let 
+    let
         inc = dictData.lastInc + 1
         key = keyFromInc dictData.prefix inc
         newData =
@@ -77,7 +77,7 @@ insertWithKey value dictData =
             , dict = Dict.insert key value dictData.dict
             }
     in (newData, key)
-  
+
 update : Key -> (Maybe v -> Maybe v) -> AutoIncDict v -> AutoIncDict v
 update key func dictData =
     { dictData
@@ -95,7 +95,7 @@ get key = Dict.get key << .dict
 
 remove : Key -> AutoIncDict v -> AutoIncDict v
 remove key dictData =
-    { dictData 
+    { dictData
     | dict = Dict.remove key dictData.dict
     }
 

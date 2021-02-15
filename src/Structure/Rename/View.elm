@@ -14,7 +14,7 @@ import Structure.Rename.Model exposing
     , NewStructureName(..)
     , getNewStructureName
     , StructureName(..))
-import Types.Msg exposing 
+import Types.Msg exposing
     ( Msg
     , RenameStructureMsg(..)
     , fromRenameStructureMsg
@@ -22,12 +22,12 @@ import Types.Msg exposing
 
 import Palette.Font.Size as FontSize
 import Palette.Colors as Colors
-    
+
 structureNameElem : Structure -> Element Msg
 structureNameElem struct =
     case struct.name of
         StructureName name ->
-            el 
+            el
                 [ Region.heading 2
                 , Element.centerX
                 , Font.underline
@@ -35,7 +35,7 @@ structureNameElem struct =
                     <| fromRenameStructureMsg struct.key
                     <| EditStructureName
                     <| NewStructureName name
-                ] 
+                ]
                 (Element.text name)
         RenamingStructure oldName newName ->
             let
@@ -49,7 +49,7 @@ structureNameElem struct =
                         << NewStructureName
                     , text = getNewStructureName newName
                     , placeholder = Just <|
-                        Input.placeholder 
+                        Input.placeholder
                             [ Font.italic
                             ]
                             (Element.text "Please enter a name")
@@ -69,7 +69,7 @@ structureNameElem struct =
                     ]
                 buttonText text =
                     el
-                        
+
                 acceptButtonText = Element.text "✓"
                 cancelButtonText = Element.text "✕"
                 enabledAcceptButton : Element Msg
@@ -78,7 +78,7 @@ structureNameElem struct =
                         ( Background.color (Element.rgb255 0 200 20)
                           :: buttonAttrs
                         )
-                        { onPress = Just 
+                        { onPress = Just
                             <| fromRenameStructureMsg struct.key
                             <| AcceptStructureName
                         , label = el
@@ -107,7 +107,7 @@ structureNameElem struct =
                         ( Background.color (Colors.red)
                           :: buttonAttrs
                         )
-                        { onPress = Just 
+                        { onPress = Just
                             <| fromRenameStructureMsg struct.key
                             <| CancelRenameStructure
                         , label = el

@@ -13,7 +13,7 @@ type Metal
     | Metal600
     | Metal800
     | Metal1000
-    
+
 metalPackages : Packages Metal
 metalPackages =
     fromIntIterator
