@@ -20,6 +20,9 @@ import Types.Msg exposing
     , fromRenameStructureMsg
     )
 
+import Palette.Font.Size as FontSize
+import Palette.Colors as Colors
+    
 structureNameElem : Structure -> Element Msg
 structureNameElem struct =
     case struct.name of
@@ -39,6 +42,7 @@ structureNameElem struct =
                 nameInput : Element Msg
                 nameInput = Input.text
                     [ Element.width Element.fill
+                    , Font.color Colors.xDarkBlue
                     ]
                     { onChange = fromRenameStructureMsg struct.key
                         << EditStructureName
@@ -52,10 +56,11 @@ structureNameElem struct =
                     , label = Input.labelHidden "New structure name"
                     }
                 buttonAttrs =
-                    [ Element.width (Element.px 20)
-                    , Element.height (Element.px 20)
+                    [ Element.width (Element.px 40)
+                    , Element.height (Element.px 30)
                     , Element.centerX
                     , Element.centerY
+                    , FontSize.xLarge
                     ]
                 buttonTextAttrs =
                     [ Font.color (Element.rgb255 230 230 230)
@@ -66,7 +71,7 @@ structureNameElem struct =
                     el
                         
                 acceptButtonText = Element.text "✓"
-                cancelButtonText = Element.text "🗙"
+                cancelButtonText = Element.text "✕"
                 enabledAcceptButton : Element Msg
                 enabledAcceptButton =
                     Input.button
@@ -83,7 +88,7 @@ structureNameElem struct =
                 disabledAcceptButton : Element Msg
                 disabledAcceptButton =
                     Input.button
-                        ( Background.color (Element.rgb255 128 128 128)
+                        ( Background.color (Colors.grey)
                           :: buttonAttrs
                         )
                         { onPress = Nothing
@@ -99,7 +104,7 @@ structureNameElem struct =
                 cancelButton : Element Msg
                 cancelButton =
                     Input.button
-                        ( Background.color (Element.rgb255 230 0 10)
+                        ( Background.color (Colors.red)
                           :: buttonAttrs
                         )
                         { onPress = Just 
@@ -113,7 +118,7 @@ structureNameElem struct =
                 Element.row
                     [ Element.width Element.fill
                     , Element.centerX
-                    , Element.spacing 5
+                    , Element.spacing 10
                     ]
                     [ nameInput
                     , acceptButton
