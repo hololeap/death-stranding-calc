@@ -6,3 +6,7 @@ repl-temp-*
 # Compiled HTML files
 index.html
 index.html.orig
+
+# Image stuff
+screenshots
+*.xcf
