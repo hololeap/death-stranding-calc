@@ -1,6 +1,7 @@
 module Structure.View exposing (structureView)
 
 import Element exposing (Element, el, fill, table, column, centerX)
+import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Element.Keyed as Keyed
@@ -26,6 +27,9 @@ import Resource.MVC.View exposing (ResourceRow, resourceRow)
 
 import Types.Msg exposing (Msg, StructureMsg(..), fromStructureMsg)
 
+import Palette.Colors as Colors
+import Palette.Font.Size as FontSize
+
 structureView : Structure -> Element Msg
 structureView struct =
     let
@@ -48,7 +52,7 @@ structureView struct =
         headerFont =
             [ Font.light
             , Font.variant Font.smallCaps
-            , Font.size 14
+            , FontSize.xSmall
             ]
         headerElem text =
             el
@@ -57,12 +61,21 @@ structureView struct =
                 )
                 (Element.text text)
     in
-        Keyed.column [Element.width Element.fill]
+        Keyed.column 
+            [ Element.width Element.fill
+            , Element.spacing 15
+            ]
             [ ( struct.key ++ "-heading"
               , structureNameElem struct
               )
             , ( struct.key ++ "-table"
-              , table [Element.spacing 10, Element.padding 15]
+              , table 
+                    [ Element.spacing 10
+                    , Element.padding 15
+                    , Border.width 1
+                    , Border.rounded 10
+                    , Background.color Colors.black
+                    ]
                     { data = resRows
                     , columns =
                         [ { header = el [] (headerElem "Resource")
