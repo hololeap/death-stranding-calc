@@ -5,6 +5,7 @@ import Dict.AutoInc as AutoIncDict
 import Element exposing (Element, Attr, Attribute, el, htmlAttribute)
 import Element.Background as Background
 import Element.Border as Border
+import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
 
@@ -46,8 +47,14 @@ resourceRow
     -> ResourceRow
 resourceRow struct conv resource model =
     let
-        givenAttrs = inputAttributes struct.key resource "given"
-        neededAttrs = inputAttributes struct.key resource "needed"
+        givenAttrs =
+            (  Events.onClick (conv ResetGiven)
+            :: inputAttributes struct.key resource "given"
+            )
+        neededAttrs =
+            (  Events.onClick (conv ResetNeeded)
+            :: inputAttributes struct.key resource "needed"
+            )
         structName = case struct.name of
             RenamingStructure oldName _ -> getOldStructureName oldName
             StructureName str -> str
