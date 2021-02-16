@@ -4,6 +4,7 @@ import Element exposing (Element, el, fill, table, column, centerX)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
+import Element.Input as Input
 import Element.Keyed as Keyed
 import Element.Region as Region
 
@@ -29,6 +30,8 @@ import Types.Msg exposing (Msg, StructureMsg(..), fromStructureMsg)
 
 import Palette.Colors as Colors
 import Palette.Font.Size as FontSize
+
+import Widget
 
 structureView : Structure -> Element Msg
 structureView struct =
@@ -60,6 +63,60 @@ structureView struct =
                   :: headerFont
                 )
                 (Element.text text)
+        inputTable = table
+            [ Element.spacing 10
+            , Element.padding 15
+            , Border.width 1
+            , Border.rounded 10
+            , Background.color Colors.black
+            , Element.below hideInputsButton
+            ]
+            { data = resRows
+            , columns =
+                [ { header = el [] (headerElem "Resource")
+                    , width = fill
+                    , view = .name
+                    }
+                , { header = el [] (headerElem "Given")
+                    , width = fill
+                    , view = .given
+                    }
+                , { header = el [] (headerElem "Needed")
+                    , width = fill
+                    , view = .needed
+                    }
+                ]
+            }
+        toggleShowInputsButton attrs text bool =
+            el
+                [Element.width Element.fill]
+                ( Widget.button
+                    text
+                    (Just (fromStructureMsg struct.key (InputsVisibleMsg bool)))
+                    (FontSize.xSmall :: attrs)
+                )
+        showInputsButton = toggleShowInputsButton
+            [ Element.alignLeft
+            ]
+            "Show inputs"
+            True
+        hideInputsButton = toggleShowInputsButton
+            [ Element.moveRight 20
+            , Border.widthEach
+                { bottom = 1
+                , left = 1
+                , right = 1
+                , top = 0
+                }
+            , Border.roundEach
+                { topLeft = 0
+                , topRight = 0
+                , bottomLeft = 5
+                , bottomRight = 5
+                }
+            ]
+            "Hide inputs"
+            False
     in
         Keyed.column
             [ Element.width Element.fill
@@ -69,28 +126,8 @@ structureView struct =
               , structureNameElem struct
               )
             , ( struct.key ++ "-table"
-              , table
-                    [ Element.spacing 10
-                    , Element.padding 15
-                    , Border.width 1
-                    , Border.rounded 10
-                    , Background.color Colors.black
-                    ]
-                    { data = resRows
-                    , columns =
-                        [ { header = el [] (headerElem "Resource")
-                          , width = fill
-                          , view = .name
-                          }
-                        , { header = el [] (headerElem "Given")
-                          , width = fill
-                          , view = .given
-                          }
-                        , { header = el [] (headerElem "Needed")
-                          , width = fill
-                          , view = .needed
-                          }
-                        ]
-                    }
-                )
+              , if struct.inputsVisible
+                    then inputTable
+                    else showInputsButton
+              )
             ]
