@@ -16,7 +16,9 @@ import Resource.Metal exposing (Metal)
 import Resource.Ceramics exposing (Ceramics)
 import Resource.Chemicals exposing (Chemicals)
 import Resource.SpecialAlloys exposing (SpecialAlloys)
-import Resource.Types exposing (ResourceNeededTotal, ResourceGiven)
+
+import Resource.Types.NeededTotal exposing (ResourceNeededTotal)
+import Resource.Types.Given exposing (ResourceGiven)
 
 import Structure.Rename.Model exposing
     (OldStructureName, NewStructureName)

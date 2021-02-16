@@ -5,16 +5,6 @@ module Resource.Types exposing
     , Weight(..)
     , getWeight
     , Resource
-    , ResourceGiven(..)
-    , toResourceGiven
-    , fromResourceGiven
-    , showResourceGiven
-    , readResourceGiven
-    , ResourceNeededTotal(..)
-    , toResourceNeededTotal
-    , fromResourceNeededTotal
-    , showResourceNeededTotal
-    , readResourceNeededTotal
     , ResourceNeeded(..)
     , getResourceNeeded
 --    , showResourceNeeded
@@ -28,7 +18,6 @@ module Resource.Types exposing
 import Dict.Count as CountDict exposing (CountDict)
 import Enum exposing (EnumInt)
 
-import Types.MaybeInt as MaybeInt exposing (MaybeInt)
 
 type alias Value = Int -- How much of a resource a package contains
 type alias ResourceName = String -- Name of a resource
@@ -51,36 +40,6 @@ type alias Resource r =
     , image : String
     , weight : Weight
     }
-
--- Amount of a resource present in a structure
-type ResourceGiven = ResourceGiven MaybeInt
-
-toResourceGiven : Int -> ResourceGiven
-toResourceGiven = ResourceGiven << MaybeInt.fromInt
-
-fromResourceGiven : ResourceGiven -> Int
-fromResourceGiven (ResourceGiven mi) = MaybeInt.toInt mi
-
-showResourceGiven : ResourceGiven -> String
-showResourceGiven (ResourceGiven mi) = MaybeInt.toString mi
-
-readResourceGiven : String -> ResourceGiven
-readResourceGiven = ResourceGiven << MaybeInt.fromString
-
--- Total amount of a resource needed
-type ResourceNeededTotal = ResourceNeededTotal MaybeInt
-
-toResourceNeededTotal : Int -> ResourceNeededTotal
-toResourceNeededTotal = ResourceNeededTotal << MaybeInt.fromInt
-
-fromResourceNeededTotal : ResourceNeededTotal -> Int
-fromResourceNeededTotal (ResourceNeededTotal mi) = MaybeInt.toInt mi
-
-showResourceNeededTotal : ResourceNeededTotal -> String
-showResourceNeededTotal (ResourceNeededTotal mi) = MaybeInt.toString mi
-
-readResourceNeededTotal : String -> ResourceNeededTotal
-readResourceNeededTotal = ResourceNeededTotal << MaybeInt.fromString
 
 -- Amount of resource needed to finish structure
 type ResourceNeeded = ResourceNeeded Int

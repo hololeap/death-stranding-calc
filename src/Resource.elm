@@ -21,6 +21,12 @@ import Resource.Ceramics exposing (Ceramics, ceramicsResource)
 import Resource.Chemicals exposing (Chemicals, chemicalsResource)
 import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
 import Resource.Types exposing (..)
+import Resource.Types.Given
+    as ResourceGiven
+    exposing (ResourceGiven)
+import Resource.Types.NeededTotal
+    as ResourceNeededTotal
+    exposing (ResourceNeededTotal)
 
 type alias PackageCountsAll =
     { chiralCrystals : PackageCounts ChiralCrystals
@@ -70,7 +76,7 @@ packagesNeeded resource given neededTotal =
     let
         counts0 = initPackageCounts resource
         needed0 = ResourceNeeded
-            (fromResourceNeededTotal neededTotal - fromResourceGiven given)
+            (ResourceNeededTotal.toInt neededTotal - ResourceGiven.toInt given)
         pkgList = packagesByValueDesc resource
 
         maxPkg needed = find
@@ -101,7 +107,7 @@ packagesNeeded resource given neededTotal =
                     in loop newCounts newNeeded -- Continue recursion
                 Nothing -> counts
     in
-        if fromResourceGiven given >= fromResourceNeededTotal neededTotal
+        if ResourceGiven.toInt given >= ResourceNeededTotal.toInt neededTotal
             then (counts0, Excess 0)
             else
                 ( loop counts0 roundUpNeeded

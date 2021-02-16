@@ -1,11 +1,7 @@
 module Resource.MVC.Controller exposing (..)
 
 import Resource exposing (packagesNeeded)
-import Resource.Types exposing
-    ( Resource
-    , ResourceNeededTotal(..)
-    , ResourceGiven(..)
-    )
+import Resource.Types exposing (Resource)
 import Resource.MVC.Model exposing (ResourceModel)
 
 import Types.Msg exposing (ResourceMsg(..))

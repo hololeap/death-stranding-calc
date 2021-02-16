@@ -3,12 +3,17 @@ module Resource.MVC.Model exposing (..)
 import Dict.Count as CountDict
 
 import Resource.Types exposing
-    ( ResourceNeededTotal(..)
-    , ResourceGiven(..)
-    , PackageCounts
+    ( PackageCounts
     , Excess(..)
     , Resource
     , initPackageCounts)
+
+import Resource.Types.Given
+    as ResourceGiven
+    exposing (ResourceGiven)
+import Resource.Types.NeededTotal
+    as ResourceNeededTotal
+    exposing (ResourceNeededTotal)
 
 import Types.MaybeInt as MaybeInt
 
@@ -22,8 +27,8 @@ type alias ResourceModel r =
 
 initResourceModel : Resource r -> ResourceModel r
 initResourceModel resource =
-    { needed = ResourceNeededTotal MaybeInt.init
-    , given = ResourceGiven MaybeInt.init
+    { needed = ResourceNeededTotal.init
+    , given = ResourceGiven.init
     , pkgs = initPackageCounts resource
     , excess = Excess 0
     }
