@@ -8,9 +8,11 @@ module Resource.Types.Given exposing
     , map
     , andThen
     , init
+    , codec
     )
 
 import Types.MaybeInt as MaybeInt exposing (MaybeInt)
+import Serialize as S exposing (Codec)
 
 -- Amount of a resource present in a structure
 type ResourceGiven = ResourceGiven MaybeInt
@@ -38,3 +40,9 @@ andThen = mapM << Maybe.andThen
 
 init : ResourceGiven
 init = ResourceGiven MaybeInt.init
+
+codec : Codec e ResourceGiven
+codec =
+    S.customType (\e -> e << toInt)
+        |> S.variant1 fromInt S.int
+        |> S.finishCustomType

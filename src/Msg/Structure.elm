@@ -1,4 +1,4 @@
-module Msg.Structure exposing (StructureMsg(..))
+module Msg.Structure exposing (..)
 
 import Msg.Resource exposing (ResourceMsg)
 

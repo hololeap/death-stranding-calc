@@ -9,7 +9,7 @@ import Resource.Metal exposing (..)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Model.Main exposing (..)
+import Model.Main as Model
 import Controller.Main exposing (..)
 import View.Main exposing (..)
 
@@ -24,7 +24,7 @@ body = el
     ]
 
 main = Browser.sandbox
-    { init = init
+    { init = Model.init
     , update = update
     , view = Element.layout [] << body << view }
 

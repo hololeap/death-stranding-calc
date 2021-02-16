@@ -8,8 +8,10 @@ module Resource.Types.NeededTotal exposing
     , map
     , andThen
     , init
+    , codec
     )
 
+import Serialize as S exposing (Codec)
 import Types.MaybeInt as MaybeInt exposing (MaybeInt)
 
 -- Total amount of a resource needed
@@ -38,3 +40,9 @@ andThen = mapM << Maybe.andThen
 
 init : ResourceNeededTotal
 init = ResourceNeededTotal MaybeInt.init
+
+codec : Codec e ResourceNeededTotal
+codec =
+    S.customType (\e -> e << toInt)
+        |> S.variant1 fromInt S.int
+        |> S.finishCustomType

@@ -1,25 +1,32 @@
 module Resource.ChiralCrystals exposing (..)
 
 import Enum exposing (fromIntIterator)
+import Serialize as S exposing (Codec)
 
 import Resource.Types exposing (Packages, Resource, Weight(..))
 
 type ChiralCrystals = ChiralCrystals
 
-chiralCrystalsPackages : Packages ChiralCrystals
-chiralCrystalsPackages =
+packages : Packages ChiralCrystals
+packages =
     fromIntIterator
         (\r -> case r of
             ChiralCrystals -> (1, ChiralCrystals)
         )
         ChiralCrystals
 
-chiralCrystalsResource : Resource ChiralCrystals
-chiralCrystalsResource =
+resource : Resource ChiralCrystals
+resource =
     { name = "Chiral crystals"
     , id = "chiralCrystals"
-    , packages = chiralCrystalsPackages
+    , packages = packages
     , minimum = ChiralCrystals
     , image = "chiral-crystals-transparent.png"
     , weight = Weight 0
     }
+
+codec : Codec e ChiralCrystals
+codec =
+    S.customType (\e ChiralCrystals -> e)
+        |> S.variant0 ChiralCrystals
+        |> S.finishCustomType

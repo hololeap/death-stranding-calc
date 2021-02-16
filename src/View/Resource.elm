@@ -13,8 +13,8 @@ import Element.Input as Input
 import Html.Attributes
 
 import Model.Structure exposing (Structure)
-import Model.Structure.Rename exposing
-    (StructureName(..), getOldStructureName)
+import Model.Structure.Name exposing(StructureName(..))
+import Model.Structure.Name.Old as OldStructureName
 
 import Resource.Types exposing
     ( Resource
@@ -57,7 +57,7 @@ resourceRow struct conv resource model =
             :: inputAttributes struct.key resource "needed"
             )
         structName = case struct.name of
-            RenamingStructure oldName _ -> getOldStructureName oldName
+            RenamingStructure oldName _ -> OldStructureName.toString oldName
             StructureName str -> str
         label inputType =
             structName ++  " " ++ resource.name ++ " " ++ inputType

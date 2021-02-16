@@ -1,4 +1,4 @@
-module View.Structure.Rename exposing (..)
+module View.Structure.Name exposing (..)
 
 import Element exposing (Element, el)
 import Element.Background as Background
@@ -9,14 +9,12 @@ import Element.Input as Input
 import Element.Region as Region
 
 import Model.Structure exposing (Structure)
-import Model.Structure.Rename exposing
-    ( OldStructureName(..)
-    , NewStructureName(..)
-    , getNewStructureName
-    , StructureName(..))
+import Model.Structure.Name exposing (StructureName(..))
+import Model.Structure.Name.Old as OldStructureName exposing (OldStructureName)
+import Model.Structure.Name.New as NewStructureName exposing (NewStructureName)
 
 import Msg.Main exposing (Msg, fromRenameStructureMsg)
-import Msg.Structure.Rename exposing (RenameStructureMsg(..))
+import Msg.Structure.Name exposing (RenameStructureMsg(..))
 
 import Palette.Font.Size as FontSize
 import Palette.Colors as Colors
@@ -32,7 +30,7 @@ structureNameElem struct =
                 , Events.onClick
                     <| fromRenameStructureMsg struct.key
                     <| EditStructureName
-                    <| NewStructureName name
+                    <| NewStructureName.fromString name
                 ]
                 (Element.text name)
         RenamingStructure oldName newName ->
@@ -44,8 +42,8 @@ structureNameElem struct =
                     ]
                     { onChange = fromRenameStructureMsg struct.key
                         << EditStructureName
-                        << NewStructureName
-                    , text = getNewStructureName newName
+                        << NewStructureName.fromString
+                    , text = NewStructureName.toString newName
                     , placeholder = Just <|
                         Input.placeholder
                             [ Font.italic
@@ -96,7 +94,7 @@ structureNameElem struct =
                         }
                 acceptButton : Element Msg
                 acceptButton =
-                    if String.isEmpty (getNewStructureName newName)
+                    if String.isEmpty (NewStructureName.toString newName)
                         then disabledAcceptButton
                         else enabledAcceptButton
                 cancelButton : Element Msg

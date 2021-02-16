@@ -1,16 +1,12 @@
-module Controller.Structure.Rename exposing (..)
+module Controller.Structure.Name exposing (..)
 
 import Dict.AutoInc as AutoIncDict
-import Msg.Structure.Rename exposing (RenameStructureMsg(..))
+import Msg.Structure.Name exposing (RenameStructureMsg(..))
 import Model.Main exposing (Model)
 
-import Model.Structure.Rename exposing
-    ( OldStructureName(..)
-    , NewStructureName(..)
-    , getOldStructureName
-    , getNewStructureName
-    , StructureName(..)
-    )
+import Model.Structure.Name exposing (StructureName(..))
+import Model.Structure.Name.Old as OldStructureName
+import Model.Structure.Name.New as NewStructureName
 
 renameStructure : RenameStructureMsg -> StructureName -> StructureName
 renameStructure msg structName =
@@ -19,18 +15,18 @@ renameStructure msg structName =
             case structName of
                 StructureName name ->
                     RenamingStructure
-                        (OldStructureName name)
-                        (NewStructureName "")
+                        (OldStructureName.fromString name)
+                        (NewStructureName.fromString "")
                 RenamingStructure oldName _ ->
                     RenamingStructure oldName newName
         AcceptStructureName ->
             case structName of
                 StructureName _ -> structName
                 RenamingStructure _ newName ->
-                    StructureName (getNewStructureName newName)
+                    StructureName (NewStructureName.toString newName)
         CancelRenameStructure ->
             case structName of
                 StructureName _ -> structName
                 RenamingStructure oldName _ ->
-                    StructureName (getOldStructureName oldName)
+                    StructureName (OldStructureName.toString oldName)
 

@@ -16,10 +16,12 @@ module Dict.AutoInc exposing
     , values
     , get
     , remove
+    , codec
     )
 
 import Dict exposing (Dict)
 import Tuple exposing (first, second)
+import Serialize as S exposing (Codec)
 
 type alias Key = String
 type alias Prefix = String
@@ -101,3 +103,11 @@ remove key dictData =
 
 keyFromInc : Prefix -> Int -> Key
 keyFromInc prefix inc = prefix ++ String.fromInt inc
+
+codec : Codec e v -> Codec e (AutoIncDict v)
+codec valCodec =
+    let cons li d p = { lastInc = li, dict = d, prefix = p }
+    in S.customType
+            (\e dict -> e dict.lastInc dict.dict dict.prefix)
+            |> S.variant3 cons S.int (S.dict S.string valCodec) S.string
+            |> S.finishCustomType

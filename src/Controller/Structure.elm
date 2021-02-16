@@ -1,15 +1,13 @@
-module Controller.Structure exposing
-    ( updateStructure
-    )
+module Controller.Structure exposing (updateStructure)
 
 import Dict.AutoInc as AutoIncDict
 
-import Resource.ChiralCrystals exposing (chiralCrystalsResource)
-import Resource.Resins exposing (resinsResource)
-import Resource.Metal exposing (metalResource)
-import Resource.Ceramics exposing (ceramicsResource)
-import Resource.Chemicals exposing (chemicalsResource)
-import Resource.SpecialAlloys exposing (specialAlloysResource)
+import Resource.ChiralCrystals as ChiralCrystals
+import Resource.Resins as Resins
+import Resource.Metal as Metal
+import Resource.Ceramics as Ceramics
+import Resource.Chemicals as Chemicals
+import Resource.SpecialAlloys as SpecialAlloys
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
@@ -21,35 +19,40 @@ import Msg.Structure exposing (StructureMsg(..))
 
 updateStructure : StructureMsg -> Structure -> Structure
 updateStructure mainMsg struct =
-    let updateRes resource msg selector =
-            updateResource resource msg (selector struct)
+    let resources = struct.resources
+        updateRes resource msg selector =
+            updateResource resource msg (selector resources)
+        updateStructRes r =
+            { struct
+            | resources = r
+            }
     in
         case mainMsg of
-            ChiralCrystalsMsg msg ->
-                { struct
+            ChiralCrystalsMsg msg -> updateStructRes <|
+                { resources
                 | chiralCrystals =
-                    updateRes chiralCrystalsResource msg .chiralCrystals
+                    updateRes ChiralCrystals.resource msg .chiralCrystals
                 }
-            ResinsMsg msg ->
-                { struct
-                | resins = updateRes resinsResource msg .resins
+            ResinsMsg msg -> updateStructRes <|
+                { resources
+                | resins = updateRes Resins.resource msg .resins
                 }
-            MetalMsg msg ->
-                { struct
-                | metal = updateRes metalResource msg .metal
+            MetalMsg msg -> updateStructRes <|
+                { resources
+                | metal = updateRes Metal.resource msg .metal
                 }
-            CeramicsMsg msg ->
-                { struct
-                | ceramics = updateRes ceramicsResource msg .ceramics
+            CeramicsMsg msg -> updateStructRes <|
+                { resources
+                | ceramics = updateRes Ceramics.resource msg .ceramics
                 }
-            ChemicalsMsg msg ->
-                { struct
-                | chemicals = updateRes chemicalsResource msg .chemicals
+            ChemicalsMsg msg -> updateStructRes <|
+                { resources
+                | chemicals = updateRes Chemicals.resource msg .chemicals
                 }
-            SpecialAlloysMsg msg ->
-                { struct
+            SpecialAlloysMsg msg -> updateStructRes <|
+                { resources
                 | specialAlloys =
-                    updateRes specialAlloysResource msg .specialAlloys
+                    updateRes SpecialAlloys.resource msg .specialAlloys
                 }
             InputsVisibleMsg bool ->
                 { struct

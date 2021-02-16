@@ -8,7 +8,10 @@ module Types.MaybeInt exposing
     , map
     , andThen
     , init
+    , codec
     )
+
+import Serialize as S exposing (Codec)
 
 type MaybeInt = MaybeInt (Maybe Int)
 
@@ -39,3 +42,10 @@ andThen = mapM << Maybe.andThen
 
 init : MaybeInt
 init = MaybeInt Nothing
+
+codec : Codec e MaybeInt
+codec =
+    S.customType
+        (\e (MaybeInt mi) -> e mi)
+        |> S.variant1 MaybeInt (S.maybe S.int)
+        |> S.finishCustomType

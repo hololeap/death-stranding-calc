@@ -1,19 +1,19 @@
-module Controller.Main exposing
-    ( update
-    )
+module Controller.Main exposing (update)
 
 import Dict.AutoInc as AutoIncDict exposing (AutoIncDict, Key)
 import Dict.Count as CountDict exposing (CountDict)
 
 import Model.Resource exposing (ResourceModel)
-import Resource.Types exposing (Excess(..), getExcess)
-import Model.Structure exposing (..)
-import Controller.Structure exposing (..)
-import Controller.Structure.Rename exposing (renameStructure)
+import Resource.Types.Excess as Excess exposing (Excess)
+import Model.Structure as Structure exposing (Structure)
+import Controller.Structure exposing (updateStructure)
+import Controller.Structure.Name exposing (renameStructure)
 
 import Msg.Main exposing (Msg(..))
 
-import Model.Main exposing (Model, TotalCounts, CombinedCounts, initTotalCounts)
+import Model.Main exposing (Model)
+import Model.Main.TotalCounts as TotalCounts exposing (TotalCounts)
+import Model.Main.CombinedCounts exposing (CombinedCounts)
 
 appendResourceCounts
     :  ResourceModel r
@@ -21,25 +21,34 @@ appendResourceCounts
     -> CombinedCounts r
 appendResourceCounts model counts =
     { pkgs = CountDict.union counts.pkgs model.pkgs
-    , excess = Excess <| getExcess counts.excess + getExcess model.excess
+    , excess = Excess.fromInt
+        <| Excess.toInt counts.excess + Excess.toInt model.excess
     }
 
 getTotalCounts : AutoIncDict Structure -> TotalCounts
 getTotalCounts dict =
     let append struct total =
             { chiralCrystals = appendResourceCounts
-                struct.chiralCrystals
+                struct.resources.chiralCrystals
                 total.chiralCrystals
-            , resins = appendResourceCounts struct.resins total.resins
-            , metal = appendResourceCounts struct.metal total.metal
-            , ceramics = appendResourceCounts struct.ceramics total.ceramics
-            , chemicals = appendResourceCounts struct.chemicals total.chemicals
+            , resins = appendResourceCounts
+                struct.resources.resins
+                total.resins
+            , metal = appendResourceCounts
+                struct.resources.metal
+                total.metal
+            , ceramics = appendResourceCounts
+                struct.resources.ceramics
+                total.ceramics
+            , chemicals = appendResourceCounts
+                struct.resources.chemicals
+                total.chemicals
             , specialAlloys = appendResourceCounts
-                struct.specialAlloys
+                struct.resources.specialAlloys
                 total.specialAlloys
             }
     in
-        List.foldl append initTotalCounts <| AutoIncDict.values dict
+        List.foldl append TotalCounts.init <| AutoIncDict.values dict
 
 update : Msg -> Model -> Model
 update msg model =
@@ -56,7 +65,7 @@ update msg model =
                 model.structDict
         onAddStructure =
             updateCounts
-            <| AutoIncDict.insertNeedingKeyInc initStructure model.structDict
+            <| AutoIncDict.insertNeedingKeyInc Structure.init model.structDict
         onRemoveStructure key =
             updateCounts
             <| AutoIncDict.remove key model.structDict

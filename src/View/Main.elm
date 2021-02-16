@@ -11,23 +11,24 @@ import Dict.AutoInc as AutoIncDict exposing (AutoIncDict)
 import Dict.Count as CountDict
 
 import Resource exposing (..)
-import Resource.ChiralCrystals exposing (chiralCrystalsResource)
-import Resource.Resins exposing (resinsResource)
-import Resource.Metal exposing (metalResource)
-import Resource.Ceramics exposing (ceramicsResource)
-import Resource.Chemicals exposing (chemicalsResource)
-import Resource.SpecialAlloys exposing (specialAlloysResource)
-import Resource.Types exposing (..)
+import Resource.ChiralCrystals as ChiralCrystals
+import Resource.Resins as Resins
+import Resource.Metal as Metal
+import Resource.Ceramics as Ceramics
+import Resource.Chemicals as Chemicals
+import Resource.SpecialAlloys as SpecialAlloys
+import Resource.Types exposing (Resource, Weight(..), getWeight)
+import Resource.Types.Excess as Excess exposing (Excess)
+import Resource.Types.PackageCounts exposing (PackageCounts)
+import Resource.Types.PackageCounts.All exposing (PackageCountsAll)
 
-import Model.Structure exposing (Structure, structurePackageCounts)
+import Model.Structure exposing (Structure)
+import Model.Structure.Resources as StructureResources
 import View.Structure exposing (structureView)
 
-import Model.Main exposing
-    ( Model
-    , CombinedCounts
-    , TotalCounts
-    , totalCountsPackageCounts
-    )
+import Model.Main exposing (Model)
+import Model.Main.TotalCounts as TotalCounts exposing (TotalCounts)
+
 --import Main.Controller exposing (..)
 
 import Msg.Main exposing (Msg(..))
@@ -93,7 +94,7 @@ totalsColumn : TotalCounts -> Maybe (Element Msg)
 totalsColumn totalCounts =
     let
         heading = Element.text "Totals"
-        pkgCounts = totalCountsPackageCounts totalCounts
+        pkgCounts = TotalCounts.toPackageCountsAll totalCounts
         totalPkgs = packageListElement pkgCounts
         totalRes = totalListElement pkgCounts
         wasted = wastedListElement totalCounts
@@ -114,12 +115,12 @@ wastedListElement totalCounts =
         resElem resource selector =
             wastedListResElement resource (.excess (selector totalCounts))
         resElems =
-            [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem resinsResource .resins
-            , resElem metalResource .metal
-            , resElem ceramicsResource .ceramics
-            , resElem chemicalsResource .chemicals
-            , resElem specialAlloysResource .specialAlloys
+            [ resElem ChiralCrystals.resource .chiralCrystals
+            , resElem Resins.resource .resins
+            , resElem Metal.resource .metal
+            , resElem Ceramics.resource .ceramics
+            , resElem Chemicals.resource .chemicals
+            , resElem SpecialAlloys.resource .specialAlloys
             ]
         header = Element.text "Resources wasted:"
     in columnHelper
@@ -130,7 +131,7 @@ wastedListElement totalCounts =
 
 wastedListResElement : Resource r -> Excess -> Maybe (Element Msg)
 wastedListResElement resource excess =
-    if getExcess excess == 0
+    if Excess.toInt excess == 0
         then Nothing
         else Just <|
             Element.row
@@ -143,7 +144,7 @@ wastedListResElement resource excess =
                     [Element.width Element.fill]
                     (el
                         [Element.alignRight]
-                        (Element.text (showExcess excess))
+                        (Element.text (Excess.toString excess))
                     )
                 ]
 totalListElement : PackageCountsAll -> Maybe (Element Msg)
@@ -152,12 +153,12 @@ totalListElement counts =
         resElem resource selector =
             totalListResElement resource (selector counts)
         resElems =
-            [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem resinsResource .resins
-            , resElem metalResource .metal
-            , resElem ceramicsResource .ceramics
-            , resElem chemicalsResource .chemicals
-            , resElem specialAlloysResource .specialAlloys
+            [ resElem ChiralCrystals.resource .chiralCrystals
+            , resElem Resins.resource .resins
+            , resElem Metal.resource .metal
+            , resElem Ceramics.resource .ceramics
+            , resElem Chemicals.resource .chemicals
+            , resElem SpecialAlloys.resource .specialAlloys
             ]
         heading = Element.text "Resources needed:"
     in columnHelper
@@ -197,12 +198,12 @@ totalWeightElement countsAll =
                     then Nothing
                     else Just (resourceWeight resource counts)
         resWeights =
-            [ resWeight chiralCrystalsResource .chiralCrystals
-            , resWeight resinsResource .resins
-            , resWeight metalResource .metal
-            , resWeight ceramicsResource .ceramics
-            , resWeight chemicalsResource .chemicals
-            , resWeight specialAlloysResource .specialAlloys
+            [ resWeight ChiralCrystals.resource .chiralCrystals
+            , resWeight Resins.resource .resins
+            , resWeight Metal.resource .metal
+            , resWeight Ceramics.resource .ceramics
+            , resWeight Chemicals.resource .chemicals
+            , resWeight SpecialAlloys.resource .specialAlloys
             ]
         heading = Element.text "Total weight:"
         addMaybe maybeWeight maybeTotalWeight =
@@ -227,12 +228,12 @@ packageListElement counts =
         resElem resource selector =
             packageListResElement resource (selector counts)
         resElems =
-            [ resElem chiralCrystalsResource .chiralCrystals
-            , resElem resinsResource .resins
-            , resElem metalResource .metal
-            , resElem ceramicsResource .ceramics
-            , resElem chemicalsResource .chemicals
-            , resElem specialAlloysResource .specialAlloys
+            [ resElem ChiralCrystals.resource .chiralCrystals
+            , resElem Resins.resource .resins
+            , resElem Metal.resource .metal
+            , resElem Ceramics.resource .ceramics
+            , resElem Chemicals.resource .chemicals
+            , resElem SpecialAlloys.resource .specialAlloys
             ]
         heading = Element.text "Packages needed:"
     in columnHelper
@@ -354,7 +355,8 @@ structList = List.map structElem << AutoIncDict.values
 
 structElem : Structure -> Element Msg
 structElem struct =
-    let list = packageListElement (structurePackageCounts struct)
+    let list = packageListElement
+            (StructureResources.toPackageCountsAll struct.resources)
     in
         column structAttrs
             [ el

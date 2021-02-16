@@ -12,17 +12,17 @@ import Element.Region as Region
 --import Html.Attributes exposing (..)
 --import Html.Events exposing (onInput)
 
-import Resource.ChiralCrystals exposing (chiralCrystalsResource)
-import Resource.Resins exposing (resinsResource)
-import Resource.Metal exposing (metalResource)
-import Resource.Ceramics exposing (ceramicsResource)
-import Resource.Chemicals exposing (chemicalsResource)
-import Resource.SpecialAlloys exposing (specialAlloysResource)
+import Resource.ChiralCrystals as ChiralCrystals
+import Resource.Resins as Resins
+import Resource.Metal as Metal
+import Resource.Ceramics as Ceramics
+import Resource.Chemicals as Chemicals
+import Resource.SpecialAlloys as SpecialAlloys
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
 import Model.Structure exposing (Structure)
-import View.Structure.Rename exposing (structureNameElem)
+import View.Structure.Name exposing (structureNameElem)
 
 import View.Resource exposing (resourceRow)
 
@@ -42,16 +42,28 @@ structureView struct =
         resRows =
             [ mkResRow
                 ChiralCrystalsMsg
-                chiralCrystalsResource
-                struct.chiralCrystals
-            , mkResRow ResinsMsg resinsResource struct.resins
-            , mkResRow MetalMsg metalResource struct.metal
-            , mkResRow CeramicsMsg ceramicsResource struct.ceramics
-            , mkResRow ChemicalsMsg chemicalsResource struct.chemicals
+                ChiralCrystals.resource
+                struct.resources.chiralCrystals
+            , mkResRow
+                ResinsMsg
+                Resins.resource
+                struct.resources.resins
+            , mkResRow
+                MetalMsg
+                Metal.resource
+                struct.resources.metal
+            , mkResRow
+                CeramicsMsg
+                Ceramics.resource
+                struct.resources.ceramics
+            , mkResRow
+                ChemicalsMsg
+                Chemicals.resource
+                struct.resources.chemicals
             , mkResRow
                 SpecialAlloysMsg
-                specialAlloysResource
-                struct.specialAlloys
+                SpecialAlloys.resource
+                struct.resources.specialAlloys
             ]
         headerFont =
             [ Font.light

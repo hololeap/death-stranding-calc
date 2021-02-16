@@ -1,6 +1,6 @@
-module Msg.Structure.Rename exposing (RenameStructureMsg(..))
+module Msg.Structure.Name exposing (RenameStructureMsg(..))
 
-import Model.Structure.Rename exposing (NewStructureName)
+import Model.Structure.Name.New exposing (NewStructureName)
 
 type RenameStructureMsg
     = EditStructureName NewStructureName

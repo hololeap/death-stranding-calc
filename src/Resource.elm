@@ -1,7 +1,5 @@
 module Resource exposing
-    ( PackageCountsAll
-    , initPackageCountsAll
-    , printPackage
+    ( printPackage
     , resourceTotal
     , resourceWeight
     , printResourceTotal
@@ -14,38 +12,20 @@ import Tuple exposing (first, second)
 import Enum exposing (Enum, fromIterator)
 import Dict.Count as CountDict
 
-import Resource.ChiralCrystals exposing (ChiralCrystals, chiralCrystalsResource)
-import Resource.Resins exposing (Resins, resinsResource)
-import Resource.Metal exposing (Metal, metalResource)
-import Resource.Ceramics exposing (Ceramics, ceramicsResource)
-import Resource.Chemicals exposing (Chemicals, chemicalsResource)
-import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
-import Resource.Types exposing (..)
-import Resource.Types.Given
-    as ResourceGiven
-    exposing (ResourceGiven)
+import Resource.Types exposing 
+    ( ResourceNeeded(..)
+    , getResourceNeeded
+    , Resource
+    , Value
+    , Weight(..)
+    , getWeight
+    )
+import Resource.Types.Excess as Excess exposing (Excess)
+import Resource.Types.Given as ResourceGiven exposing (ResourceGiven)
 import Resource.Types.NeededTotal
     as ResourceNeededTotal
     exposing (ResourceNeededTotal)
-
-type alias PackageCountsAll =
-    { chiralCrystals : PackageCounts ChiralCrystals
-    , resins : PackageCounts Resins
-    , metal : PackageCounts Metal
-    , ceramics : PackageCounts Ceramics
-    , chemicals : PackageCounts Chemicals
-    , specialAlloys : PackageCounts SpecialAlloys
-    }
-
-initPackageCountsAll : PackageCountsAll
-initPackageCountsAll =
-    { chiralCrystals = initPackageCounts chiralCrystalsResource
-    , resins = initPackageCounts resinsResource
-    , metal = initPackageCounts metalResource
-    , ceramics = initPackageCounts ceramicsResource
-    , chemicals = initPackageCounts chemicalsResource
-    , specialAlloys = initPackageCounts specialAlloysResource
-    }
+import Resource.Types.PackageCounts as PackageCounts exposing (PackageCounts)
 
 printPackage : Resource r -> r -> String
 printPackage resource package =
@@ -65,8 +45,6 @@ printResourceTotal : Resource r -> PackageCounts r -> String
 printResourceTotal resource dict =
     resource.name ++ ": " ++ String.fromInt (resourceTotal resource dict)
 
-
-
 packagesNeeded
     :  Resource r
     -> ResourceGiven
@@ -74,7 +52,7 @@ packagesNeeded
     -> (PackageCounts r, Excess)
 packagesNeeded resource given neededTotal =
     let
-        counts0 = initPackageCounts resource
+        counts0 = PackageCounts.init resource
         needed0 = ResourceNeeded
             (ResourceNeededTotal.toInt neededTotal - ResourceGiven.toInt given)
         pkgList = packagesByValueDesc resource
@@ -108,10 +86,10 @@ packagesNeeded resource given neededTotal =
                 Nothing -> counts
     in
         if ResourceGiven.toInt given >= ResourceNeededTotal.toInt neededTotal
-            then (counts0, Excess 0)
+            then (counts0, Excess.init)
             else
                 ( loop counts0 roundUpNeeded
-                , Excess
+                , Excess.fromInt
                     ( getResourceNeeded roundUpNeeded
                     - getResourceNeeded needed0
                     )

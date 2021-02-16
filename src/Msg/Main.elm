@@ -9,7 +9,7 @@ import Dict.AutoInc as AutoIncDict
 
 import Msg.Resource exposing (ResourceMsg)
 import Msg.Structure exposing (StructureMsg)
-import Msg.Structure.Rename exposing (RenameStructureMsg)
+import Msg.Structure.Name exposing (RenameStructureMsg)
 
 type Msg
     = ResourceChange
