@@ -1,4 +1,4 @@
-module Structure.Rename.Model exposing (..)
+module Model.Structure.Rename exposing (..)
 
 type OldStructureName = OldStructureName String
 

@@ -1,19 +1,19 @@
-module Main.Controller exposing
+module Controller.Main exposing
     ( update
     )
 
 import Dict.AutoInc as AutoIncDict exposing (AutoIncDict, Key)
 import Dict.Count as CountDict exposing (CountDict)
 
-import Resource.MVC.Model exposing (ResourceModel)
+import Model.Resource exposing (ResourceModel)
 import Resource.Types exposing (Excess(..), getExcess)
-import Structure.Model exposing (..)
-import Structure.Controller exposing (..)
-import Structure.Rename.Controller exposing (renameStructure)
+import Model.Structure exposing (..)
+import Controller.Structure exposing (..)
+import Controller.Structure.Rename exposing (renameStructure)
 
-import Types.Msg exposing (Msg(..))
+import Msg.Main exposing (Msg(..))
 
-import Main.Model exposing (Model, TotalCounts, CombinedCounts, initTotalCounts)
+import Model.Main exposing (Model, TotalCounts, CombinedCounts, initTotalCounts)
 
 appendResourceCounts
     :  ResourceModel r

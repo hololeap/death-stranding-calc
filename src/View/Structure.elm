@@ -1,4 +1,4 @@
-module Structure.View exposing (structureView)
+module View.Structure exposing (structureView)
 
 import Element exposing (Element, el, fill, table, column, centerX)
 import Element.Background as Background
@@ -21,12 +21,13 @@ import Resource.SpecialAlloys exposing (specialAlloysResource)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Structure.Model exposing (Structure)
-import Structure.Rename.View exposing (structureNameElem)
+import Model.Structure exposing (Structure)
+import View.Structure.Rename exposing (structureNameElem)
 
-import Resource.MVC.View exposing (ResourceRow, resourceRow)
+import View.Resource exposing (resourceRow)
 
-import Types.Msg exposing (Msg, StructureMsg(..), fromStructureMsg)
+import Msg.Main exposing (Msg, fromStructureMsg)
+import Msg.Structure exposing (StructureMsg(..))
 
 import Palette.Colors as Colors
 import Palette.Font.Size as FontSize

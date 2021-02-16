@@ -9,12 +9,12 @@ import Resource.Metal exposing (..)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Main.Model exposing (..)
-import Main.Controller exposing (..)
-import Main.View exposing (..)
+import Model.Main exposing (..)
+import Controller.Main exposing (..)
+import View.Main exposing (..)
 
 import Palette.Colors as Colors
-import Types.Msg exposing (Msg)
+import Msg.Main exposing (Msg)
 
 body : Element Msg -> Element Msg
 body = el

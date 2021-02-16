@@ -1,4 +1,4 @@
-module Structure.Controller exposing
+module Controller.Structure exposing
     ( updateStructure
     )
 
@@ -13,11 +13,11 @@ import Resource.SpecialAlloys exposing (specialAlloysResource)
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Resource.MVC.Controller exposing (updateResource)
+import Controller.Resource exposing (updateResource)
 
-import Structure.Model exposing (Structure)
+import Model.Structure exposing (Structure)
 
-import Types.Msg exposing (StructureMsg(..))
+import Msg.Structure exposing (StructureMsg(..))
 
 updateStructure : StructureMsg -> Structure -> Structure
 updateStructure mainMsg struct =

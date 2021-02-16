@@ -1,4 +1,4 @@
-module Resource.MVC.View exposing (ResourceRow, resourceRow)
+module View.Resource exposing (ResourceRow, resourceRow)
 
 import Dict.AutoInc as AutoIncDict
 
@@ -12,8 +12,8 @@ import Element.Input as Input
 --import Html exposing (Attribute)
 import Html.Attributes
 
-import Structure.Model exposing (Structure)
-import Structure.Rename.Model exposing
+import Model.Structure exposing (Structure)
+import Model.Structure.Rename exposing
     (StructureName(..), getOldStructureName)
 
 import Resource.Types exposing
@@ -23,10 +23,11 @@ import Resource.Types exposing
 import Resource.Types.Given as ResourceGiven
 import Resource.Types.NeededTotal as ResourceNeededTotal
 
-import Resource.MVC.Model exposing (ResourceModel)
+import Model.Resource exposing (ResourceModel)
 --import Resource.MVC.Controller exposing (ResourceMsg(..))
 
-import Types.Msg exposing (Msg, ResourceMsg(..), FromResourceMsg)
+import Msg.Main exposing (Msg, FromResourceMsg)
+import Msg.Resource exposing (ResourceMsg(..))
 
 import Palette.Colors as Colors
 import Palette.Font.Size as FontSize

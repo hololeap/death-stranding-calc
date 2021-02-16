@@ -1,4 +1,4 @@
-module Structure.Model exposing
+module Model.Structure exposing
     ( Structure
     , initStructure
     , structurePackageCounts
@@ -16,9 +16,9 @@ import Resource.Chemicals exposing (Chemicals, chemicalsResource)
 import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
 import Resource.Types exposing (..)
 
-import Resource.MVC.Model exposing (ResourceModel, initResourceModel)
+import Model.Resource exposing (ResourceModel, initResourceModel)
 
-import Structure.Rename.Model exposing (StructureName(..))
+import Model.Structure.Rename exposing (StructureName(..))
 
 type alias Structure =
     { name : StructureName

@@ -1,10 +1,10 @@
-module Structure.Rename.Controller exposing (..)
+module Controller.Structure.Rename exposing (..)
 
 import Dict.AutoInc as AutoIncDict
-import Types.Msg exposing (RenameStructureMsg(..))
-import Main.Model exposing (Model)
+import Msg.Structure.Rename exposing (RenameStructureMsg(..))
+import Model.Main exposing (Model)
 
-import Structure.Rename.Model exposing
+import Model.Structure.Rename exposing
     ( OldStructureName(..)
     , NewStructureName(..)
     , getOldStructureName

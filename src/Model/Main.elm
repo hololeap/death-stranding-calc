@@ -1,4 +1,4 @@
-module Main.Model exposing
+module Model.Main exposing
     ( CombinedCounts
     , TotalCounts
     , Model
@@ -19,8 +19,7 @@ import Resource.Chemicals exposing (Chemicals, chemicalsResource)
 import Resource.SpecialAlloys exposing (SpecialAlloys, specialAlloysResource)
 import Resource.Types exposing (..)
 
-import Structure.Model exposing (Structure, initStructure)
-import Structure.Rename.Model exposing (isRenaming)
+import Model.Structure exposing (Structure, initStructure)
 
 type alias CombinedCounts r =
     { pkgs : PackageCounts r

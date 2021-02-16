@@ -1,4 +1,4 @@
-module Main.Font exposing (..)
+module Palette.Font exposing (..)
 
 import Element exposing (Attribute)
 import Element.Font as Font

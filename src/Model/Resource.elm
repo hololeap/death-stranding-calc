@@ -1,4 +1,4 @@
-module Resource.MVC.Model exposing (..)
+module Model.Resource exposing (..)
 
 import Dict.Count as CountDict
 
@@ -14,8 +14,6 @@ import Resource.Types.Given
 import Resource.Types.NeededTotal
     as ResourceNeededTotal
     exposing (ResourceNeededTotal)
-
-import Types.MaybeInt as MaybeInt
 
 -- The current information state about a given resource in a given structure
 type alias ResourceModel r =

@@ -1,6 +1,4 @@
-module Main.View exposing
-    ( view
-    )
+module View.Main exposing (view)
 
 import Element exposing (Element, el, column)
 import Element.Background as Background
@@ -21,10 +19,10 @@ import Resource.Chemicals exposing (chemicalsResource)
 import Resource.SpecialAlloys exposing (specialAlloysResource)
 import Resource.Types exposing (..)
 
-import Structure.Model exposing (Structure, structurePackageCounts)
-import Structure.View exposing (structureView)
+import Model.Structure exposing (Structure, structurePackageCounts)
+import View.Structure exposing (structureView)
 
-import Main.Model exposing
+import Model.Main exposing
     ( Model
     , CombinedCounts
     , TotalCounts
@@ -32,9 +30,9 @@ import Main.Model exposing
     )
 --import Main.Controller exposing (..)
 
-import Types.Msg exposing (Msg(..))
+import Msg.Main exposing (Msg(..))
 
-import Main.Font
+import Palette.Font
 import Palette.Colors as Colors
 import Palette.Font.Size as FontSize
 import Widget
@@ -46,7 +44,7 @@ view model = column
     :: Element.centerX
     :: Element.spacing 20
     :: Background.color Colors.blueGrey
-    :: Main.Font.defaultFont
+    :: Palette.Font.defaultFont
     )
     [ el [] Element.none
     , mainTitle

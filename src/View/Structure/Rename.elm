@@ -1,4 +1,4 @@
-module Structure.Rename.View exposing (..)
+module View.Structure.Rename exposing (..)
 
 import Element exposing (Element, el)
 import Element.Background as Background
@@ -8,17 +8,15 @@ import Element.Font as Font
 import Element.Input as Input
 import Element.Region as Region
 
-import Structure.Model exposing (Structure)
-import Structure.Rename.Model exposing
+import Model.Structure exposing (Structure)
+import Model.Structure.Rename exposing
     ( OldStructureName(..)
     , NewStructureName(..)
     , getNewStructureName
     , StructureName(..))
-import Types.Msg exposing
-    ( Msg
-    , RenameStructureMsg(..)
-    , fromRenameStructureMsg
-    )
+
+import Msg.Main exposing (Msg, fromRenameStructureMsg)
+import Msg.Structure.Rename exposing (RenameStructureMsg(..))
 
 import Palette.Font.Size as FontSize
 import Palette.Colors as Colors
