@@ -54,7 +54,7 @@ fromStructureMsg key msg =
 
 -- Events for changing state on a ResourceModel
 type ResourceMsg r
-    = ChangeNeeded (Maybe ResourceNeededTotal)
-    | ChangeGiven (Maybe ResourceGiven)
+    = ChangeNeeded (ResourceNeededTotal)
+    | ChangeGiven (ResourceGiven)
 
 type alias FromResourceMsg r = ResourceMsg r -> Msg

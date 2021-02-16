@@ -10,6 +10,8 @@ import Resource.Types exposing
     , Resource
     , initPackageCounts)
 
+import Types.MaybeInt as MaybeInt
+
 -- The current information state about a given resource in a given structure
 type alias ResourceModel r =
     { needed : ResourceNeededTotal
@@ -20,8 +22,8 @@ type alias ResourceModel r =
 
 initResourceModel : Resource r -> ResourceModel r
 initResourceModel resource =
-    { needed = ResourceNeededTotal 0
-    , given = ResourceGiven 0
+    { needed = ResourceNeededTotal MaybeInt.init
+    , given = ResourceGiven MaybeInt.init
     , pkgs = initPackageCounts resource
     , excess = Excess 0
     }
