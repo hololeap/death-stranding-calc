@@ -38,6 +38,7 @@ import Main.Font
 import Palette.Colors as Colors
 import Palette.Font.Size as FontSize
 import Widget
+import Version exposing (currentVersion)
 
 view : Model -> Element Msg
 view model = column
@@ -77,12 +78,18 @@ footer =
     let
         copyright = "Death Stranding is a trademark of Sony Interactive "
             ++ "Entertainment LLC."
-    in el
+    in column
         [ FontSize.xSmall
-        , Element.centerX
-        , Font.italic
+        , Element.width Element.fill
         ]
-        (Element.text copyright)
+        [ el
+            [Element.centerX]
+            (Element.text ("v" ++ Version.toString currentVersion))
+        , el
+            [ Element.centerX
+            , Font.italic
+            ] (Element.text copyright)
+        ]
 
 totalsColumn : TotalCounts -> Maybe (Element Msg)
 totalsColumn totalCounts =
