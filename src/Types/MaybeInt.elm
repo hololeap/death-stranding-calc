@@ -2,8 +2,8 @@ module Types.MaybeInt exposing
     ( MaybeInt
     , toInt
     , fromInt
-    , show
-    , read
+    , toString
+    , fromString
     , map
     , init
     )
@@ -18,13 +18,13 @@ toInt (MaybeInt mi) = case mi of
 fromInt : Int -> MaybeInt
 fromInt = MaybeInt << Just
 
-show : MaybeInt -> String
-show (MaybeInt mi) = case mi of
+toString : MaybeInt -> String
+toString (MaybeInt mi) = case mi of
     Just i  -> String.fromInt i
     Nothing -> ""
 
-read : String -> MaybeInt
-read = MaybeInt << String.toInt
+fromString : String -> MaybeInt
+fromString = MaybeInt << String.toInt
 
 map : (Int -> Int) -> MaybeInt -> MaybeInt
 map f (MaybeInt mi) = MaybeInt (Maybe.map f mi)

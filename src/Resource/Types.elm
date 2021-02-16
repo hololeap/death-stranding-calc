@@ -62,10 +62,10 @@ fromResourceGiven : ResourceGiven -> Int
 fromResourceGiven (ResourceGiven mi) = MaybeInt.toInt mi
 
 showResourceGiven : ResourceGiven -> String
-showResourceGiven (ResourceGiven mi) = MaybeInt.show mi
+showResourceGiven (ResourceGiven mi) = MaybeInt.toString mi
 
 readResourceGiven : String -> ResourceGiven
-readResourceGiven = ResourceGiven << MaybeInt.read
+readResourceGiven = ResourceGiven << MaybeInt.fromString
 
 -- Total amount of a resource needed
 type ResourceNeededTotal = ResourceNeededTotal MaybeInt
@@ -77,10 +77,10 @@ fromResourceNeededTotal : ResourceNeededTotal -> Int
 fromResourceNeededTotal (ResourceNeededTotal mi) = MaybeInt.toInt mi
 
 showResourceNeededTotal : ResourceNeededTotal -> String
-showResourceNeededTotal (ResourceNeededTotal mi) = MaybeInt.show mi
+showResourceNeededTotal (ResourceNeededTotal mi) = MaybeInt.toString mi
 
 readResourceNeededTotal : String -> ResourceNeededTotal
-readResourceNeededTotal = ResourceNeededTotal << MaybeInt.read
+readResourceNeededTotal = ResourceNeededTotal << MaybeInt.fromString
 
 -- Amount of resource needed to finish structure
 type ResourceNeeded = ResourceNeeded Int

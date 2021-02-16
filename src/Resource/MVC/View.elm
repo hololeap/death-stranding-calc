@@ -92,7 +92,7 @@ resourceRow struct conv resource model =
                     << ChangeGiven
                     << ResourceGiven
                     << MaybeInt.map verifyNum
-                    << MaybeInt.read
+                    << MaybeInt.fromString
                 , text = showResourceGiven model.given
                 , placeholder = Nothing
                 , label = Input.labelHidden (label "given")
@@ -104,7 +104,7 @@ resourceRow struct conv resource model =
                     << ChangeNeeded
                     << ResourceNeededTotal
                     << MaybeInt.map verifyNum
-                    << MaybeInt.read
+                    << MaybeInt.fromString
                 , text = showResourceNeededTotal model.needed
                 , placeholder = Nothing
                 , label = Input.labelHidden (label "needed")
