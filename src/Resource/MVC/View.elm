@@ -17,13 +17,11 @@ import Structure.Rename.Model exposing
 
 import Resource.Types exposing
     ( Resource
-    , ResourceGiven(..)
-    , fromResourceGiven
-    , showResourceGiven
-    , ResourceNeededTotal(..)
-    , fromResourceNeededTotal
-    , showResourceNeededTotal
     )
+
+import Resource.Types.Given as ResourceGiven
+import Resource.Types.NeededTotal as ResourceNeededTotal
+
 import Resource.MVC.Model exposing (ResourceModel)
 --import Resource.MVC.Controller exposing (ResourceMsg(..))
 
@@ -63,7 +61,7 @@ resourceRow struct conv resource model =
             if i <= 0
                 then Font.color Colors.lightBlue
                 else Font.color Colors.lightGrey
-        verifyNum num = if num > 0 then num else 0
+        verifyNum num = if num > 0 then Just num else Nothing
     in
         { name =
             Element.row
@@ -86,26 +84,24 @@ resourceRow struct conv resource model =
                     )
                     (el [Element.alignRight] (Element.text resource.name))
                 ]
-        , given = el [inputFontColor (fromResourceGiven model.given)]
+        , given = el [inputFontColor (ResourceGiven.toInt model.given)]
             ( Input.text givenAttrs
                 { onChange = conv
                     << ChangeGiven
-                    << ResourceGiven
-                    << MaybeInt.map verifyNum
-                    << MaybeInt.fromString
-                , text = showResourceGiven model.given
+                    << ResourceGiven.andThen verifyNum
+                    << ResourceGiven.fromString
+                , text = ResourceGiven.toString model.given
                 , placeholder = Nothing
                 , label = Input.labelHidden (label "given")
                 }
             )
-        , needed = el [inputFontColor (fromResourceNeededTotal model.needed)]
+        , needed = el [inputFontColor (ResourceNeededTotal.toInt model.needed)]
             ( Input.text neededAttrs
                 { onChange = conv
                     << ChangeNeeded
-                    << ResourceNeededTotal
-                    << MaybeInt.map verifyNum
-                    << MaybeInt.fromString
-                , text = showResourceNeededTotal model.needed
+                    << ResourceNeededTotal.andThen verifyNum
+                    << ResourceNeededTotal.fromString
+                , text = ResourceNeededTotal.toString model.needed
                 , placeholder = Nothing
                 , label = Input.labelHidden (label "needed")
                 }
