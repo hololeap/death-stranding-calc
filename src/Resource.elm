@@ -70,7 +70,7 @@ packagesNeeded resource given neededTotal =
     let
         counts0 = initPackageCounts resource
         needed0 = ResourceNeeded
-            (getResourceNeededTotal neededTotal - getResourceGiven given)
+            (fromResourceNeededTotal neededTotal - fromResourceGiven given)
         pkgList = packagesByValueDesc resource
 
         maxPkg needed = find
@@ -101,7 +101,7 @@ packagesNeeded resource given neededTotal =
                     in loop newCounts newNeeded -- Continue recursion
                 Nothing -> counts
     in
-        if getResourceGiven given >= getResourceNeededTotal neededTotal
+        if fromResourceGiven given >= fromResourceNeededTotal neededTotal
             then (counts0, Excess 0)
             else
                 ( loop counts0 roundUpNeeded

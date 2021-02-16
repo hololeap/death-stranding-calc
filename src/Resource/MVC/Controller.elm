@@ -4,9 +4,7 @@ import Resource exposing (packagesNeeded)
 import Resource.Types exposing
     ( Resource
     , ResourceNeededTotal(..)
-    , getResourceNeededTotal
     , ResourceGiven(..)
-    , getResourceGiven
     )
 import Resource.MVC.Model exposing (ResourceModel)
 
@@ -26,18 +24,7 @@ updateResource resource msg model =
                 }
         updateGiven given = updateModel given model.needed
         updateNeeded needed = updateModel model.given needed
-        verifyNum maybeNum =
-            let num = Maybe.withDefault 0 maybeNum
-            in if num > 0 then num else 0
     in
         case msg of
-            ChangeNeeded maybeNeeded ->
-                updateNeeded
-                    <| ResourceNeededTotal
-                    <| verifyNum
-                    <| Maybe.map getResourceNeededTotal maybeNeeded
-            ChangeGiven maybeGiven ->
-                updateGiven
-                    <| ResourceGiven
-                    <| verifyNum
-                    <| Maybe.map getResourceGiven maybeGiven
+            ChangeNeeded needed -> updateModel model.given needed
+            ChangeGiven given -> updateModel given model.needed

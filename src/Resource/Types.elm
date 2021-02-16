@@ -6,14 +6,18 @@ module Resource.Types exposing
     , getWeight
     , Resource
     , ResourceGiven(..)
-    , getResourceGiven
+    , toResourceGiven
+    , fromResourceGiven
     , showResourceGiven
+    , readResourceGiven
     , ResourceNeededTotal(..)
-    , getResourceNeededTotal
+    , toResourceNeededTotal
+    , fromResourceNeededTotal
     , showResourceNeededTotal
+    , readResourceNeededTotal
     , ResourceNeeded(..)
     , getResourceNeeded
-    , showResourceNeeded
+--    , showResourceNeeded
     , Excess(..)
     , getExcess
     , showExcess
@@ -23,6 +27,8 @@ module Resource.Types exposing
 
 import Dict.Count as CountDict exposing (CountDict)
 import Enum exposing (EnumInt)
+
+import Types.MaybeInt as MaybeInt exposing (MaybeInt)
 
 type alias Value = Int -- How much of a resource a package contains
 type alias ResourceName = String -- Name of a resource
@@ -47,22 +53,34 @@ type alias Resource r =
     }
 
 -- Amount of a resource present in a structure
-type ResourceGiven = ResourceGiven Int
+type ResourceGiven = ResourceGiven MaybeInt
 
-getResourceGiven : ResourceGiven -> Int
-getResourceGiven (ResourceGiven i) = i
+toResourceGiven : Int -> ResourceGiven
+toResourceGiven = ResourceGiven << MaybeInt.fromInt
+
+fromResourceGiven : ResourceGiven -> Int
+fromResourceGiven (ResourceGiven mi) = MaybeInt.toInt mi
 
 showResourceGiven : ResourceGiven -> String
-showResourceGiven = String.fromInt << getResourceGiven
+showResourceGiven (ResourceGiven mi) = MaybeInt.show mi
+
+readResourceGiven : String -> ResourceGiven
+readResourceGiven = ResourceGiven << MaybeInt.read
 
 -- Total amount of a resource needed
-type ResourceNeededTotal = ResourceNeededTotal Int
+type ResourceNeededTotal = ResourceNeededTotal MaybeInt
 
-getResourceNeededTotal : ResourceNeededTotal -> Int
-getResourceNeededTotal (ResourceNeededTotal i) = i
+toResourceNeededTotal : Int -> ResourceNeededTotal
+toResourceNeededTotal = ResourceNeededTotal << MaybeInt.fromInt
+
+fromResourceNeededTotal : ResourceNeededTotal -> Int
+fromResourceNeededTotal (ResourceNeededTotal mi) = MaybeInt.toInt mi
 
 showResourceNeededTotal : ResourceNeededTotal -> String
-showResourceNeededTotal = String.fromInt << getResourceNeededTotal
+showResourceNeededTotal (ResourceNeededTotal mi) = MaybeInt.show mi
+
+readResourceNeededTotal : String -> ResourceNeededTotal
+readResourceNeededTotal = ResourceNeededTotal << MaybeInt.read
 
 -- Amount of resource needed to finish structure
 type ResourceNeeded = ResourceNeeded Int
