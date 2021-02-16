@@ -29,6 +29,7 @@ type alias Structure =
     , ceramics : ResourceModel Ceramics
     , chemicals : ResourceModel Chemicals
     , specialAlloys : ResourceModel SpecialAlloys
+    , inputsVisible : Bool
     }
 
 initStructure : Int -> AutoIncDict.Key -> Structure
@@ -41,6 +42,7 @@ initStructure inc key =
     , ceramics = initResourceModel ceramicsResource
     , chemicals = initResourceModel chemicalsResource
     , specialAlloys = initResourceModel specialAlloysResource
+    , inputsVisible = True
     }
 
 structurePackageCounts : Structure -> PackageCountsAll

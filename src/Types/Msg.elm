@@ -44,6 +44,7 @@ type StructureMsg
     | CeramicsMsg (ResourceMsg Ceramics)
     | ChemicalsMsg (ResourceMsg Chemicals)
     | SpecialAlloysMsg (ResourceMsg SpecialAlloys)
+    | InputsVisibleMsg Bool
 
 fromStructureMsg : AutoIncDict.Key -> StructureMsg -> Msg
 fromStructureMsg key msg =

@@ -352,7 +352,11 @@ structElem struct =
     let list = packageListElement (structurePackageCounts struct)
     in
         column structAttrs
-            [ el [Element.centerX] (structureView struct)
+            [ el
+                [ Element.centerX
+                , Element.width Element.fill
+                ]
+                (structureView struct)
             , removeButton struct.key
             , el
                 [ Element.width Element.fill

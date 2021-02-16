@@ -51,3 +51,7 @@ updateStructure mainMsg struct =
                 | specialAlloys =
                     updateRes specialAlloysResource msg .specialAlloys
                 }
+            InputsVisibleMsg bool ->
+                { struct
+                | inputsVisible = bool
+                }
