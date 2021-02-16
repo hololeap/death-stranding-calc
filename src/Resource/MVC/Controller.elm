@@ -5,6 +5,8 @@ import Resource.Types exposing (Resource)
 import Resource.MVC.Model exposing (ResourceModel)
 
 import Types.Msg exposing (ResourceMsg(..))
+import Resource.Types.Given as ResourceGiven
+import Resource.Types.NeededTotal as ResourceNeededTotal
 
 updateResource
     : Resource r -> ResourceMsg r -> ResourceModel r -> ResourceModel r
@@ -22,5 +24,7 @@ updateResource resource msg model =
         updateNeeded needed = updateModel model.given needed
     in
         case msg of
-            ChangeNeeded needed -> updateModel model.given needed
-            ChangeGiven given -> updateModel given model.needed
+            ChangeNeeded needed -> updateNeeded needed
+            ChangeGiven given -> updateGiven given
+            ResetNeeded -> updateNeeded ResourceNeededTotal.init
+            ResetGiven -> updateGiven ResourceGiven.init

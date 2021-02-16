@@ -59,5 +59,7 @@ fromStructureMsg key msg =
 type ResourceMsg r
     = ChangeNeeded (ResourceNeededTotal)
     | ChangeGiven (ResourceGiven)
+    | ResetNeeded
+    | ResetGiven
 
 type alias FromResourceMsg r = ResourceMsg r -> Msg
