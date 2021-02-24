@@ -8,9 +8,12 @@
         "direct": {
             "Herteby/enum": "1.0.1",
             "MartinSStewart/elm-serialize": "1.2.2",
+            "bChiquet/elm-accessors": "2.0.0",
+            "chelovek0v/bbase64": "1.0.1",
             "elm/browser": "1.0.2",
             "elm/core": "1.0.5",
             "elm/html": "1.0.0",
+            "folkertdev/elm-flate": "2.0.5",
             "mdgriffith/elm-ui": "1.1.8",
             "turboMaCk/any-dict": "2.4.0"
         },
@@ -22,7 +25,8 @@
             "elm/regex": "1.0.0",
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
-            "elm/virtual-dom": "1.0.2"
+            "elm/virtual-dom": "1.0.2",
+            "elm-community/list-extra": "8.2.4"
         }
     },
     "test-dependencies": {
