@@ -2,7 +2,6 @@ module Resource exposing
     ( printPackage
     , resourceTotal
     , resourceWeight
-    , printResourceTotal
     , packagesNeeded
     , packagesNeededByValueDesc
     )
@@ -43,10 +42,6 @@ resourceWeight resource dict =
         weightFloat = get Weight.float resource.weight
         totalFloat = toFloat (resourceTotal resource dict)
     in Weight.fromFloat (weightFloat * totalFloat)
-
-printResourceTotal : Resource r -> PackageCounts r -> String
-printResourceTotal resource dict =
-    resource.name ++ ": " ++ String.fromInt (resourceTotal resource dict)
 
 packagesNeeded
     :  Resource r
