@@ -1,60 +1,33 @@
-module Controller.Structure exposing (updateStructure)
+module Controller.Structure exposing (update)
 
-import Dict.AutoInc as AutoIncDict
+import Accessors as A
 
-import Resource.ChiralCrystals as ChiralCrystals
-import Resource.Resins as Resins
-import Resource.Metal as Metal
-import Resource.Ceramics as Ceramics
-import Resource.Chemicals as Chemicals
-import Resource.SpecialAlloys as SpecialAlloys
-import Resource.Types exposing (..)
-import Resource exposing (..)
+import Resource.Types.All as AllResources
 
-import Controller.Resource exposing (updateResource)
-
-import Model.Structure exposing (Structure)
-
+import Controller.Resource as ResourceController
+import Controller.Structure.Name as StructureNameController
+import Model.Input.Structure as StructureInput exposing (StructureInput)
 import Msg.Structure exposing (StructureMsg(..))
+import Msg.Structure.Name exposing (RenameStructureMsg(..))
 
-updateStructure : StructureMsg -> Structure -> Structure
-updateStructure mainMsg struct =
-    let resources = struct.resources
-        updateRes resource msg selector =
-            updateResource resource msg (selector resources)
-        updateStructRes r =
-            { struct
-            | resources = r
-            }
+update : StructureMsg -> StructureInput -> StructureInput
+update structMsg =
+    let
+        updateRes accessor msg =
+            A.over
+                (StructureInput.resources << accessor)
+                (ResourceController.update msg)
+        updateName msg =
+            A.over
+                StructureInput.name
+                (StructureNameController.update msg)
     in
-        case mainMsg of
-            ChiralCrystalsMsg msg -> updateStructRes <|
-                { resources
-                | chiralCrystals =
-                    updateRes ChiralCrystals.resource msg .chiralCrystals
-                }
-            ResinsMsg msg -> updateStructRes <|
-                { resources
-                | resins = updateRes Resins.resource msg .resins
-                }
-            MetalMsg msg -> updateStructRes <|
-                { resources
-                | metal = updateRes Metal.resource msg .metal
-                }
-            CeramicsMsg msg -> updateStructRes <|
-                { resources
-                | ceramics = updateRes Ceramics.resource msg .ceramics
-                }
-            ChemicalsMsg msg -> updateStructRes <|
-                { resources
-                | chemicals = updateRes Chemicals.resource msg .chemicals
-                }
-            SpecialAlloysMsg msg -> updateStructRes <|
-                { resources
-                | specialAlloys =
-                    updateRes SpecialAlloys.resource msg .specialAlloys
-                }
-            InputsVisibleMsg bool ->
-                { struct
-                | inputsVisible = bool
-                }
+        case structMsg of
+            ChiralCrystalsMsg msg -> updateRes AllResources.chiralCrystals msg
+            ResinsMsg msg -> updateRes AllResources.resins msg
+            MetalMsg msg -> updateRes AllResources.metal msg
+            CeramicsMsg msg -> updateRes AllResources.ceramics msg
+            ChemicalsMsg msg -> updateRes AllResources.chemicals msg
+            SpecialAlloysMsg msg -> updateRes AllResources.specialAlloys msg
+            InputsVisibleMsg bool -> A.set StructureInput.inputsVisible bool
+            RenameStructure msg -> updateName msg

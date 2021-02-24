@@ -1,49 +1,42 @@
 module View.Structure.Name exposing (..)
 
+import Accessors as A
+
 import Element exposing (Element, el)
 import Element.Background as Background
-import Element.Border as Border
 import Element.Events as Events
-import Element.Font as Font
 import Element.Input as Input
+import Element.Font as Font
 import Element.Region as Region
 
-import Model.Structure exposing (Structure)
-import Model.Structure.Name exposing (StructureName(..))
-import Model.Structure.Name.Old as OldStructureName exposing (OldStructureName)
-import Model.Structure.Name.New as NewStructureName exposing (NewStructureName)
+import Model.Input.Structure.Name exposing (StructureName(..))
+import Model.Input.Structure.Name.New as NewStructureName
 
-import Msg.Main exposing (Msg, fromRenameStructureMsg)
 import Msg.Structure.Name exposing (RenameStructureMsg(..))
 
 import Palette.Font.Size as FontSize
 import Palette.Colors as Colors
 
-structureNameElem : Structure -> Element Msg
-structureNameElem struct =
-    case struct.name of
+structureNameElem : StructureName -> Element RenameStructureMsg
+structureNameElem structName =
+    case structName of
         StructureName name ->
             el
                 [ Region.heading 2
                 , Element.centerX
                 , Font.underline
-                , Events.onClick
-                    <| fromRenameStructureMsg struct.key
-                    <| EditStructureName
-                    <| NewStructureName.fromString name
+                , Events.onClick (EditStructureName name)
                 ]
                 (Element.text name)
-        RenamingStructure oldName newName ->
+        RenamingStructure _ newName ->
             let
-                nameInput : Element Msg
+                nameInput : Element RenameStructureMsg
                 nameInput = Input.text
                     [ Element.width Element.fill
                     , Font.color Colors.xDarkBlue
                     ]
-                    { onChange = fromRenameStructureMsg struct.key
-                        << EditStructureName
-                        << NewStructureName.fromString
-                    , text = NewStructureName.toString newName
+                    { onChange = EditStructureName
+                    , text = A.get NewStructureName.string newName
                     , placeholder = Just <|
                         Input.placeholder
                             [ Font.italic
@@ -63,25 +56,21 @@ structureNameElem struct =
                     , Element.centerX
                     , Element.centerY
                     ]
-                buttonText text =
-                    el
 
                 acceptButtonText = Element.text "✓"
                 cancelButtonText = Element.text "✕"
-                enabledAcceptButton : Element Msg
+                enabledAcceptButton : Element RenameStructureMsg
                 enabledAcceptButton =
                     Input.button
                         ( Background.color (Element.rgb255 0 200 20)
                           :: buttonAttrs
                         )
-                        { onPress = Just
-                            <| fromRenameStructureMsg struct.key
-                            <| AcceptStructureName
+                        { onPress = Just AcceptStructureName
                         , label = el
                             buttonTextAttrs
                             acceptButtonText
                         }
-                disabledAcceptButton : Element Msg
+                disabledAcceptButton : Element RenameStructureMsg
                 disabledAcceptButton =
                     Input.button
                         ( Background.color (Colors.grey)
@@ -92,20 +81,18 @@ structureNameElem struct =
                             buttonTextAttrs
                             acceptButtonText
                         }
-                acceptButton : Element Msg
+                acceptButton : Element RenameStructureMsg
                 acceptButton =
-                    if String.isEmpty (NewStructureName.toString newName)
+                    if String.isEmpty (A.get NewStructureName.string newName)
                         then disabledAcceptButton
                         else enabledAcceptButton
-                cancelButton : Element Msg
+                cancelButton : Element RenameStructureMsg
                 cancelButton =
                     Input.button
                         ( Background.color (Colors.red)
                           :: buttonAttrs
                         )
-                        { onPress = Just
-                            <| fromRenameStructureMsg struct.key
-                            <| CancelRenameStructure
+                        { onPress = Just CancelRenameStructure
                         , label = el
                             buttonTextAttrs
                             cancelButtonText

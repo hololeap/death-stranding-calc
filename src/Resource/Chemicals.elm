@@ -3,7 +3,8 @@ module Resource.Chemicals exposing (..)
 import Enum exposing (fromIntIterator)
 import Serialize as S exposing (Codec)
 
-import Resource.Types exposing (Packages, Resource, Weight(..))
+import Resource.Types exposing (Packages, Resource)
+import Resource.Types.Weight as Weight
 
 type Chemicals
     = Chemicals30
@@ -35,7 +36,7 @@ resource =
     , packages = packages
     , minimum = Chemicals30
     , image = "chemicals-transparent.png"
-    , weight = Weight 0.1
+    , weight = Weight.fromFloat 0.1
     }
 
 codec : Codec e Chemicals

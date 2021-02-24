@@ -3,7 +3,8 @@ module Resource.ChiralCrystals exposing (..)
 import Enum exposing (fromIntIterator)
 import Serialize as S exposing (Codec)
 
-import Resource.Types exposing (Packages, Resource, Weight(..))
+import Resource.Types exposing (Packages, Resource)
+import Resource.Types.Weight as Weight
 
 type ChiralCrystals = ChiralCrystals
 
@@ -22,7 +23,7 @@ resource =
     , packages = packages
     , minimum = ChiralCrystals
     , image = "chiral-crystals-transparent.png"
-    , weight = Weight 0
+    , weight = Weight.fromFloat 0
     }
 
 codec : Codec e ChiralCrystals

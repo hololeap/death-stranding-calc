@@ -1,66 +1,51 @@
-module View.Resource exposing (ResourceRow, resourceRow)
+module View.Resource exposing (ResourceRow, map, resourceRow)
 
-import Dict.AutoInc as AutoIncDict
-
-import Element exposing (Element, Attr, Attribute, el, htmlAttribute)
+import Element exposing (Element, Attribute, el, htmlAttribute)
 import Element.Background as Background
-import Element.Border as Border
 import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
 
---import Html exposing (Attribute)
 import Html.Attributes
 
-import Model.Structure exposing (Structure)
-import Model.Structure.Name exposing(StructureName(..))
-import Model.Structure.Name.Old as OldStructureName
+import Model.Input.Structure.Name exposing(StructureName(..))
 
-import Resource.Types exposing
-    ( Resource
-    )
+import Resource.Types exposing (Resource)
 
 import Resource.Types.Given as ResourceGiven
 import Resource.Types.NeededTotal as ResourceNeededTotal
 
-import Model.Resource exposing (ResourceModel)
---import Resource.MVC.Controller exposing (ResourceMsg(..))
+import Model.Input.Resource exposing (ResourceInput(..))
 
-import Msg.Main exposing (Msg, FromResourceMsg)
 import Msg.Resource exposing (ResourceMsg(..))
 
 import Palette.Colors as Colors
 import Palette.Font.Size as FontSize
 
-import Types.MaybeInt as MaybeInt
+type alias ResourceRow msg =
+    { name : Element msg
+    , given : Element msg
+    , needed : Element msg
+    }
 
-type alias ResourceRow =
-    { name : Element Msg
-    , given : Element Msg
-    , needed : Element Msg
+map : (msg1 -> msg2) -> ResourceRow msg1 -> ResourceRow msg2
+map f r =
+    { name = Element.map f r.name
+    , given = Element.map f r.given
+    , needed = Element.map f r.needed
     }
 
 resourceRow
-    :  Structure
-    -> FromResourceMsg r
-    -> Resource r
-    -> ResourceModel r
-    -> ResourceRow
-resourceRow struct conv resource model =
+    :  Resource r
+    -> ResourceInput r
+    -> ResourceRow (ResourceMsg r)
+resourceRow resource (ResourceInput model) =
     let
         givenAttrs =
-            (  Events.onClick (conv ResetGiven)
-            :: inputAttributes struct.key resource "given"
-            )
+            ( Events.onClick ResetGiven :: inputAttributes )
         neededAttrs =
-            (  Events.onClick (conv ResetNeeded)
-            :: inputAttributes struct.key resource "needed"
-            )
-        structName = case struct.name of
-            RenamingStructure oldName _ -> OldStructureName.toString oldName
-            StructureName str -> str
-        label inputType =
-            structName ++  " " ++ resource.name ++ " " ++ inputType
+            ( Events.onClick ResetNeeded :: inputAttributes )
+        label inputType = resource.name ++ " " ++ inputType
         resourceLabelFont =
             [ FontSize.small
             , Font.variant Font.smallCaps
@@ -69,7 +54,6 @@ resourceRow struct conv resource model =
             if i <= 0
                 then Font.color Colors.lightBlue
                 else Font.color Colors.lightGrey
-        verifyNum num = if num > 0 then Just num else Nothing
     in
         { name =
             Element.row
@@ -94,10 +78,7 @@ resourceRow struct conv resource model =
                 ]
         , given = el [inputFontColor (ResourceGiven.toInt model.given)]
             ( Input.text givenAttrs
-                { onChange = conv
-                    << ChangeGiven
-                    << ResourceGiven.andThen verifyNum
-                    << ResourceGiven.fromString
+                { onChange = ChangeGiven
                 , text = ResourceGiven.toString model.given
                 , placeholder = Nothing
                 , label = Input.labelHidden (label "given")
@@ -105,10 +86,7 @@ resourceRow struct conv resource model =
             )
         , needed = el [inputFontColor (ResourceNeededTotal.toInt model.needed)]
             ( Input.text neededAttrs
-                { onChange = conv
-                    << ChangeNeeded
-                    << ResourceNeededTotal.andThen verifyNum
-                    << ResourceNeededTotal.fromString
+                { onChange = ChangeNeeded
                 , text = ResourceNeededTotal.toString model.needed
                 , placeholder = Nothing
                 , label = Input.labelHidden (label "needed")
@@ -116,24 +94,12 @@ resourceRow struct conv resource model =
             )
         }
 
-inputAttributes
-    : AutoIncDict.Key -> Resource r -> String -> List (Attribute Msg)
-inputAttributes key resource inputType =
-    let
-        inputId = key ++ "-" ++ resource.id ++ "-" ++ inputType ++ "-input"
-        inputClass = "structure-" ++ resource.id ++ "-" ++ inputType
-    in
---        [ id inputId
---        , classList
---            [ ("structure-resource-input", True)
---            , (resource.id ++ "-input", True)
---            , (inputType ++ "-input", True)
---            ]
---        , placeholder "0"
-        List.map htmlAttribute
+inputAttributes : List (Attribute (ResourceMsg r))
+inputAttributes =
+    Background.color Colors.darkBlue
+    :: List.map htmlAttribute
             [ Html.Attributes.type_ "number"
             , Html.Attributes.size 4
             , Html.Attributes.min "0"
             , Html.Attributes.max "9999"
             ]
-        ++ [ Background.color Colors.darkBlue ]

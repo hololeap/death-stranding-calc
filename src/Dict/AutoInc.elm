@@ -5,23 +5,26 @@ module Dict.AutoInc exposing
     , empty
     , singleton
     , singletonWithKey
-    , singletonNeedingKey
-    , singletonNeedingKeyInc
+    , singletonNeedingInc
     , insert
     , insertWithKey
-    , insertNeedingKey
-    , insertNeedingKeyInc
+    , insertNeedingInc
+    , adjust
     , update
+    , map
     , toList
     , values
     , get
     , remove
     , codec
+    , onOne
+    , onEach
     )
 
 import Dict exposing (Dict)
-import Tuple exposing (first, second)
+import Tuple exposing (first)
 import Serialize as S exposing (Codec)
+import Accessors exposing (Relation, makeOneToOne, makeOneToN)
 
 type alias Key = String
 type alias Prefix = String
@@ -45,27 +48,21 @@ singleton prefix = first << singletonWithKey prefix
 singletonWithKey : Prefix -> v -> (AutoIncDict v, Key)
 singletonWithKey prefix value = insertWithKey value <| empty prefix
 
-singletonNeedingKey : Prefix -> (Key -> v) -> AutoIncDict v
-singletonNeedingKey prefix func = insertNeedingKey func <| empty prefix
-
-singletonNeedingKeyInc : Prefix -> (Int -> Key -> v) -> AutoIncDict v
-singletonNeedingKeyInc prefix func = insertNeedingKeyInc func <| empty prefix
+singletonNeedingInc : Prefix -> (Int -> v) -> AutoIncDict v
+singletonNeedingInc prefix func = insertNeedingInc func <| empty prefix
 
 insert : v -> AutoIncDict v -> AutoIncDict v
 insert value = first << insertWithKey value
 
-insertNeedingKey : (Key -> v) -> AutoIncDict v -> AutoIncDict v
-insertNeedingKey func = insertNeedingKeyInc (\_ key -> func key)
-
-insertNeedingKeyInc : (Int -> Key -> v) -> AutoIncDict v -> AutoIncDict v
-insertNeedingKeyInc func dictData =
+insertNeedingInc : (Int -> v) -> AutoIncDict v -> AutoIncDict v
+insertNeedingInc func dictData =
     let
         inc = dictData.lastInc + 1
         key = keyFromInc dictData.prefix inc
     in
         { dictData
         | lastInc = inc
-        , dict = Dict.insert key (func inc key) dictData.dict
+        , dict = Dict.insert key (func inc) dictData.dict
         }
 
 insertWithKey : v -> AutoIncDict v -> (AutoIncDict v, Key)
@@ -80,10 +77,20 @@ insertWithKey value dictData =
             }
     in (newData, key)
 
+adjust : Key -> (v -> v) -> AutoIncDict v -> AutoIncDict v
+adjust key = update key << Maybe.map
+
 update : Key -> (Maybe v -> Maybe v) -> AutoIncDict v -> AutoIncDict v
 update key func dictData =
     { dictData
     | dict = Dict.update key func dictData.dict
+    }
+
+map : (Key -> a -> b) -> AutoIncDict a -> AutoIncDict b
+map f dictData =
+    { lastInc = dictData.lastInc
+    , dict = Dict.map f dictData.dict
+    , prefix = dictData.prefix
     }
 
 toList : AutoIncDict v -> List (Key, v)
@@ -111,3 +118,17 @@ codec valCodec =
             (\e dict -> e dict.lastInc dict.dict dict.prefix)
             |> S.variant3 cons S.int (S.dict S.string valCodec) S.string
             |> S.finishCustomType
+
+onOne : Key -> Relation (Maybe v) reachable wrap
+    -> Relation (AutoIncDict v) reachable wrap
+onOne key =
+    makeOneToOne
+        (get key)
+        (update key)
+
+onEach : Relation v reachable subWrap
+    -> Relation (AutoIncDict v) reachable (AutoIncDict subWrap)
+onEach =
+    makeOneToN
+        (\f -> map (\_ -> f))
+        (\f -> map (\_ -> f))

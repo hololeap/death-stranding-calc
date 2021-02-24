@@ -7,9 +7,9 @@ module Resource exposing
     , packagesNeededByValueDesc
     )
 
+import Accessors exposing (get)
 import Tuple exposing (first, second)
 
-import Enum exposing (Enum, fromIterator)
 import Dict.Count as CountDict
 
 import Resource.Types exposing 
@@ -17,15 +17,15 @@ import Resource.Types exposing
     , getResourceNeeded
     , Resource
     , Value
-    , Weight(..)
-    , getWeight
     )
+
 import Resource.Types.Excess as Excess exposing (Excess)
 import Resource.Types.Given as ResourceGiven exposing (ResourceGiven)
 import Resource.Types.NeededTotal
     as ResourceNeededTotal
     exposing (ResourceNeededTotal)
 import Resource.Types.PackageCounts as PackageCounts exposing (PackageCounts)
+import Resource.Types.Weight as Weight exposing (Weight)
 
 printPackage : Resource r -> r -> String
 printPackage resource package =
@@ -37,9 +37,12 @@ resourceTotal resource dict =
             value + resource.packages.toInt pkg * count
     in List.foldl addValue 0 <| CountDict.toList dict
 
-resourceWeight : Resource r -> PackageCounts r -> Weight
+resourceWeight : Resource r -> PackageCounts r -> (Weight r)
 resourceWeight resource dict =
-    Weight <| toFloat (resourceTotal resource dict) * getWeight resource.weight
+    let
+        weightFloat = get Weight.float resource.weight
+        totalFloat = toFloat (resourceTotal resource dict)
+    in Weight.fromFloat (weightFloat * totalFloat)
 
 printResourceTotal : Resource r -> PackageCounts r -> String
 printResourceTotal resource dict =
@@ -49,7 +52,7 @@ packagesNeeded
     :  Resource r
     -> ResourceGiven
     -> ResourceNeededTotal
-    -> (PackageCounts r, Excess)
+    -> (PackageCounts r, Excess r)
 packagesNeeded resource given neededTotal =
     let
         counts0 = PackageCounts.init resource
@@ -60,8 +63,6 @@ packagesNeeded resource given neededTotal =
         maxPkg needed = find
             ((\i -> i <= getResourceNeeded needed) << second)
             pkgList
-        addN n m =
-            Just <| Maybe.withDefault n <| Maybe.map (\old -> (old + n)) m
 
         minValue = resource.packages.toInt resource.minimum
 

@@ -1,16 +1,13 @@
-module View.Structure exposing (structureView)
+module View.Structure exposing (view)
 
-import Element exposing (Element, el, fill, table, column, centerX)
+import Accessors as A
+import Dict.AutoInc as AutoIncDict
+
+import Element exposing (Element, el, fill, table)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
-import Element.Input as Input
 import Element.Keyed as Keyed
-import Element.Region as Region
-
---import Html exposing (..)
---import Html.Attributes exposing (..)
---import Html.Events exposing (onInput)
 
 import Resource.ChiralCrystals as ChiralCrystals
 import Resource.Resins as Resins
@@ -18,15 +15,15 @@ import Resource.Metal as Metal
 import Resource.Ceramics as Ceramics
 import Resource.Chemicals as Chemicals
 import Resource.SpecialAlloys as SpecialAlloys
+import Resource.Types.All as AllResources
 import Resource.Types exposing (..)
 import Resource exposing (..)
 
-import Model.Structure exposing (Structure)
+import Model.Input.Structure as StructureInput exposing (StructureInput)
 import View.Structure.Name exposing (structureNameElem)
 
-import View.Resource exposing (resourceRow)
+import View.Resource as ResourceRow exposing (resourceRow)
 
-import Msg.Main exposing (Msg, fromStructureMsg)
 import Msg.Structure exposing (StructureMsg(..))
 
 import Palette.Colors as Colors
@@ -34,36 +31,40 @@ import Palette.Font.Size as FontSize
 
 import Widget
 
-structureView : Structure -> Element Msg
-structureView struct =
+
+
+view : AutoIncDict.Key -> StructureInput -> Element StructureMsg
+view key struct =
     let
-        mkResRow resConv =
-            resourceRow struct (fromStructureMsg struct.key << resConv)
+        mkResRow conv resource accessor =
+            A.get (StructureInput.resources << accessor) struct
+                |> resourceRow resource
+                |> ResourceRow.map conv
         resRows =
             [ mkResRow
                 ChiralCrystalsMsg
                 ChiralCrystals.resource
-                struct.resources.chiralCrystals
+                AllResources.chiralCrystals
             , mkResRow
                 ResinsMsg
                 Resins.resource
-                struct.resources.resins
+                AllResources.resins
             , mkResRow
                 MetalMsg
                 Metal.resource
-                struct.resources.metal
+                AllResources.metal
             , mkResRow
                 CeramicsMsg
                 Ceramics.resource
-                struct.resources.ceramics
+                AllResources.ceramics
             , mkResRow
                 ChemicalsMsg
                 Chemicals.resource
-                struct.resources.chemicals
+                AllResources.chemicals
             , mkResRow
                 SpecialAlloysMsg
                 SpecialAlloys.resource
-                struct.resources.specialAlloys
+                AllResources.specialAlloys
             ]
         headerFont =
             [ Font.light
@@ -105,7 +106,7 @@ structureView struct =
                 [Element.width Element.fill]
                 ( Widget.button
                     text
-                    (Just (fromStructureMsg struct.key (InputsVisibleMsg bool)))
+                    (Just (InputsVisibleMsg bool))
                     (FontSize.xSmall :: attrs)
                 )
         showInputsButton = toggleShowInputsButton
@@ -135,10 +136,10 @@ structureView struct =
             [ Element.width Element.fill
             , Element.spacing 15
             ]
-            [ ( struct.key ++ "-heading"
-              , structureNameElem struct
+            [ ( key ++ "-heading"
+              , Element.map RenameStructure (structureNameElem struct.name)
               )
-            , ( struct.key ++ "-table"
+            , ( key ++ "-table"
               , if struct.inputsVisible
                     then inputTable
                     else showInputsButton

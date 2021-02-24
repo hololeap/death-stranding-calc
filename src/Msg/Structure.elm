@@ -8,6 +8,7 @@ import Resource.Metal exposing (Metal)
 import Resource.Ceramics exposing (Ceramics)
 import Resource.Chemicals exposing (Chemicals)
 import Resource.SpecialAlloys exposing (SpecialAlloys)
+import Msg.Structure.Name exposing (RenameStructureMsg)
 
 type StructureMsg
     = ChiralCrystalsMsg (ResourceMsg ChiralCrystals)
@@ -17,3 +18,4 @@ type StructureMsg
     | ChemicalsMsg (ResourceMsg Chemicals)
     | SpecialAlloysMsg (ResourceMsg SpecialAlloys)
     | InputsVisibleMsg Bool
+    | RenameStructure RenameStructureMsg
