@@ -7,7 +7,7 @@ module Version exposing
 type Version = Version (List Int)
 
 currentVersion : Version
-currentVersion = Version [0, 1, 1]
+currentVersion = Version [0, 2, 0]
 
 toString : Version -> String
 toString (Version version) =
