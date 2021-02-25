@@ -43,6 +43,6 @@ init = ResourceGiven MaybeInt.init
 
 codec : Codec e ResourceGiven
 codec =
-    S.customType (\e -> e << toInt)
-        |> S.variant1 fromInt S.int
+    S.customType (\e (ResourceGiven mi) -> e mi)
+        |> S.variant1 ResourceGiven MaybeInt.codec
         |> S.finishCustomType

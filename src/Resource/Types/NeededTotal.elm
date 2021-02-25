@@ -43,6 +43,6 @@ init = ResourceNeededTotal MaybeInt.init
 
 codec : Codec e ResourceNeededTotal
 codec =
-    S.customType (\e -> e << toInt)
-        |> S.variant1 fromInt S.int
+    S.customType (\e (ResourceNeededTotal mi) -> e mi)
+        |> S.variant1 ResourceNeededTotal MaybeInt.codec
         |> S.finishCustomType
