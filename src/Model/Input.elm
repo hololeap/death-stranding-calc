@@ -12,6 +12,8 @@ import Url.Parser.Query as QueryP
 import Dict.AutoInc as AutoIncDict exposing (AutoIncDict)
 import Model.Input.Structure as StructureInput exposing (StructureInput)
 
+import Version
+
 type alias ModelInput = AutoIncDict StructureInput
 
 init : ModelInput
@@ -37,15 +39,32 @@ decode = B64D.decode B64D.bytes
 encodeUrl : ModelInput -> String
 encodeUrl input =
     let encodedInput = encode input
-    in Url.Builder.relative [] [Url.Builder.string "state" encodedInput]
+    in Url.Builder.relative 
+        [] 
+        [ Url.Builder.string "version" (Version.toString Version.currentVersion)
+        , Url.Builder.string "state" encodedInput ]
 
 decodeUrl : Url -> Maybe ModelInput
 decodeUrl url =
     let
         -- This is a hack to completely ignore the path and just extract the
         -- query
-        parser = Url.Parser.query (QueryP.string "state")
         modifiedUrl = { url | path = "" }
+
+        checkVersion maybeVersion maybeState =
+            case maybeVersion of
+                -- If there is no version info, just let the state through
+                Nothing -> maybeState
+                Just version ->
+                    if version == Version.toString Version.currentVersion
+                        then maybeState
+                        else Nothing
+        queryParser =
+            QueryP.map2
+                checkVersion
+                (QueryP.string "version")
+                (QueryP.string "state")
+        parser = Url.Parser.query queryParser
     in
         Maybe.andThen
             (Maybe.andThen decode)
