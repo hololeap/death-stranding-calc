@@ -9,7 +9,7 @@ import Controller exposing (update)
 import View exposing (view)
 
 import Palette.Colors as Colors
-import Msg exposing (Msg)
+import Msg exposing (Msg(..))
 
 body : Element Msg -> Element Msg
 body = el
@@ -18,9 +18,19 @@ body = el
     , Element.height Element.fill
     ]
 
+document : Element Msg -> Browser.Document Msg
+document myView =
+    { title = "Death Stranding Structure Calc"
+    , body = [Element.layout [] (body myView)]
+    }
+
 main : Program () Model Msg
-main = Browser.sandbox
+main = Browser.application
     { init = Model.init
+    , view = document << view
     , update = update
-    , view = Element.layout [] << body << view }
+    , subscriptions = (\_ -> Sub.none)
+    , onUrlRequest = UrlRequestMsg
+    , onUrlChange = UrlChangeMsg
+    }
 
