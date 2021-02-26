@@ -2,11 +2,11 @@ module Model exposing (Model, init)
 
 import Browser.Navigation as Nav
 import Url exposing (Url)
-import Url.Parser as Parser
-import Url.Parser.Query as QueryP
 
 import Model.Input as ModelInput exposing (ModelInput)
 import Model.Output as ModelOutput exposing (ModelOutput)
+
+import Msg exposing (Msg)
 
 type alias Model =
     { input : ModelInput
@@ -14,14 +14,16 @@ type alias Model =
     , navKey : Nav.Key
     }
 
-init : flags -> Url -> Nav.Key -> (Model, Cmd msg)
+init : flags -> Url -> Nav.Key -> (Model, Cmd Msg)
 init _ url navKey =
     let
-        input = ModelInput.decodeUrl url
-            |> Maybe.withDefault ModelInput.init
+        input =
+            case ModelInput.decodeUrl url of
+                Nothing -> ModelInput.init
+                Just modelInput -> modelInput
         model =
             { input = input
             , output = ModelOutput.generate input
             , navKey = navKey
             }
-    in (model, Cmd.none)
+    in (model, ModelInput.updateUrl navKey input)
