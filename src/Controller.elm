@@ -1,7 +1,5 @@
 module Controller exposing (update)
 
-import Browser.Navigation
-
 import Dict.AutoInc as AutoIncDict
 
 import Model.Input.Structure as StructureInput
@@ -34,21 +32,12 @@ updateInput msg modelInput =
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-    let
-        updateUrl =
-            ModelInput.encodeUrl >>
-                Browser.Navigation.replaceUrl model.navKey
-        maybeInput = updateInput msg model.input
-        newModel =
-            case maybeInput of
-                Nothing -> model
-                Just input ->
-                    { model
-                    | input = input
-                    , output = ModelOutput.generate input
-                    }
-        cmd =
-            case maybeInput of
-                Nothing -> Cmd.none
-                Just input -> updateUrl input
-    in (newModel, cmd)
+    case updateInput msg model.input of
+        Nothing -> (model, Cmd.none)
+        Just input ->
+            ( { model
+              | input = input
+              , output = ModelOutput.generate input
+              }
+            , ModelInput.updateUrl model.navKey input
+            )

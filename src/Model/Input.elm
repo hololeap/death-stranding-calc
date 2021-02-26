@@ -1,5 +1,7 @@
 module Model.Input exposing (..)
 
+import Browser.Navigation as Nav
+
 import Serialize exposing (Codec)
 import Flate
 import Base64.Encode as B64E
@@ -11,6 +13,7 @@ import Url.Parser.Query as QueryP
 
 import Dict.AutoInc as AutoIncDict exposing (AutoIncDict)
 import Model.Input.Structure as StructureInput exposing (StructureInput)
+import Msg exposing (Msg)
 
 import Version
 
@@ -39,7 +42,7 @@ decode = B64D.decode B64D.bytes
 encodeUrl : ModelInput -> String
 encodeUrl input =
     let encodedInput = encode input
-    in Url.Builder.relative 
+    in Url.Builder.relative
         [] 
         [ Url.Builder.string "version" (Version.toString Version.currentVersion)
         , Url.Builder.string "state" encodedInput ]
@@ -69,3 +72,6 @@ decodeUrl url =
         Maybe.andThen
             (Maybe.andThen decode)
             (Url.Parser.parse parser modifiedUrl)
+
+updateUrl : Nav.Key -> ModelInput -> Cmd Msg
+updateUrl navKey = encodeUrl >> Nav.replaceUrl navKey
